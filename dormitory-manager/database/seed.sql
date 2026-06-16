@@ -53,18 +53,18 @@ INSERT INTO roles (id, role_name, description) VALUES
 -- =====================================================
 
 INSERT INTO users (id, username, password_hash, email, phone, role_id, status) VALUES
-(1, 'admin01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'admin01@school.edu.vn', '0900000001', 1, 'active'),
-(2, 'manager_a', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'manager.a@school.edu.vn', '0900000002', 2, 'active'),
-(3, 'manager_b', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'manager.b@school.edu.vn', '0900000003', 2, 'active'),
+(1, 'admin01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin01@school.edu.vn', '0900000001', 1, 'active'),
+(2, 'manager_a', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'manager.a@school.edu.vn', '0900000002', 2, 'active'),
+(3, 'manager_b', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'manager.b@school.edu.vn', '0900000003', 2, 'active'),
 
-(4, 'student001', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student001@school.edu.vn', '0910000001', 3, 'active'),
-(5, 'student002', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student002@school.edu.vn', '0910000002', 3, 'active'),
-(6, 'student003', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student003@school.edu.vn', '0910000003', 3, 'active'),
-(7, 'student004', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student004@school.edu.vn', '0910000004', 3, 'active'),
-(8, 'student005', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student005@school.edu.vn', '0910000005', 3, 'active'),
-(9, 'student006', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student006@school.edu.vn', '0910000006', 3, 'active'),
-(10, 'student007', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student007@school.edu.vn', '0910000007', 3, 'active'),
-(11, 'student008', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi', 'student008@school.edu.vn', '0910000008', 3, 'active');
+(4, 'student001', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student001@school.edu.vn', '0910000001', 3, 'active'),
+(5, 'student002', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student002@school.edu.vn', '0910000002', 3, 'active'),
+(6, 'student003', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student003@school.edu.vn', '0910000003', 3, 'active'),
+(7, 'student004', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student004@school.edu.vn', '0910000004', 3, 'active'),
+(8, 'student005', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student005@school.edu.vn', '0910000005', 3, 'active'),
+(9, 'student006', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student006@school.edu.vn', '0910000006', 3, 'active'),
+(10, 'student007', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student007@school.edu.vn', '0910000007', 3, 'active'),
+(11, 'student008', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student008@school.edu.vn', '0910000008', 3, 'active');
 
 -- =====================================================
 -- 3. students

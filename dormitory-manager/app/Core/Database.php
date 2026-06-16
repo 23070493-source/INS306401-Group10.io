@@ -13,17 +13,32 @@ class Database
     public static function getConnection(): PDO
     {
         if (self::$connection === null) {
-            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
-
-            try {
-                self::$connection = new PDO($dsn, DB_USER, DB_PASS);
-                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            } catch (PDOException $e) {
-                die('Database connection failed: ' . $e->getMessage());
-            }
+            self::$connection = self::connect();
         }
 
+        return self::$connection;
+    }
+
+    private static function connect(): PDO
+    {
+        $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
+
+        try {
+            return new PDO($dsn, DB_USER, DB_PASS, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_PERSISTENT => false,
+                PDO::ATTR_TIMEOUT => 5,
+            ]);
+        } catch (PDOException $e) {
+            die('Database connection failed: ' . $e->getMessage());
+        }
+    }
+
+    public static function reconnect(): PDO
+    {
+        self::$connection = self::connect();
         return self::$connection;
     }
 }
