@@ -27,6 +27,7 @@ class Auth
                 u.password_hash,
                 u.email,
                 u.phone,
+                u.avatar,
                 u.status,
                 r.role_name
             FROM users u
@@ -69,6 +70,42 @@ class Auth
         self::start();
 
         return $_SESSION['user'] ?? null;
+    }
+
+    public static function refreshUserSession(): void
+    {
+        self::start();
+
+        if (!isset($_SESSION['user']['id'])) {
+            return;
+        }
+
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT 
+                u.id,
+                u.username,
+                u.email,
+                u.phone,
+                u.avatar,
+                u.status,
+                r.role_name
+            FROM users u
+            JOIN roles r ON r.id = u.role_id
+            WHERE u.id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $_SESSION['user']['id']
+        ]);
+
+        $user = $stmt->fetch();
+
+        if ($user) {
+            $_SESSION['user'] = $user;
+        }
     }
 
     public static function logout(): void

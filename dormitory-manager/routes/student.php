@@ -1145,3 +1145,69 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
         exit;
     }
 };
+$routes['student/violations'] = function (PDO $db): void {
+    Auth::requireRole('Student');
+
+    $user = Auth::user();
+
+    $stmt = $db->prepare("
+        SELECT *
+        FROM students
+        WHERE user_id = :user_id
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'user_id' => $user['id']
+    ]);
+
+    $student = $stmt->fetch();
+
+    $violations = [];
+    $totalPoints = 0;
+
+    if ($student) {
+        $stmt = $db->prepare("
+            SELECT
+                vr.id,
+                vr.violation_type,
+                vr.description,
+                vr.penalty_points,
+                vr.violation_date,
+                vr.created_at,
+                creator.username AS created_by_username
+            FROM violation_records vr
+            LEFT JOIN users creator ON creator.id = vr.created_by
+            WHERE vr.student_id = :student_id
+            ORDER BY 
+                vr.violation_date DESC,
+                vr.created_at DESC,
+                vr.id DESC
+        ");
+
+        $stmt->execute([
+            'student_id' => $student['id']
+        ]);
+
+        $violations = $stmt->fetchAll();
+
+        $stmt = $db->prepare("
+            SELECT COALESCE(SUM(penalty_points), 0)
+            FROM violation_records
+            WHERE student_id = :student_id
+        ");
+
+        $stmt->execute([
+            'student_id' => $student['id']
+        ]);
+
+        $totalPoints = (int) $stmt->fetchColumn();
+    }
+
+    render('student/violations', [
+        'title' => 'My Violations',
+        'student' => $student,
+        'violations' => $violations,
+        'totalPoints' => $totalPoints
+    ]);
+};

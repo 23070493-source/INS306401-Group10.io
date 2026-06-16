@@ -16,7 +16,7 @@ $routes['manager/dashboard'] = function (PDO $db): void {
             SELECT student_id
             FROM violation_records
             GROUP BY student_id
-            HAVING SUM(penalty_points) >= 10
+            HAVING SUM(penalty_points) >= 5
         ) AS warning_students
     ")->fetchColumn();
 
@@ -1401,6 +1401,353 @@ $routes['manager/maintenance-update'] = function (PDO $db): void {
         echo '<h2>Cập nhật yêu cầu sửa chữa thất bại</h2>';
         echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
         echo '<a href="' . BASE_URL . '/index.php?route=manager/maintenance">Quay lại</a>';
+        exit;
+    }
+};
+
+$routes['manager/violations'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    $violationPointRules = [
+        'Late return' => 2,
+        'Noise disturbance' => 3,
+        'Poor hygiene' => 3,
+        'Unauthorized room change' => 5,
+        'Unpaid fee' => 5,
+        'Damage to property' => 7,
+        'Smoking or alcohol violation' => 10,
+        'Other' => null
+    ];
+
+    $students = $db->query("
+        SELECT
+            id,
+            student_code,
+            full_name,
+            gender,
+            faculty,
+            program
+        FROM students
+        ORDER BY student_code
+    ")->fetchAll();
+
+    $stmt = $db->query("
+        SELECT
+            vr.id,
+            vr.violation_type,
+            vr.description,
+            vr.penalty_points,
+            vr.violation_date,
+            vr.created_at,
+            s.student_code,
+            s.full_name,
+            s.faculty,
+            creator.username AS created_by_username
+        FROM violation_records vr
+        JOIN students s ON s.id = vr.student_id
+        LEFT JOIN users creator ON creator.id = vr.created_by
+        ORDER BY 
+            vr.violation_date DESC,
+            vr.created_at DESC,
+            vr.id DESC
+    ");
+
+    $violations = $stmt->fetchAll();
+
+    $stmt = $db->query("
+        SELECT
+            s.id,
+            s.student_code,
+            s.full_name,
+            s.faculty,
+            COALESCE(SUM(vr.penalty_points), 0) AS total_points,
+            COUNT(vr.id) AS violation_count
+        FROM students s
+        LEFT JOIN violation_records vr ON vr.student_id = s.id
+        GROUP BY 
+            s.id,
+            s.student_code,
+            s.full_name,
+            s.faculty
+        HAVING total_points >= 5
+        ORDER BY 
+            total_points DESC,
+            violation_count DESC
+    ");
+
+    $warningStudents = $stmt->fetchAll();
+
+    $summary = [
+        'total_violations' => $db->query("SELECT COUNT(*) FROM violation_records")->fetchColumn(),
+        'warning_students' => count($warningStudents),
+        'serious_students' => 0,
+        'critical_students' => 0,
+    ];
+
+    foreach ($warningStudents as $warningStudent) {
+        $points = (int) $warningStudent['total_points'];
+
+        if ($points >= 15) {
+            $summary['critical_students']++;
+        } elseif ($points >= 10) {
+            $summary['serious_students']++;
+        }
+    }
+
+    render('manager/violations', [
+        'title' => 'Violation Records',
+        'students' => $students,
+        'violations' => $violations,
+        'warningStudents' => $warningStudents,
+        'summary' => $summary,
+        'violationPointRules' => $violationPointRules,
+        'errors' => [],
+        'old' => []
+    ]);
+};
+
+$routes['manager/violation-store'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('manager/violations');
+    }
+
+    $manager = Auth::user();
+
+    $violationPointRules = [
+        'Late return' => 2,
+        'Noise disturbance' => 3,
+        'Poor hygiene' => 3,
+        'Unauthorized room change' => 5,
+        'Unpaid fee' => 5,
+        'Damage to property' => 7,
+        'Smoking or alcohol violation' => 10,
+        'Other' => null
+    ];
+
+    $studentId = (int) ($_POST['student_id'] ?? 0);
+    $violationType = trim($_POST['violation_type'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $violationDate = trim($_POST['violation_date'] ?? '');
+    $customPenaltyPoints = (int) ($_POST['custom_penalty_points'] ?? 0);
+
+    $errors = [];
+    $penaltyPoints = 0;
+
+    if ($studentId <= 0) {
+        $errors[] = 'Vui lòng chọn sinh viên.';
+    }
+
+    if ($violationType === '') {
+        $errors[] = 'Vui lòng chọn loại vi phạm.';
+    } elseif (!array_key_exists($violationType, $violationPointRules)) {
+        $errors[] = 'Loại vi phạm không hợp lệ.';
+    } else {
+        if ($violationType === 'Other') {
+            if ($customPenaltyPoints <= 0) {
+                $errors[] = 'Vui lòng nhập điểm phạt cho loại Other.';
+            } elseif ($customPenaltyPoints > 20) {
+                $errors[] = 'Điểm phạt cho một vi phạm không nên vượt quá 20.';
+            } else {
+                $penaltyPoints = $customPenaltyPoints;
+            }
+        } else {
+            $penaltyPoints = (int) $violationPointRules[$violationType];
+        }
+    }
+
+    if ($description === '') {
+        $errors[] = 'Vui lòng nhập mô tả vi phạm.';
+    }
+
+    if ($violationDate === '') {
+        $errors[] = 'Vui lòng chọn ngày vi phạm.';
+    }
+
+    $students = $db->query("
+        SELECT
+            id,
+            student_code,
+            full_name,
+            gender,
+            faculty,
+            program
+        FROM students
+        ORDER BY student_code
+    ")->fetchAll();
+
+    $stmt = $db->query("
+        SELECT
+            vr.id,
+            vr.violation_type,
+            vr.description,
+            vr.penalty_points,
+            vr.violation_date,
+            vr.created_at,
+            s.student_code,
+            s.full_name,
+            s.faculty,
+            creator.username AS created_by_username
+        FROM violation_records vr
+        JOIN students s ON s.id = vr.student_id
+        LEFT JOIN users creator ON creator.id = vr.created_by
+        ORDER BY 
+            vr.violation_date DESC,
+            vr.created_at DESC,
+            vr.id DESC
+    ");
+
+    $violations = $stmt->fetchAll();
+
+    $stmt = $db->query("
+        SELECT
+            s.id,
+            s.student_code,
+            s.full_name,
+            s.faculty,
+            COALESCE(SUM(vr.penalty_points), 0) AS total_points,
+            COUNT(vr.id) AS violation_count
+        FROM students s
+        LEFT JOIN violation_records vr ON vr.student_id = s.id
+        GROUP BY 
+            s.id,
+            s.student_code,
+            s.full_name,
+            s.faculty
+        HAVING total_points >= 5
+        ORDER BY 
+            total_points DESC,
+            violation_count DESC
+    ");
+
+    $warningStudents = $stmt->fetchAll();
+
+    $summary = [
+        'total_violations' => $db->query("SELECT COUNT(*) FROM violation_records")->fetchColumn(),
+        'warning_students' => count($warningStudents),
+        'serious_students' => 0,
+        'critical_students' => 0,
+    ];
+
+    foreach ($warningStudents as $warningStudent) {
+        $points = (int) $warningStudent['total_points'];
+
+        if ($points >= 15) {
+            $summary['critical_students']++;
+        } elseif ($points >= 10) {
+            $summary['serious_students']++;
+        }
+    }
+
+    if (!empty($errors)) {
+        render('manager/violations', [
+            'title' => 'Violation Records',
+            'students' => $students,
+            'violations' => $violations,
+            'warningStudents' => $warningStudents,
+            'summary' => $summary,
+            'violationPointRules' => $violationPointRules,
+            'errors' => $errors,
+            'old' => $_POST
+        ]);
+        return;
+    }
+
+    try {
+        $stmt = $db->prepare("
+            SELECT *
+            FROM students
+            WHERE id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $studentId
+        ]);
+
+        $student = $stmt->fetch();
+
+        if (!$student) {
+            throw new Exception('Không tìm thấy sinh viên.');
+        }
+
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            INSERT INTO violation_records (
+                student_id,
+                violation_type,
+                description,
+                penalty_points,
+                violation_date,
+                created_by,
+                created_at
+            )
+            VALUES (
+                :student_id,
+                :violation_type,
+                :description,
+                :penalty_points,
+                :violation_date,
+                :created_by,
+                NOW()
+            )
+        ");
+
+        $stmt->execute([
+            'student_id' => $studentId,
+            'violation_type' => $violationType,
+            'description' => $description,
+            'penalty_points' => $penaltyPoints,
+            'violation_date' => $violationDate,
+            'created_by' => $manager['id']
+        ]);
+
+        $violationId = $db->lastInsertId();
+
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (
+                user_id,
+                action,
+                table_name,
+                record_id,
+                old_value,
+                new_value,
+                ip_address,
+                user_agent
+            )
+            VALUES (
+                :user_id,
+                'create',
+                'violation_records',
+                :record_id,
+                NULL,
+                :new_value,
+                :ip_address,
+                :user_agent
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $manager['id'],
+            'record_id' => $violationId,
+            'new_value' => 'Created violation record for student ' . $student['student_code'] . ' with ' . $penaltyPoints . ' points',
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+        ]);
+
+        $db->commit();
+
+        redirectTo('manager/violations');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Tạo biên bản vi phạm thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/violations">Quay lại</a>';
         exit;
     }
 };

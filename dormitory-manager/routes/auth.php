@@ -260,3 +260,353 @@ $routes['logout'] = function (PDO $db): void {
     Auth::logout();
     redirectTo('login');
 };
+$routes['profile'] = function (PDO $db): void {
+    Auth::requireLogin();
+
+    $user = Auth::user();
+    $studentProfile = null;
+
+    if ($user['role_name'] === 'Student') {
+        $stmt = $db->prepare("
+            SELECT *
+            FROM students
+            WHERE user_id = :user_id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'user_id' => $user['id']
+        ]);
+
+        $studentProfile = $stmt->fetch();
+    }
+
+    render('profile/index', [
+        'title' => 'My Profile',
+        'user' => $user,
+        'studentProfile' => $studentProfile,
+        'profileErrors' => [],
+        'passwordErrors' => [],
+        'success' => $_GET['success'] ?? null
+    ]);
+};
+
+$routes['profile/update'] = function (PDO $db): void {
+    Auth::requireLogin();
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('profile');
+    }
+
+    $user = Auth::user();
+
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+
+    $errors = [];
+    $avatarPath = $user['avatar'] ?? null;
+
+    if ($email === '') {
+        $errors[] = 'Vui lòng nhập email.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Email không hợp lệ.';
+    }
+
+    if ($email !== '') {
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM users
+            WHERE email = :email
+              AND id <> :id
+        ");
+
+        $stmt->execute([
+            'email' => $email,
+            'id' => $user['id']
+        ]);
+
+        if ((int) $stmt->fetchColumn() > 0) {
+            $errors[] = 'Email này đã được tài khoản khác sử dụng.';
+        }
+    }
+
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = 'Upload avatar thất bại.';
+        } else {
+            $maxSize = 5 * 1024 * 1024;
+
+            if ($_FILES['avatar']['size'] > $maxSize) {
+                $errors[] = 'Avatar không được vượt quá 5MB.';
+            }
+
+            $allowedMimeTypes = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp'
+            ];
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $_FILES['avatar']['tmp_name']);
+            finfo_close($finfo);
+
+            if (!array_key_exists($mimeType, $allowedMimeTypes)) {
+                $errors[] = 'Avatar chỉ được dùng định dạng JPG, PNG hoặc WEBP.';
+            }
+
+            if (empty($errors)) {
+                $uploadDir = dirname(__DIR__) . '/public/uploads/avatars';
+
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                $extension = $allowedMimeTypes[$mimeType];
+                $fileName = 'avatar_' . $user['id'] . '_' . date('YmdHis') . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
+                $targetPath = $uploadDir . '/' . $fileName;
+
+                if (!move_uploaded_file($_FILES['avatar']['tmp_name'], $targetPath)) {
+                    $errors[] = 'Không thể lưu avatar.';
+                } else {
+                    $avatarPath = 'uploads/avatars/' . $fileName;
+                }
+            }
+        }
+    }
+
+    $studentProfile = null;
+
+    if ($user['role_name'] === 'Student') {
+        $stmt = $db->prepare("
+            SELECT *
+            FROM students
+            WHERE user_id = :user_id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'user_id' => $user['id']
+        ]);
+
+        $studentProfile = $stmt->fetch();
+    }
+
+    if (!empty($errors)) {
+        render('profile/index', [
+            'title' => 'My Profile',
+            'user' => $user,
+            'studentProfile' => $studentProfile,
+            'profileErrors' => $errors,
+            'passwordErrors' => [],
+            'success' => null
+        ]);
+        return;
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            UPDATE users
+            SET
+                email = :email,
+                phone = :phone,
+                avatar = :avatar
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'email' => $email,
+            'phone' => $phone !== '' ? $phone : null,
+            'avatar' => $avatarPath,
+            'id' => $user['id']
+        ]);
+
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (
+                user_id,
+                action,
+                table_name,
+                record_id,
+                old_value,
+                new_value,
+                ip_address,
+                user_agent
+            )
+            VALUES (
+                :user_id,
+                'update',
+                'users',
+                :record_id,
+                NULL,
+                :new_value,
+                :ip_address,
+                :user_agent
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $user['id'],
+            'record_id' => $user['id'],
+            'new_value' => 'User updated profile information',
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+        ]);
+
+        $db->commit();
+
+        Auth::refreshUserSession();
+
+        redirectTo('profile&success=profile');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Cập nhật profile thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=profile">Quay lại</a>';
+        exit;
+    }
+};
+
+$routes['profile/password'] = function (PDO $db): void {
+    Auth::requireLogin();
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('profile');
+    }
+
+    $user = Auth::user();
+
+    $currentPassword = trim($_POST['current_password'] ?? '');
+    $newPassword = trim($_POST['new_password'] ?? '');
+    $confirmPassword = trim($_POST['confirm_password'] ?? '');
+
+    $errors = [];
+
+    if ($currentPassword === '') {
+        $errors[] = 'Vui lòng nhập mật khẩu hiện tại.';
+    }
+
+    if ($newPassword === '') {
+        $errors[] = 'Vui lòng nhập mật khẩu mới.';
+    } elseif (strlen($newPassword) < 6) {
+        $errors[] = 'Mật khẩu mới nên có ít nhất 6 ký tự.';
+    }
+
+    if ($confirmPassword === '') {
+        $errors[] = 'Vui lòng nhập lại mật khẩu mới.';
+    }
+
+    if ($newPassword !== '' && $confirmPassword !== '' && $newPassword !== $confirmPassword) {
+        $errors[] = 'Mật khẩu mới và xác nhận mật khẩu không khớp.';
+    }
+
+    $stmt = $db->prepare("
+        SELECT password_hash
+        FROM users
+        WHERE id = :id
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'id' => $user['id']
+    ]);
+
+    $account = $stmt->fetch();
+
+    if (!$account || !password_verify($currentPassword, $account['password_hash'])) {
+        $errors[] = 'Mật khẩu hiện tại không đúng.';
+    }
+
+    $studentProfile = null;
+
+    if ($user['role_name'] === 'Student') {
+        $stmt = $db->prepare("
+            SELECT *
+            FROM students
+            WHERE user_id = :user_id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'user_id' => $user['id']
+        ]);
+
+        $studentProfile = $stmt->fetch();
+    }
+
+    if (!empty($errors)) {
+        render('profile/index', [
+            'title' => 'My Profile',
+            'user' => $user,
+            'studentProfile' => $studentProfile,
+            'profileErrors' => [],
+            'passwordErrors' => $errors,
+            'success' => null
+        ]);
+        return;
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $stmt = $db->prepare("
+            UPDATE users
+            SET password_hash = :password_hash
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'password_hash' => $newPasswordHash,
+            'id' => $user['id']
+        ]);
+
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (
+                user_id,
+                action,
+                table_name,
+                record_id,
+                old_value,
+                new_value,
+                ip_address,
+                user_agent
+            )
+            VALUES (
+                :user_id,
+                'update',
+                'users',
+                :record_id,
+                NULL,
+                :new_value,
+                :ip_address,
+                :user_agent
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $user['id'],
+            'record_id' => $user['id'],
+            'new_value' => 'User changed password',
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+        ]);
+
+        $db->commit();
+
+        redirectTo('profile&success=password');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Đổi mật khẩu thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=profile">Quay lại</a>';
+        exit;
+    }
+};
