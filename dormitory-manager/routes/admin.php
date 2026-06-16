@@ -1202,3 +1202,457 @@ $routes['admin/service-update'] = function (PDO $db): void {
         exit;
     }
 };
+
+if (!function_exists('adminAuditSafe')) {
+    function adminAuditSafe(PDO $db, int $userId, string $action, string $tableName, int $recordId, ?string $oldValue, ?string $newValue): void
+    {
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (
+                user_id,
+                action,
+                table_name,
+                record_id,
+                old_value,
+                new_value,
+                ip_address,
+                user_agent
+            )
+            VALUES (
+                :user_id,
+                :action,
+                :table_name,
+                :record_id,
+                :old_value,
+                :new_value,
+                :ip_address,
+                :user_agent
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $userId,
+            'action' => $action,
+            'table_name' => $tableName,
+            'record_id' => $recordId,
+            'old_value' => $oldValue,
+            'new_value' => $newValue,
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+        ]);
+    }
+}
+
+$routes['admin/students'] = function (PDO $db): void {
+    Auth::requireRole('Admin');
+
+    $statusFilter = trim($_GET['status'] ?? '');
+    $where = '';
+    $params = [];
+
+    if ($statusFilter !== '' && in_array($statusFilter, ['active', 'inactive'], true)) {
+        $where = 'WHERE s.status = :status';
+        $params['status'] = $statusFilter;
+    }
+
+    $stmt = $db->prepare("
+        SELECT
+            s.*,
+            u.username,
+            u.email,
+            u.phone,
+            u.status AS user_status
+        FROM students s
+        LEFT JOIN users u ON u.id = s.user_id
+        $where
+        ORDER BY s.id DESC
+    ");
+    $stmt->execute($params);
+    $students = $stmt->fetchAll();
+
+    $studentUsers = $db->query("
+        SELECT
+            u.id,
+            u.username,
+            u.email
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        LEFT JOIN students s ON s.user_id = u.id
+        WHERE r.role_name = 'Student'
+          AND s.id IS NULL
+        ORDER BY u.username
+    ")->fetchAll();
+
+    $summary = [
+        'total' => $db->query("SELECT COUNT(*) FROM students")->fetchColumn(),
+        'active' => $db->query("SELECT COUNT(*) FROM students WHERE status = 'active'")->fetchColumn(),
+        'inactive' => $db->query("SELECT COUNT(*) FROM students WHERE status = 'inactive'")->fetchColumn(),
+        'missing_profile' => count($studentUsers),
+    ];
+
+    render('admin/students', [
+        'title' => 'Students Management',
+        'students' => $students,
+        'studentUsers' => $studentUsers,
+        'summary' => $summary,
+        'statusFilter' => $statusFilter,
+        'errors' => [],
+        'old' => []
+    ]);
+};
+
+$routes['admin/student-store'] = function (PDO $db): void {
+    Auth::requireRole('Admin');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('admin/students');
+    }
+
+    $admin = Auth::user();
+
+    $userId = (int) ($_POST['user_id'] ?? 0);
+    $studentCode = trim($_POST['student_code'] ?? '');
+    $fullName = trim($_POST['full_name'] ?? '');
+    $gender = trim($_POST['gender'] ?? '');
+    $faculty = trim($_POST['faculty'] ?? '');
+    $program = trim($_POST['program'] ?? '');
+    $priorityType = trim($_POST['priority_type'] ?? '');
+    $status = trim($_POST['status'] ?? 'active');
+
+    $errors = [];
+
+    if ($userId <= 0) {
+        $errors[] = 'Vui lòng chọn user Student.';
+    }
+
+    if ($studentCode === '') {
+        $errors[] = 'Vui lòng nhập mã sinh viên.';
+    }
+
+    if ($fullName === '') {
+        $errors[] = 'Vui lòng nhập họ tên sinh viên.';
+    }
+
+    if (!in_array($gender, ['male', 'female', 'other'], true)) {
+        $errors[] = 'Giới tính không hợp lệ.';
+    }
+
+    if (!in_array($status, ['active', 'inactive'], true)) {
+        $errors[] = 'Trạng thái không hợp lệ.';
+    }
+
+    if ($studentCode !== '') {
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM students
+            WHERE student_code = :student_code
+        ");
+        $stmt->execute(['student_code' => $studentCode]);
+
+        if ((int) $stmt->fetchColumn() > 0) {
+            $errors[] = 'Mã sinh viên đã tồn tại.';
+        }
+    }
+
+    if ($userId > 0) {
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM students
+            WHERE user_id = :user_id
+        ");
+        $stmt->execute(['user_id' => $userId]);
+
+        if ((int) $stmt->fetchColumn() > 0) {
+            $errors[] = 'User này đã có hồ sơ sinh viên.';
+        }
+    }
+
+    if (!empty($errors)) {
+        $stmt = $db->query("
+            SELECT
+                s.*,
+                u.username,
+                u.email,
+                u.phone,
+                u.status AS user_status
+            FROM students s
+            LEFT JOIN users u ON u.id = s.user_id
+            ORDER BY s.id DESC
+        ");
+
+        $studentUsers = $db->query("
+            SELECT
+                u.id,
+                u.username,
+                u.email
+            FROM users u
+            JOIN roles r ON r.id = u.role_id
+            LEFT JOIN students s ON s.user_id = u.id
+            WHERE r.role_name = 'Student'
+              AND s.id IS NULL
+            ORDER BY u.username
+        ")->fetchAll();
+
+        render('admin/students', [
+            'title' => 'Students Management',
+            'students' => $stmt->fetchAll(),
+            'studentUsers' => $studentUsers,
+            'summary' => [
+                'total' => $db->query("SELECT COUNT(*) FROM students")->fetchColumn(),
+                'active' => $db->query("SELECT COUNT(*) FROM students WHERE status = 'active'")->fetchColumn(),
+                'inactive' => $db->query("SELECT COUNT(*) FROM students WHERE status = 'inactive'")->fetchColumn(),
+                'missing_profile' => count($studentUsers),
+            ],
+            'statusFilter' => '',
+            'errors' => $errors,
+            'old' => $_POST
+        ]);
+        return;
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            INSERT INTO students (
+                user_id,
+                student_code,
+                full_name,
+                gender,
+                faculty,
+                program,
+                priority_type,
+                status,
+                created_at
+            )
+            VALUES (
+                :user_id,
+                :student_code,
+                :full_name,
+                :gender,
+                :faculty,
+                :program,
+                :priority_type,
+                :status,
+                NOW()
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $userId,
+            'student_code' => $studentCode,
+            'full_name' => $fullName,
+            'gender' => $gender,
+            'faculty' => $faculty !== '' ? $faculty : null,
+            'program' => $program !== '' ? $program : null,
+            'priority_type' => $priorityType !== '' ? $priorityType : null,
+            'status' => $status
+        ]);
+
+        $studentId = (int) $db->lastInsertId();
+
+        adminAuditSafe($db, (int) $admin['id'], 'create', 'students', $studentId, null, 'Created student profile: ' . $studentCode);
+
+        $db->commit();
+
+        redirectTo('admin/students');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Tạo hồ sơ sinh viên thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=admin/students">Quay lại</a>';
+        exit;
+    }
+};
+
+$routes['admin/student-update'] = function (PDO $db): void {
+    Auth::requireRole('Admin');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('admin/students');
+    }
+
+    $admin = Auth::user();
+
+    $id = (int) ($_POST['id'] ?? 0);
+    $studentCode = trim($_POST['student_code'] ?? '');
+    $fullName = trim($_POST['full_name'] ?? '');
+    $gender = trim($_POST['gender'] ?? '');
+    $faculty = trim($_POST['faculty'] ?? '');
+    $program = trim($_POST['program'] ?? '');
+    $priorityType = trim($_POST['priority_type'] ?? '');
+    $status = trim($_POST['status'] ?? 'active');
+
+    if (
+        $id <= 0 ||
+        $studentCode === '' ||
+        $fullName === '' ||
+        !in_array($gender, ['male', 'female', 'other'], true) ||
+        !in_array($status, ['active', 'inactive'], true)
+    ) {
+        redirectTo('admin/students');
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            UPDATE students
+            SET
+                student_code = :student_code,
+                full_name = :full_name,
+                gender = :gender,
+                faculty = :faculty,
+                program = :program,
+                priority_type = :priority_type,
+                status = :status
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'student_code' => $studentCode,
+            'full_name' => $fullName,
+            'gender' => $gender,
+            'faculty' => $faculty !== '' ? $faculty : null,
+            'program' => $program !== '' ? $program : null,
+            'priority_type' => $priorityType !== '' ? $priorityType : null,
+            'status' => $status,
+            'id' => $id
+        ]);
+
+        adminAuditSafe($db, (int) $admin['id'], 'update', 'students', $id, null, 'Updated student profile: ' . $studentCode);
+
+        $db->commit();
+
+        redirectTo('admin/students');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Cập nhật hồ sơ sinh viên thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=admin/students">Quay lại</a>';
+        exit;
+    }
+};
+
+$routes['admin/audit-logs'] = function (PDO $db): void {
+    Auth::requireRole('Admin');
+
+    $actionFilter = trim($_GET['action'] ?? '');
+    $tableFilter = trim($_GET['table'] ?? '');
+
+    $where = [];
+    $params = [];
+
+    if ($actionFilter !== '') {
+        $where[] = 'al.action = :action';
+        $params['action'] = $actionFilter;
+    }
+
+    if ($tableFilter !== '') {
+        $where[] = 'al.table_name = :table_name';
+        $params['table_name'] = $tableFilter;
+    }
+
+    $whereSql = '';
+    if (!empty($where)) {
+        $whereSql = 'WHERE ' . implode(' AND ', $where);
+    }
+
+    $stmt = $db->prepare("
+        SELECT
+            al.*,
+            u.username
+        FROM audit_logs al
+        LEFT JOIN users u ON u.id = al.user_id
+        $whereSql
+        ORDER BY al.id DESC
+        LIMIT 300
+    ");
+
+    $stmt->execute($params);
+
+    $actions = $db->query("
+        SELECT DISTINCT action
+        FROM audit_logs
+        ORDER BY action
+    ")->fetchAll();
+
+    $tables = $db->query("
+        SELECT DISTINCT table_name
+        FROM audit_logs
+        ORDER BY table_name
+    ")->fetchAll();
+
+    render('admin/audit_logs', [
+        'title' => 'Audit Logs',
+        'logs' => $stmt->fetchAll(),
+        'actions' => $actions,
+        'tables' => $tables,
+        'actionFilter' => $actionFilter,
+        'tableFilter' => $tableFilter
+    ]);
+};
+
+$routes['admin/reports'] = function (PDO $db): void {
+    Auth::requireRole('Admin');
+
+    $overview = [
+        'total_students' => $db->query("SELECT COUNT(*) FROM students")->fetchColumn(),
+        'active_contracts' => $db->query("SELECT COUNT(*) FROM contracts WHERE status = 'active'")->fetchColumn(),
+        'ended_contracts' => $db->query("SELECT COUNT(*) FROM contracts WHERE status = 'ended'")->fetchColumn(),
+        'pending_registrations' => $db->query("SELECT COUNT(*) FROM room_registrations WHERE status = 'pending'")->fetchColumn(),
+        'unpaid_invoices' => $db->query("SELECT COUNT(*) FROM invoices WHERE status IN ('unpaid', 'partially_paid', 'overdue')")->fetchColumn(),
+        'paid_invoices' => $db->query("SELECT COUNT(*) FROM invoices WHERE status = 'paid'")->fetchColumn(),
+        'open_maintenance' => $db->query("SELECT COUNT(*) FROM maintenance_requests WHERE status IN ('pending', 'in_progress')")->fetchColumn(),
+    ];
+
+    $occupancyByBuilding = $db->query("
+        SELECT
+            b.building_name,
+            COUNT(DISTINCT r.id) AS total_rooms,
+            COALESCE(SUM(r.capacity), 0) AS total_capacity,
+            COUNT(c.id) AS active_occupancy
+        FROM buildings b
+        LEFT JOIN rooms r ON r.building_id = b.id
+        LEFT JOIN contracts c ON c.room_id = r.id AND c.status = 'active'
+        GROUP BY b.id, b.building_name
+        ORDER BY b.building_name
+    ")->fetchAll();
+
+    $invoiceSummary = $db->query("
+        SELECT
+            status,
+            COUNT(*) AS invoice_count,
+            COALESCE(SUM(total_amount), 0) AS total_amount,
+            COALESCE(SUM(paid_amount), 0) AS paid_amount
+        FROM invoices
+        GROUP BY status
+        ORDER BY status
+    ")->fetchAll();
+
+    $topViolationStudents = $db->query("
+        SELECT
+            s.student_code,
+            s.full_name,
+            COALESCE(SUM(vr.penalty_points), 0) AS total_points,
+            COUNT(vr.id) AS violation_count
+        FROM students s
+        JOIN violation_records vr ON vr.student_id = s.id
+        GROUP BY s.id, s.student_code, s.full_name
+        ORDER BY total_points DESC, violation_count DESC
+        LIMIT 10
+    ")->fetchAll();
+
+    render('admin/reports', [
+        'title' => 'Reports',
+        'overview' => $overview,
+        'occupancyByBuilding' => $occupancyByBuilding,
+        'invoiceSummary' => $invoiceSummary,
+        'topViolationStudents' => $topViolationStudents
+    ]);
+};

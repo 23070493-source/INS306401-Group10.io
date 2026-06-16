@@ -43,16 +43,20 @@ if ($user && !empty($user['avatar'])) {
                 <?php if ($user['role_name'] === 'Admin'): ?>
                     <a href="<?= BASE_URL ?>/index.php?route=admin/dashboard">Dashboard</a>
                     <a href="<?= BASE_URL ?>/index.php?route=admin/users">Users</a>
+                    <a href="<?= BASE_URL ?>/index.php?route=admin/students">Students</a>
                     <a href="<?= BASE_URL ?>/index.php?route=admin/buildings">Buildings</a>
                     <a href="<?= BASE_URL ?>/index.php?route=admin/rooms">Rooms</a>
                     <a href="<?= BASE_URL ?>/index.php?route=admin/semesters">Semesters</a>
                     <a href="<?= BASE_URL ?>/index.php?route=admin/services">Services</a>
+                    <a href="<?= BASE_URL ?>/index.php?route=admin/audit-logs">Audit Logs</a>
+                    <a href="<?= BASE_URL ?>/index.php?route=admin/reports">Reports</a>
 
                 <?php elseif ($user['role_name'] === 'Manager'): ?>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/dashboard">Dashboard</a>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/registrations">Room Registrations</a>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/contracts">Contracts</a>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/invoices">Invoices</a>
+                    <a href="<?= BASE_URL ?>/index.php?route=manager/utility-readings">Utility Readings</a>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/payments">Payments</a>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/maintenance">Maintenance</a>
                     <a href="<?= BASE_URL ?>/index.php?route=manager/violations">Violations</a>

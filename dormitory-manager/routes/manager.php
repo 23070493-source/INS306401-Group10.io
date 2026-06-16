@@ -1751,3 +1751,804 @@ $routes['manager/violation-store'] = function (PDO $db): void {
         exit;
     }
 };
+
+if (!function_exists('ktxAuditSafe')) {
+    function ktxAuditSafe(PDO $db, int $userId, string $action, string $tableName, int $recordId, ?string $oldValue, ?string $newValue): void
+    {
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (
+                user_id,
+                action,
+                table_name,
+                record_id,
+                old_value,
+                new_value,
+                ip_address,
+                user_agent
+            )
+            VALUES (
+                :user_id,
+                :action,
+                :table_name,
+                :record_id,
+                :old_value,
+                :new_value,
+                :ip_address,
+                :user_agent
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $userId,
+            'action' => $action,
+            'table_name' => $tableName,
+            'record_id' => $recordId,
+            'old_value' => $oldValue,
+            'new_value' => $newValue,
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+        ]);
+    }
+}
+
+if (!function_exists('ktxSyncRoomStatus')) {
+    function ktxSyncRoomStatus(PDO $db, int $roomId): void
+    {
+        if ($roomId <= 0) {
+            return;
+        }
+
+        $stmt = $db->prepare("
+            SELECT id, capacity, status
+            FROM rooms
+            WHERE id = :id
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $roomId]);
+        $room = $stmt->fetch();
+
+        if (!$room) {
+            return;
+        }
+
+        if (in_array($room['status'], ['maintenance', 'inactive'], true)) {
+            return;
+        }
+
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM contracts
+            WHERE room_id = :room_id
+              AND status = 'active'
+        ");
+        $stmt->execute(['room_id' => $roomId]);
+
+        $activeCount = (int) $stmt->fetchColumn();
+        $capacity = (int) $room['capacity'];
+
+        $newStatus = $activeCount >= $capacity ? 'full' : 'available';
+
+        $stmt = $db->prepare("
+            UPDATE rooms
+            SET status = :status
+            WHERE id = :id
+        ");
+        $stmt->execute([
+            'status' => $newStatus,
+            'id' => $roomId
+        ]);
+    }
+}
+
+$routes['manager/contracts'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    $stmt = $db->query("
+        SELECT
+            c.*,
+            s.student_code,
+            s.full_name,
+            r.room_number,
+            r.status AS room_status,
+            b.building_name,
+            sem.semester_name
+        FROM contracts c
+        JOIN students s ON s.id = c.student_id
+        JOIN rooms r ON r.id = c.room_id
+        JOIN buildings b ON b.id = r.building_id
+        LEFT JOIN semesters sem ON sem.id = c.semester_id
+        ORDER BY 
+            CASE c.status
+                WHEN 'active' THEN 1
+                WHEN 'ended' THEN 2
+                ELSE 3
+            END,
+            c.id DESC
+    ");
+
+    render('manager/contracts', [
+        'title' => 'Contracts',
+        'contracts' => $stmt->fetchAll()
+    ]);
+};
+
+$routes['manager/contract-end'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('manager/contracts');
+    }
+
+    $manager = Auth::user();
+
+    $contractId = (int) ($_POST['contract_id'] ?? 0);
+    $checkoutNote = trim($_POST['checkout_note'] ?? '');
+
+    if ($contractId <= 0) {
+        redirectTo('manager/contracts');
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            SELECT *
+            FROM contracts
+            WHERE id = :id
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $contractId]);
+        $contract = $stmt->fetch();
+
+        if (!$contract) {
+            throw new Exception('Không tìm thấy hợp đồng.');
+        }
+
+        if ($contract['status'] !== 'active') {
+            throw new Exception('Chỉ có thể kết thúc hợp đồng đang active.');
+        }
+
+        $stmt = $db->prepare("
+            UPDATE contracts
+            SET
+                status = 'ended',
+                ended_at = NOW(),
+                ended_by = :ended_by,
+                checkout_note = :checkout_note
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'ended_by' => $manager['id'],
+            'checkout_note' => $checkoutNote !== '' ? $checkoutNote : null,
+            'id' => $contractId
+        ]);
+
+        ktxSyncRoomStatus($db, (int) $contract['room_id']);
+
+        ktxAuditSafe(
+            $db,
+            (int) $manager['id'],
+            'update',
+            'contracts',
+            $contractId,
+            'active',
+            'ended'
+        );
+
+        $db->commit();
+
+        redirectTo('manager/contracts');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Kết thúc hợp đồng thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/contracts">Quay lại</a>';
+        exit;
+    }
+};
+
+$routes['manager/utility-readings'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    $rooms = $db->query("
+        SELECT
+            r.id,
+            r.room_number,
+            b.building_name
+        FROM rooms r
+        JOIN buildings b ON b.id = r.building_id
+        WHERE r.status IN ('available', 'full')
+        ORDER BY b.building_name, r.room_number
+    ")->fetchAll();
+
+    $services = $db->query("
+        SELECT id, service_name, unit, default_price
+        FROM services
+        WHERE status = 'active'
+        ORDER BY service_name
+    ")->fetchAll();
+
+    $semesters = $db->query("
+        SELECT id, semester_name
+        FROM semesters
+        ORDER BY start_date DESC, id DESC
+    ")->fetchAll();
+
+    $stmt = $db->query("
+        SELECT
+            ur.*,
+            r.room_number,
+            b.building_name,
+            sv.service_name,
+            sv.unit,
+            sem.semester_name,
+            u.username AS recorded_by_username
+        FROM utility_readings ur
+        JOIN rooms r ON r.id = ur.room_id
+        JOIN buildings b ON b.id = r.building_id
+        JOIN services sv ON sv.id = ur.service_id
+        LEFT JOIN semesters sem ON sem.id = ur.semester_id
+        LEFT JOIN users u ON u.id = ur.recorded_by
+        ORDER BY ur.id DESC
+    ");
+
+    render('manager/utility_readings', [
+        'title' => 'Utility Readings',
+        'rooms' => $rooms,
+        'services' => $services,
+        'semesters' => $semesters,
+        'readings' => $stmt->fetchAll(),
+        'errors' => [],
+        'old' => []
+    ]);
+};
+
+$routes['manager/utility-reading-store'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('manager/utility-readings');
+    }
+
+    $manager = Auth::user();
+
+    $roomId = (int) ($_POST['room_id'] ?? 0);
+    $serviceId = (int) ($_POST['service_id'] ?? 0);
+    $semesterId = (int) ($_POST['semester_id'] ?? 0);
+    $readingMonth = trim($_POST['reading_month'] ?? '');
+    $previousReading = (float) ($_POST['previous_reading'] ?? 0);
+    $currentReading = (float) ($_POST['current_reading'] ?? 0);
+    $unitPrice = (float) ($_POST['unit_price'] ?? 0);
+
+    $errors = [];
+
+    if ($roomId <= 0) {
+        $errors[] = 'Vui lòng chọn phòng.';
+    }
+
+    if ($serviceId <= 0) {
+        $errors[] = 'Vui lòng chọn dịch vụ.';
+    }
+
+    if ($readingMonth === '') {
+        $errors[] = 'Vui lòng chọn tháng ghi chỉ số.';
+    }
+
+    if ($currentReading < $previousReading) {
+        $errors[] = 'Chỉ số mới không được nhỏ hơn chỉ số cũ.';
+    }
+
+    if ($unitPrice < 0) {
+        $errors[] = 'Đơn giá không hợp lệ.';
+    }
+
+    if (!empty($errors)) {
+        echo '<h2>Tạo utility reading thất bại</h2>';
+        foreach ($errors as $error) {
+            echo '<p>' . htmlspecialchars($error) . '</p>';
+        }
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/utility-readings">Quay lại</a>';
+        exit;
+    }
+
+    $consumption = $currentReading - $previousReading;
+    $totalAmount = $consumption * $unitPrice;
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            INSERT INTO utility_readings (
+                room_id,
+                service_id,
+                semester_id,
+                reading_month,
+                previous_reading,
+                current_reading,
+                consumption,
+                unit_price,
+                total_amount,
+                recorded_by,
+                recorded_at,
+                status
+            )
+            VALUES (
+                :room_id,
+                :service_id,
+                :semester_id,
+                :reading_month,
+                :previous_reading,
+                :current_reading,
+                :consumption,
+                :unit_price,
+                :total_amount,
+                :recorded_by,
+                NOW(),
+                'recorded'
+            )
+        ");
+
+        $stmt->execute([
+            'room_id' => $roomId,
+            'service_id' => $serviceId,
+            'semester_id' => $semesterId > 0 ? $semesterId : null,
+            'reading_month' => $readingMonth,
+            'previous_reading' => $previousReading,
+            'current_reading' => $currentReading,
+            'consumption' => $consumption,
+            'unit_price' => $unitPrice,
+            'total_amount' => $totalAmount,
+            'recorded_by' => $manager['id']
+        ]);
+
+        $readingId = (int) $db->lastInsertId();
+
+        ktxAuditSafe($db, (int) $manager['id'], 'create', 'utility_readings', $readingId, null, 'Created utility reading');
+
+        $db->commit();
+
+        redirectTo('manager/utility-readings');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Tạo utility reading thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/utility-readings">Quay lại</a>';
+        exit;
+    }
+};
+
+$routes['manager/utility-generate-invoice'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('manager/utility-readings');
+    }
+
+    $manager = Auth::user();
+
+    $readingId = (int) ($_POST['reading_id'] ?? 0);
+
+    if ($readingId <= 0) {
+        redirectTo('manager/utility-readings');
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            SELECT
+                ur.*,
+                sv.service_name,
+                sv.unit,
+                r.room_number
+            FROM utility_readings ur
+            JOIN services sv ON sv.id = ur.service_id
+            JOIN rooms r ON r.id = ur.room_id
+            WHERE ur.id = :id
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $readingId]);
+        $reading = $stmt->fetch();
+
+        if (!$reading) {
+            throw new Exception('Không tìm thấy chỉ số điện/nước.');
+        }
+
+        if ($reading['status'] === 'invoiced') {
+            throw new Exception('Reading này đã được sinh hóa đơn rồi.');
+        }
+
+        $stmt = $db->prepare("
+            SELECT
+                c.id AS contract_id,
+                c.student_id,
+                c.room_id
+            FROM contracts c
+            WHERE c.room_id = :room_id
+              AND c.status = 'active'
+        ");
+        $stmt->execute(['room_id' => $reading['room_id']]);
+        $contracts = $stmt->fetchAll();
+
+        if (empty($contracts)) {
+            throw new Exception('Phòng này không có hợp đồng active để sinh hóa đơn.');
+        }
+
+        $studentCount = count($contracts);
+        $shareAmount = round(((float) $reading['total_amount']) / $studentCount, 2);
+        $shareConsumption = round(((float) $reading['consumption']) / $studentCount, 2);
+
+        $firstInvoiceId = null;
+
+        foreach ($contracts as $contract) {
+            $stmt = $db->prepare("
+                INSERT INTO invoices (
+                    student_id,
+                    contract_id,
+                    semester_id,
+                    invoice_month,
+                    due_date,
+                    total_amount,
+                    paid_amount,
+                    status,
+                    created_by,
+                    created_at
+                )
+                VALUES (
+                    :student_id,
+                    :contract_id,
+                    :semester_id,
+                    :invoice_month,
+                    DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+                    :total_amount,
+                    0,
+                    'unpaid',
+                    :created_by,
+                    NOW()
+                )
+            ");
+
+            $stmt->execute([
+                'student_id' => $contract['student_id'],
+                'contract_id' => $contract['contract_id'],
+                'semester_id' => $reading['semester_id'],
+                'invoice_month' => $reading['reading_month'],
+                'total_amount' => $shareAmount,
+                'created_by' => $manager['id']
+            ]);
+
+            $invoiceId = (int) $db->lastInsertId();
+
+            if ($firstInvoiceId === null) {
+                $firstInvoiceId = $invoiceId;
+            }
+
+            $description = $reading['service_name']
+                . ' for room '
+                . $reading['room_number']
+                . ' - '
+                . $reading['reading_month'];
+
+            $stmt = $db->prepare("
+                INSERT INTO invoice_details (
+                    invoice_id,
+                    service_id,
+                    description,
+                    quantity,
+                    unit_price,
+                    amount
+                )
+                VALUES (
+                    :invoice_id,
+                    :service_id,
+                    :description,
+                    :quantity,
+                    :unit_price,
+                    :amount
+                )
+            ");
+
+            $stmt->execute([
+                'invoice_id' => $invoiceId,
+                'service_id' => $reading['service_id'],
+                'description' => $description,
+                'quantity' => $shareConsumption,
+                'unit_price' => $reading['unit_price'],
+                'amount' => $shareAmount
+            ]);
+
+            ktxAuditSafe($db, (int) $manager['id'], 'create', 'invoices', $invoiceId, null, 'Generated utility invoice from reading #' . $readingId);
+        }
+
+        $stmt = $db->prepare("
+            UPDATE utility_readings
+            SET
+                status = 'invoiced',
+                invoice_id = :invoice_id
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'invoice_id' => $firstInvoiceId,
+            'id' => $readingId
+        ]);
+
+        $db->commit();
+
+        redirectTo('manager/utility-readings');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Sinh hóa đơn từ utility reading thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/utility-readings">Quay lại</a>';
+        exit;
+    }
+};
+
+if (!function_exists('ktxAuditSafe')) {
+    function ktxAuditSafe(PDO $db, int $userId, string $action, string $tableName, int $recordId, ?string $oldValue, ?string $newValue): void
+    {
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (
+                user_id,
+                action,
+                table_name,
+                record_id,
+                old_value,
+                new_value,
+                ip_address,
+                user_agent
+            )
+            VALUES (
+                :user_id,
+                :action,
+                :table_name,
+                :record_id,
+                :old_value,
+                :new_value,
+                :ip_address,
+                :user_agent
+            )
+        ");
+
+        $stmt->execute([
+            'user_id' => $userId,
+            'action' => $action,
+            'table_name' => $tableName,
+            'record_id' => $recordId,
+            'old_value' => $oldValue,
+            'new_value' => $newValue,
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+        ]);
+    }
+}
+
+if (!function_exists('ktxSyncRoomStatus')) {
+    function ktxSyncRoomStatus(PDO $db, int $roomId): void
+    {
+        if ($roomId <= 0) {
+            return;
+        }
+
+        $stmt = $db->prepare("
+            SELECT id, capacity, status
+            FROM rooms
+            WHERE id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $roomId
+        ]);
+
+        $room = $stmt->fetch();
+
+        if (!$room) {
+            return;
+        }
+
+        if (in_array($room['status'], ['maintenance', 'inactive'], true)) {
+            return;
+        }
+
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM contracts
+            WHERE room_id = :room_id
+              AND status = 'active'
+        ");
+
+        $stmt->execute([
+            'room_id' => $roomId
+        ]);
+
+        $activeCount = (int) $stmt->fetchColumn();
+        $capacity = (int) $room['capacity'];
+
+        $newStatus = $activeCount >= $capacity ? 'full' : 'available';
+
+        $stmt = $db->prepare("
+            UPDATE rooms
+            SET status = :status
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'status' => $newStatus,
+            'id' => $roomId
+        ]);
+    }
+}
+
+$routes['manager/contracts'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    $currentStatus = trim($_GET['status'] ?? '');
+
+    $where = '';
+    $params = [];
+
+    if ($currentStatus !== '' && in_array($currentStatus, ['active', 'expired', 'terminated', 'cancelled'], true)) {
+        $where = 'WHERE c.status = :status';
+        $params['status'] = $currentStatus;
+    }
+
+    $summary = [
+        'total' => $db->query("SELECT COUNT(*) FROM contracts")->fetchColumn(),
+        'active' => $db->query("SELECT COUNT(*) FROM contracts WHERE status = 'active'")->fetchColumn(),
+        'expired' => $db->query("SELECT COUNT(*) FROM contracts WHERE status = 'expired'")->fetchColumn(),
+        'terminated' => $db->query("SELECT COUNT(*) FROM contracts WHERE status = 'terminated'")->fetchColumn(),
+    ];
+
+    $stmt = $db->prepare("
+        SELECT
+            c.id,
+            c.contract_code,
+            c.student_id,
+            c.room_id,
+            c.semester_id,
+            c.start_date,
+            c.end_date,
+            c.monthly_price,
+            c.deposit_amount,
+            c.status,
+            c.created_at,
+            c.ended_at,
+            c.checkout_note,
+
+            s.student_code,
+            s.full_name,
+
+            r.room_number,
+            r.room_type,
+            r.gender_type AS gender,
+
+            b.building_name,
+
+            sem.semester_name,
+            sem.academic_year,
+
+            creator.username AS created_by_username,
+            ended_user.username AS ended_by_username
+        FROM contracts c
+        JOIN students s ON s.id = c.student_id
+        JOIN rooms r ON r.id = c.room_id
+        JOIN buildings b ON b.id = r.building_id
+        LEFT JOIN semesters sem ON sem.id = c.semester_id
+        LEFT JOIN users creator ON creator.id = c.created_by
+        LEFT JOIN users ended_user ON ended_user.id = c.ended_by
+        $where
+        ORDER BY
+            CASE c.status
+                WHEN 'active' THEN 1
+                WHEN 'expired' THEN 2
+                WHEN 'terminated' THEN 3
+                WHEN 'cancelled' THEN 4
+                ELSE 5
+            END,
+            c.id DESC
+    ");
+
+    $stmt->execute($params);
+
+    render('manager/contracts', [
+        'title' => 'Contracts',
+        'contracts' => $stmt->fetchAll(),
+        'summary' => $summary,
+        'currentStatus' => $currentStatus
+    ]);
+};
+
+$routes['manager/contract-end'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        redirectTo('manager/contracts');
+    }
+
+    $manager = Auth::user();
+
+    $contractId = (int) ($_POST['contract_id'] ?? 0);
+    $checkoutNote = trim($_POST['checkout_note'] ?? '');
+
+    if ($contractId <= 0) {
+        redirectTo('manager/contracts');
+    }
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare("
+            SELECT *
+            FROM contracts
+            WHERE id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $contractId
+        ]);
+
+        $contract = $stmt->fetch();
+
+        if (!$contract) {
+            throw new Exception('Không tìm thấy hợp đồng.');
+        }
+
+        if ($contract['status'] !== 'active') {
+            throw new Exception('Chỉ có thể checkout hợp đồng đang active.');
+        }
+
+        $stmt = $db->prepare("
+            UPDATE contracts
+            SET
+                status = 'terminated',
+                ended_at = NOW(),
+                ended_by = :ended_by,
+                checkout_note = :checkout_note
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'ended_by' => $manager['id'],
+            'checkout_note' => $checkoutNote !== '' ? $checkoutNote : null,
+            'id' => $contractId
+        ]);
+
+        ktxSyncRoomStatus($db, (int) $contract['room_id']);
+
+        ktxAuditSafe(
+            $db,
+            (int) $manager['id'],
+            'update',
+            'contracts',
+            $contractId,
+            'active',
+            'terminated'
+        );
+
+        $db->commit();
+
+        redirectTo('manager/contracts');
+    } catch (Exception $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        echo '<h2>Checkout / kết thúc hợp đồng thất bại</h2>';
+        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/contracts">Quay lại</a>';
+        exit;
+    }
+};
