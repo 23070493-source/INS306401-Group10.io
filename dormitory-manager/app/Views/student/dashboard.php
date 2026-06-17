@@ -1,79 +1,170 @@
+<?php
+$unpaidInvoiceCount = count($unpaidInvoices ?? []);
+$violationPoints = (int) ($violationPoints ?? 0);
+
+$violationLevel = 'Normal';
+$violationClass = 'normal';
+
+if ($violationPoints >= 15) {
+    $violationLevel = 'Critical';
+    $violationClass = 'critical';
+} elseif ($violationPoints >= 10) {
+    $violationLevel = 'Serious';
+    $violationClass = 'serious';
+} elseif ($violationPoints >= 5) {
+    $violationLevel = 'Warning';
+    $violationClass = 'warning';
+}
+
+$registrationStatus = $registration['status'] ?? 'No registration';
+$contractCode = $contract['contract_code'] ?? 'No active contract';
+?>
+
 <h1>Student Dashboard</h1>
-<p>Thông tin đăng ký, hợp đồng, hóa đơn và yêu cầu sửa chữa của sinh viên.</p>
 
 <?php if (!$student): ?>
-    <div class="alert error">Không tìm thấy hồ sơ sinh viên.</div>
+    <div class="alert error">
+        Student profile not found.
+    </div>
 <?php else: ?>
 
-    <div class="profile-box">
-        <h2><?= htmlspecialchars($student['full_name']) ?></h2>
-        <p><strong>Mã sinh viên:</strong> <?= htmlspecialchars($student['student_code']) ?></p>
-        <p><strong>Giới tính:</strong> <?= htmlspecialchars($student['gender']) ?></p>
-        <p><strong>Khoa:</strong> <?= htmlspecialchars($student['faculty']) ?></p>
-        <p><strong>Diện ưu tiên:</strong> <?= htmlspecialchars($student['priority_type']) ?></p>
-    </div>
+    <section class="student-dashboard-hero">
+        <div>
+            <p class="student-dashboard-label">Student Portal</p>
+            <h2><?= htmlspecialchars($student['full_name']) ?></h2>
 
-    <div class="cards">
-        <div class="card">
-            <h3>Registration Status</h3>
-            <strong><?= $registration ? htmlspecialchars($registration['status']) : 'No registration' ?></strong>
+            <div class="student-profile-grid">
+                <div>
+                    <span>Student Code</span>
+                    <strong><?= htmlspecialchars($student['student_code'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>Gender</span>
+                    <strong><?= htmlspecialchars($student['gender'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>Faculty</span>
+                    <strong><?= htmlspecialchars($student['faculty'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>Priority Type</span>
+                    <strong><?= htmlspecialchars($student['priority_type'] ?? '-') ?></strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="student-status-grid">
+        <div class="student-status-card">
+            <span>Registration</span>
+            <strong><?= htmlspecialchars(ucfirst($registrationStatus)) ?></strong>
+            <a href="<?= BASE_URL ?>/index.php?route=student/my-registration">View Registration</a>
         </div>
 
-        <div class="card">
-            <h3>Active Contract</h3>
-            <strong><?= $contract ? htmlspecialchars($contract['contract_code']) : 'No active contract' ?></strong>
+        <div class="student-status-card">
+            <span>Contract</span>
+            <strong><?= htmlspecialchars($contractCode) ?></strong>
+            <a href="<?= BASE_URL ?>/index.php?route=student/my-contract">View Contract</a>
         </div>
 
-        <div class="card warning">
-            <h3>Unpaid Invoices</h3>
-            <strong><?= count($unpaidInvoices) ?></strong>
+        <div class="student-status-card">
+            <span>Unpaid Invoices</span>
+            <strong><?= htmlspecialchars((string) $unpaidInvoiceCount) ?></strong>
+            <a href="<?= BASE_URL ?>/index.php?route=student/my-invoices">View Invoices</a>
         </div>
 
-        <div class="card danger">
-            <h3>Violation Points</h3>
-            <strong><?= htmlspecialchars($violationPoints) ?></strong>
+        <div class="student-status-card <?= htmlspecialchars($violationClass) ?>">
+            <span>Violation Points</span>
+            <strong><?= htmlspecialchars((string) $violationPoints) ?></strong>
+            <em><?= htmlspecialchars($violationLevel) ?></em>
         </div>
-    </div>
+    </section>
 
-    <?php if ($contract): ?>
-        <h2>Current Room</h2>
-        <table>
-            <tr>
-                <th>Building</th>
-                <th>Room</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Monthly Price</th>
-            </tr>
-            <tr>
-                <td><?= htmlspecialchars($contract['building_name']) ?></td>
-                <td><?= htmlspecialchars($contract['room_number']) ?></td>
-                <td><?= htmlspecialchars($contract['start_date']) ?></td>
-                <td><?= htmlspecialchars($contract['end_date']) ?></td>
-                <td><?= number_format($contract['monthly_price']) ?> VND</td>
-            </tr>
-        </table>
-    <?php endif; ?>
+    <section class="student-dashboard-section">
+        <div class="student-section-header">
+            <div>
+                <h2>Current Room</h2>
+            </div>
 
-    <h2>Recent Maintenance Requests</h2>
+            <?php if ($contract): ?>
+                <span class="badge active">Active</span>
+            <?php else: ?>
+                <span class="badge pending">Not assigned</span>
+            <?php endif; ?>
+        </div>
 
-    <?php if (empty($maintenanceRequests)): ?>
-        <p>Chưa có yêu cầu sửa chữa.</p>
-    <?php else: ?>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Request Date</th>
-            </tr>
-            <?php foreach ($maintenanceRequests as $request): ?>
-                <tr>
-                    <td><?= htmlspecialchars($request['issue_title']) ?></td>
-                    <td><?= htmlspecialchars($request['status']) ?></td>
-                    <td><?= htmlspecialchars($request['request_date']) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-    <?php endif; ?>
+        <?php if ($contract): ?>
+            <div class="student-room-card">
+                <div>
+                    <span>Building</span>
+                    <strong><?= htmlspecialchars($contract['building_name'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>Room</span>
+                    <strong><?= htmlspecialchars($contract['room_number'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>Start Date</span>
+                    <strong><?= htmlspecialchars($contract['start_date'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>End Date</span>
+                    <strong><?= htmlspecialchars($contract['end_date'] ?? '-') ?></strong>
+                </div>
+
+                <div>
+                    <span>Monthly Price</span>
+                    <strong><?= number_format((float) ($contract['monthly_price'] ?? 0)) ?> VND</strong>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="empty-state">
+                No active room contract found.
+            </div>
+        <?php endif; ?>
+    </section>
+
+    <section class="student-dashboard-section">
+        <div class="student-section-header">
+            <div>
+                <h2>Recent Maintenance Requests</h2>
+            </div>
+
+            <a class="student-small-link" href="<?= BASE_URL ?>/index.php?route=student/maintenance">
+                View All
+            </a>
+        </div>
+
+        <?php if (empty($maintenanceRequests)): ?>
+            <div class="empty-state">
+                No maintenance requests yet.
+            </div>
+        <?php else: ?>
+            <div class="student-maintenance-list">
+                <?php foreach ($maintenanceRequests as $request): ?>
+                    <?php
+                    $requestTitle = $request['title'] ?? $request['issue_title'] ?? 'Maintenance Request';
+                    $requestStatus = $request['status'] ?? '-';
+                    ?>
+                    <div class="student-maintenance-item">
+                        <div>
+                            <strong><?= htmlspecialchars($requestTitle) ?></strong>
+                            <span><?= htmlspecialchars($request['request_date'] ?? '-') ?></span>
+                        </div>
+
+                        <span class="badge <?= htmlspecialchars($requestStatus) ?>">
+                            <?= htmlspecialchars(ucfirst($requestStatus)) ?>
+                        </span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </section>
 
 <?php endif; ?>

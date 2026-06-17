@@ -1,0 +1,126 @@
+/* =========================================================
+   admin.css
+   Admin Theme - System Control Center
+   ========================================================= */
+
+body.role-admin {
+    --role-primary: #7c3aed;
+    --role-primary-dark: #6d28d9;
+    --role-dark: #2e1065;
+    --role-soft: #ede9fe;
+    --role-light: #faf5ff;
+    --role-gradient: linear-gradient(135deg, #7c3aed, #2563eb);
+
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.12), transparent 30%),
+        linear-gradient(135deg, #faf5ff 0%, #f8fafc 45%, #eef2ff 100%);
+}
+
+.role-admin .sidebar {
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.15), transparent 34%),
+        linear-gradient(180deg, #2e1065 0%, #1e1b4b 52%, #020617 100%);
+}
+
+.role-admin .sidebar-brand p::before {
+    content: "Admin · ";
+}
+
+.role-admin h1::after {
+    content: "";
+    display: block;
+    width: 74px;
+    height: 5px;
+    margin-top: 14px;
+    border-radius: 999px;
+    background: var(--role-gradient);
+}
+
+.role-admin .main-content {
+    background:
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.09), transparent 32%),
+        transparent;
+}
+
+.role-admin .stat-card,
+.role-admin .summary-card {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 245, 255, 0.88));
+}
+
+.role-admin .stat-card:nth-child(1)::before,
+.role-admin .summary-card:nth-child(1)::before {
+    background: linear-gradient(180deg, #7c3aed, #a855f7);
+}
+
+.role-admin .stat-card:nth-child(2)::before,
+.role-admin .summary-card:nth-child(2)::before {
+    background: linear-gradient(180deg, #2563eb, #60a5fa);
+}
+
+.role-admin .stat-card:nth-child(3)::before,
+.role-admin .summary-card:nth-child(3)::before {
+    background: linear-gradient(180deg, #9333ea, #ec4899);
+}
+
+.role-admin .stat-card:nth-child(4)::before,
+.role-admin .summary-card:nth-child(4)::before {
+    background: linear-gradient(180deg, #4f46e5, #7c3aed);
+}
+
+.role-admin table th {
+    background: #f3e8ff;
+    color: #4c1d95;
+}
+
+.role-admin .form-card {
+    border-top: 5px solid var(--role-primary);
+}
+
+.role-admin .profile-box {
+    background:
+        linear-gradient(135deg, rgba(237, 233, 254, 0.75), rgba(255, 255, 255, 0.96));
+}
+
+.role-admin .action-card:hover {
+    border-color: #c4b5fd;
+}
+
+.role-admin .role-pill-admin {
+    background: rgba(237, 233, 254, 0.18);
+    color: #ddd6fe;
+}
+
+/* Admin-specific management panels */
+.role-admin .admin-panel,
+.role-admin .system-panel {
+    padding: 22px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 233, 254, 0.82));
+    border: 1px solid #ddd6fe;
+    box-shadow: var(--shadow-sm);
+}
+
+.role-admin .admin-form-grid {
+    background: rgba(250, 245, 255, 0.45);
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid #ede9fe;
+}
+
+/* Reports */
+.role-admin .report-card {
+    border-left: 6px solid #7c3aed;
+}
+
+.role-admin .report-card h2,
+.role-admin .report-card h3 {
+    color: #4c1d95;
+}
+
+/* Audit logs */
+.role-admin .audit-log-card,
+.role-admin .log-card {
+    background: #ffffff;
+    border-left: 5px solid #7c3aed;
+}

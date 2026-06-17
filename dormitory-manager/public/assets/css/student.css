@@ -1,0 +1,1892 @@
+/* =========================================================
+   student.css
+   Student Theme - Clean Classic Portal
+   ========================================================= */
+
+body.role-student {
+    --role-primary: #475569;
+    --role-primary-dark: #334155;
+    --role-dark: #111827;
+    --role-soft: #e5e7eb;
+    --role-light: #f8fafc;
+    --role-gradient: linear-gradient(135deg, #475569, #64748b);
+
+    background: #f7f8fa;
+    color: #111827;
+}
+
+/* Sidebar */
+.role-student .sidebar {
+    width: 300px;
+    padding: 26px 20px;
+    background: #ffffff;
+    color: #111827;
+    border-right: 1px solid #e5e7eb;
+    box-shadow: 8px 0 30px rgba(15, 23, 42, 0.05);
+}
+
+.role-student .brand-icon {
+    background: #334155;
+    box-shadow: none;
+}
+
+.role-student .sidebar-brand h2 {
+    color: #111827;
+    font-size: 25px;
+}
+
+.role-student .sidebar-brand p {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.role-student .sidebar-brand p::before {
+    content: "Student · ";
+}
+
+.role-student .user-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
+}
+
+.role-student .user-meta strong {
+    color: #111827;
+    font-size: 17px;
+}
+
+.role-student .role-pill-student,
+.role-student .user-meta span {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.role-student .sidebar-avatar,
+.role-student .sidebar-avatar-placeholder {
+    border: 2px solid #e5e7eb;
+}
+
+.role-student .sidebar-avatar-placeholder {
+    background: #475569;
+}
+
+.role-student .sidebar-nav {
+    gap: 6px;
+}
+
+.role-student .sidebar-nav a {
+    color: #4b5563;
+    border-radius: 13px;
+    padding: 12px 14px;
+    font-weight: 700;
+}
+
+.role-student .sidebar-nav a:hover {
+    color: #111827;
+    background: #f3f4f6;
+    transform: none;
+}
+
+.role-student .sidebar-nav a.active {
+    color: #ffffff;
+    background: #374151;
+    box-shadow: 0 10px 22px rgba(55, 65, 81, 0.18);
+}
+
+.role-student .sidebar-divider {
+    background: #e5e7eb;
+}
+
+.role-student .logout-link {
+    color: #b91c1c !important;
+}
+
+.role-student .logout-link:hover {
+    background: #fef2f2 !important;
+}
+
+/* Main */
+.role-student .main-content {
+    padding: 42px;
+    background: #f7f8fa;
+}
+
+.role-student h1 {
+    color: #111827;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.role-student h1::after {
+    content: "";
+    display: block;
+    width: 88px;
+    height: 4px;
+    margin-top: 14px;
+    border-radius: 999px;
+    background: #475569;
+}
+
+.role-student h1 + p {
+    max-width: 760px;
+    margin-top: 16px;
+    margin-bottom: 32px;
+    color: #6b7280;
+    font-size: 19px;
+}
+
+/* Cards */
+.role-student .card,
+.role-student .form-card,
+.role-student .profile-box,
+.role-student .profile-card,
+.role-student .table-card,
+.role-student .dashboard-card,
+.role-student .summary-card,
+.role-student .stat-card,
+.role-student .info-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .card:hover,
+.role-student .stat-card:hover,
+.role-student .summary-card:hover {
+    transform: none;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.075);
+}
+
+/* Profile box */
+.role-student .profile-box {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    margin-bottom: 26px;
+    border-left: 0;
+    background: #ffffff;
+}
+
+.role-student .profile-box::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: #475569;
+}
+
+.role-student .profile-box::after {
+    content: "Student";
+    position: absolute;
+    right: 34px;
+    bottom: -18px;
+    color: rgba(17, 24, 39, 0.045);
+    font-size: 96px;
+    font-weight: 700;
+    letter-spacing: -0.06em;
+}
+
+.role-student .profile-box h2 {
+    position: relative;
+    margin-bottom: 22px;
+    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.role-student .profile-box p {
+    position: relative;
+    margin-bottom: 12px;
+    color: #374151;
+    font-size: 19px;
+}
+
+.role-student .profile-box strong {
+    color: #111827;
+}
+
+/* Dashboard grids */
+.role-student .dashboard-grid,
+.role-student .summary-grid,
+.role-student .stats-grid,
+.role-student .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    margin: 26px 0;
+}
+
+.role-student .stat-card,
+.role-student .summary-card,
+.role-student .dashboard-card {
+    min-height: 150px;
+    padding: 28px;
+    border-radius: 18px;
+    background: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.role-student .stat-card::before,
+.role-student .summary-card::before,
+.role-student .dashboard-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: #475569;
+}
+
+.role-student .stat-card strong,
+.role-student .summary-card strong,
+.role-student .dashboard-card strong,
+.role-student .stat-card .number,
+.role-student .summary-card .number {
+    color: #111827;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.role-student .stat-card span,
+.role-student .summary-card span,
+.role-student .dashboard-card span {
+    color: #6b7280;
+    font-size: 17px;
+}
+
+/* Simple stacked dashboard cards */
+.role-student .main-content > .card,
+.role-student .main-content > .dashboard-card,
+.role-student .main-content > .summary-card {
+    padding: 30px;
+    margin-bottom: 24px;
+}
+
+/* Tables */
+.role-student table {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student table th {
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 15px;
+}
+
+.role-student table td {
+    color: #374151;
+    font-size: 17px;
+}
+
+.role-student tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* Forms */
+.role-student .form-card {
+    padding: 34px;
+    border-top: 4px solid #475569;
+}
+
+.role-student label {
+    color: #111827;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.role-student input,
+.role-student select,
+.role-student textarea {
+    border-radius: 13px;
+    background: #f9fafb;
+    border-color: #d1d5db;
+    font-size: 18px;
+}
+
+.role-student input:focus,
+.role-student select:focus,
+.role-student textarea:focus {
+    background: #ffffff;
+    border-color: #475569;
+    box-shadow: 0 0 0 4px rgba(71, 85, 105, 0.10);
+}
+
+/* Buttons */
+.role-student button,
+.role-student .btn,
+.role-student .btn-primary,
+.role-student .btn-pay,
+.role-student input[type="submit"] {
+    background: #374151;
+    border-radius: 13px;
+    box-shadow: 0 10px 22px rgba(55, 65, 81, 0.16);
+}
+
+.role-student button:hover,
+.role-student .btn:hover,
+.role-student .btn-primary:hover,
+.role-student .btn-pay:hover,
+.role-student input[type="submit"]:hover {
+    background: #111827;
+}
+
+/* Alerts */
+.role-student .alert.success {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+    border-left: 5px solid #16a34a;
+}
+
+.role-student .alert.warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+    border-left: 5px solid #d97706;
+}
+
+.role-student .alert.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+    border-left: 5px solid #dc2626;
+}
+
+/* Status boxes */
+.role-student .student-welcome,
+.role-student .my-room-card,
+.role-student .contract-card,
+.role-student .invoice-card,
+.role-student .payment-card {
+    padding: 32px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .contract-card,
+.role-student .invoice-card {
+    border-left: 5px solid #475569;
+}
+
+.role-student .payment-card {
+    border-left: 5px solid #15803d;
+}
+
+/* Badges */
+.role-student .badge.active,
+.role-student .badge.approved,
+.role-student .badge.paid {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.role-student .badge.pending,
+.role-student .badge.in_progress {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.role-student .badge.unpaid,
+.role-student .badge.partially_paid,
+.role-student .badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-student .badge.rejected,
+.role-student .badge.overdue,
+.role-student .badge.terminated,
+.role-student .badge.critical {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Responsive */
+@media (max-width: 1180px) {
+    .role-student .dashboard-grid,
+    .role-student .summary-grid,
+    .role-student .stats-grid,
+    .role-student .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 860px) {
+    .role-student .sidebar {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .role-student .main-content {
+        padding: 28px 18px;
+    }
+
+    .role-student h1 {
+        font-size: 38px;
+    }
+
+    .role-student .dashboard-grid,
+    .role-student .summary-grid,
+    .role-student .stats-grid,
+    .role-student .cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .role-student .profile-box {
+        padding: 24px;
+    }
+
+    .role-student .profile-box h2 {
+        font-size: 26px;
+    }
+
+    .role-student h1 {
+        font-size: 34px;
+    }
+}
+/* =========================================================
+   Student Dashboard - Clean Classic Layout
+   ========================================================= */
+
+.role-student .student-dashboard-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 38px 42px;
+    margin-bottom: 28px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.065);
+}
+
+.role-student .student-dashboard-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: #475569;
+}
+
+.role-student .student-dashboard-hero::after {
+    content: "Student";
+    position: absolute;
+    right: 38px;
+    bottom: -20px;
+    color: rgba(17, 24, 39, 0.045);
+    font-size: 100px;
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    pointer-events: none;
+}
+
+.role-student .student-dashboard-label {
+    margin: 0 0 8px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-dashboard-hero h2 {
+    margin: 0 0 28px;
+    color: #111827;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+.role-student .student-profile-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    z-index: 1;
+}
+
+.role-student .student-profile-grid div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-profile-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.role-student .student-profile-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Status cards */
+
+.role-student .student-status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.role-student .student-status-card {
+    min-height: 165px;
+    padding: 26px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.055);
+    position: relative;
+    overflow: hidden;
+}
+
+.role-student .student-status-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: #475569;
+}
+
+.role-student .student-status-card span {
+    display: block;
+    margin-bottom: 16px;
+    color: #6b7280;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.role-student .student-status-card strong {
+    display: block;
+    color: #111827;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.role-student .student-status-card a {
+    display: inline-block;
+    margin-top: 18px;
+    color: #374151;
+    font-size: 17px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.role-student .student-status-card a:hover {
+    text-decoration: underline;
+}
+
+.role-student .student-status-card em {
+    display: inline-flex;
+    margin-top: 18px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.role-student .student-status-card.warning::before {
+    background: #d97706;
+}
+
+.role-student .student-status-card.warning em {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-student .student-status-card.serious::before {
+    background: #ea580c;
+}
+
+.role-student .student-status-card.serious em {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.role-student .student-status-card.critical::before {
+    background: #dc2626;
+}
+
+.role-student .student-status-card.critical em {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Sections */
+
+.role-student .student-dashboard-section {
+    padding: 30px;
+    margin-bottom: 28px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.role-student .student-section-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.role-student .student-small-link {
+    color: #374151;
+    font-size: 17px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.role-student .student-small-link:hover {
+    text-decoration: underline;
+}
+
+/* Room card */
+
+.role-student .student-room-card {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.role-student .student-room-card div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-room-card span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.role-student .student-room-card strong {
+    display: block;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+/* Maintenance */
+
+.role-student .student-maintenance-list {
+    display: grid;
+    gap: 14px;
+}
+
+.role-student .student-maintenance-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-maintenance-item strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.role-student .student-maintenance-item span {
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.role-student .empty-state {
+    padding: 24px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+    color: #6b7280;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Responsive */
+
+@media (max-width: 1280px) {
+    .role-student .student-profile-grid,
+    .role-student .student-status-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .role-student .student-room-card {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .role-student .student-dashboard-hero,
+    .role-student .student-dashboard-section {
+        padding: 24px;
+    }
+
+    .role-student .student-dashboard-hero h2 {
+        font-size: 30px;
+    }
+
+    .role-student .student-profile-grid,
+    .role-student .student-status-grid,
+    .role-student .student-room-card {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-section-header,
+    .role-student .student-maintenance-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+/* =========================================================
+   Student Available Rooms Page
+   ========================================================= */
+
+.role-student .student-rooms-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px 38px;
+    margin-bottom: 26px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-page-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-rooms-hero h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.role-student .student-primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 24px;
+    border-radius: 13px;
+    background: #374151;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 22px rgba(55, 65, 81, 0.16);
+}
+
+.role-student .student-primary-link:hover {
+    background: #111827;
+}
+
+.role-student .student-room-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-room-summary-card {
+    padding: 26px 30px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-room-summary-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-room-summary-card strong {
+    color: #111827;
+    font-size: 40px;
+    font-weight: 700;
+}
+
+.role-student .student-room-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.role-student .student-room-card-item {
+    padding: 28px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-room-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.role-student .student-room-card-header span:first-child {
+    display: block;
+    margin-bottom: 6px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-room-card-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.role-student .student-room-number {
+    padding: 18px 20px;
+    margin-bottom: 22px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.role-student .student-room-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.role-student .student-room-detail-grid div {
+    padding: 16px;
+    border-radius: 14px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-room-detail-grid span {
+    display: block;
+    margin-bottom: 7px;
+    color: #6b7280;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.role-student .student-room-detail-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-empty-room-page {
+    padding: 30px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+@media (max-width: 1100px) {
+    .role-student .student-room-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .role-student .student-rooms-hero {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 28px;
+    }
+
+    .role-student .student-room-summary-grid,
+    .role-student .student-room-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-primary-link {
+        width: 100%;
+    }
+}
+/* =========================================================
+   Student Register Room Page
+   ========================================================= */
+
+.role-student .student-register-profile {
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-register-profile > div:first-child span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-register-profile h2 {
+    margin: 0 0 26px;
+    color: #111827;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.role-student .student-register-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.role-student .student-register-profile-grid div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-register-profile-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-register-profile-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Result cards */
+
+.role-student .student-register-result {
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-register-result.success-state {
+    border-left: 5px solid #15803d;
+}
+
+.role-student .student-register-result.pending-state {
+    border-left: 5px solid #475569;
+}
+
+.role-student .student-result-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-result-header span:first-child {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-result-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.role-student .student-result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.role-student .student-result-grid div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-result-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-result-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.role-student .student-register-actions {
+    margin-top: 28px;
+}
+
+/* Form */
+
+.role-student .student-register-form-section {
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-register-form {
+    margin-top: 24px;
+}
+
+.role-student .student-form-line {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 28px;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.role-student .student-form-line label {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.role-student .student-form-line input,
+.role-student .student-form-line select,
+.role-student .student-form-line textarea {
+    width: 100%;
+    min-height: 58px;
+    border-radius: 13px;
+    font-size: 19px;
+}
+
+.role-student .student-form-line-textarea {
+    align-items: start;
+}
+
+.role-student .student-form-line-textarea label {
+    padding-top: 14px;
+}
+
+.role-student .student-register-form button[type="submit"] {
+    width: 100%;
+    min-height: 58px;
+    margin-top: 12px;
+    font-size: 21px;
+}
+
+@media (max-width: 900px) {
+    .role-student .student-register-profile-grid,
+    .role-student .student-result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-form-line {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .role-student .student-form-line-textarea label {
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 620px) {
+    .role-student .student-register-profile,
+    .role-student .student-register-result,
+    .role-student .student-register-form-section {
+        padding: 26px;
+    }
+
+    .role-student .student-register-profile h2,
+    .role-student .student-result-header h2 {
+        font-size: 28px;
+    }
+}
+/* =========================================================
+   Student My Registration Page
+   ========================================================= */
+
+.role-student .student-registration-empty {
+    padding: 30px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-registration-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px 38px;
+    margin-bottom: 26px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-registration-hero h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.role-student .student-registration-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-registration-summary-card {
+    padding: 26px 30px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-registration-summary-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-registration-summary-card strong {
+    color: #111827;
+    font-size: 40px;
+    font-weight: 700;
+}
+
+.role-student .student-registration-latest,
+.role-student .student-registration-list {
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-registration-detail-grid,
+.role-student .student-registration-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.role-student .student-registration-detail-grid div,
+.role-student .student-registration-card-grid div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-registration-detail-grid span,
+.role-student .student-registration-card-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-registration-detail-grid strong,
+.role-student .student-registration-card-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-registration-card-list {
+    display: grid;
+    gap: 20px;
+}
+
+.role-student .student-registration-card {
+    padding: 26px;
+    border-radius: 18px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-registration-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.role-student .student-registration-card-header span:first-child {
+    display: block;
+    margin-bottom: 7px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-registration-card-header h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.role-student .student-rejection-box {
+    margin-top: 18px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.role-student .student-rejection-box strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #991b1b;
+    font-size: 18px;
+}
+
+.role-student .student-rejection-box p {
+    margin: 0;
+    color: #7f1d1d;
+    font-size: 17px;
+}
+
+@media (max-width: 1200px) {
+    .role-student .student-registration-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .role-student .student-registration-detail-grid,
+    .role-student .student-registration-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .role-student .student-registration-hero,
+    .role-student .student-registration-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .role-student .student-registration-summary-grid,
+    .role-student .student-registration-detail-grid,
+    .role-student .student-registration-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-registration-hero,
+    .role-student .student-registration-latest,
+    .role-student .student-registration-list {
+        padding: 26px;
+    }
+
+    .role-student .student-primary-link {
+        width: 100%;
+    }
+}
+/* =========================================================
+   Student My Contract Page
+   ========================================================= */
+
+.role-student .student-contract-empty {
+    padding: 30px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-contract-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px 38px;
+    margin-bottom: 26px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-contract-hero h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-contract-profile-grid div {
+    padding: 20px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-contract-profile-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-profile-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-contract-summary-card {
+    padding: 26px 30px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-contract-summary-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-summary-card strong {
+    display: block;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.role-student .student-contract-card {
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid #475569;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-contract-card-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: start;
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-contract-card-header span:first-child {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-card-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-price {
+    min-width: 230px;
+    padding: 18px 22px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    text-align: right;
+}
+
+.role-student .student-contract-price strong {
+    display: block;
+    color: #111827;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-price span {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.role-student .student-contract-detail-grid div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-contract-detail-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-contract-detail-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+@media (max-width: 1200px) {
+    .role-student .student-contract-profile-grid,
+    .role-student .student-contract-summary-grid,
+    .role-student .student-contract-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .role-student .student-contract-card-header {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-contract-price {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+    }
+}
+
+@media (max-width: 760px) {
+    .role-student .student-contract-hero {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .role-student .student-contract-profile-grid,
+    .role-student .student-contract-summary-grid,
+    .role-student .student-contract-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-contract-hero,
+    .role-student .student-contract-card {
+        padding: 26px;
+    }
+
+    .role-student .student-primary-link {
+        width: 100%;
+    }
+}
+/* =========================================================
+   Student My Invoices Page
+   ========================================================= */
+
+.role-student .student-invoice-empty {
+    padding: 30px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-invoice-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px 38px;
+    margin-bottom: 26px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-invoice-hero h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-student-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 14px;
+}
+
+.role-student .student-invoice-student-info div {
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-invoice-student-info span {
+    display: block;
+    margin-bottom: 7px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-student-info strong {
+    display: block;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 24px;
+}
+
+.role-student .student-invoice-summary-card {
+    padding: 26px 30px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-invoice-summary-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-summary-card strong {
+    display: block;
+    color: #111827;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.role-student .student-invoice-status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.role-student .student-invoice-status-card {
+    padding: 24px 28px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-invoice-status-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #6b7280;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-status-card strong {
+    display: block;
+    color: #111827;
+    font-size: 28px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.role-student .student-invoice-card-list {
+    display: grid;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.role-student .student-invoice-card {
+    padding: 32px 36px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid #475569;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.055);
+}
+
+.role-student .student-invoice-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.role-student .student-invoice-card-header span:first-child {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-card-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-meta-grid,
+.role-student .student-invoice-money-grid {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.role-student .student-invoice-meta-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.role-student .student-invoice-money-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.role-student .student-invoice-meta-grid div,
+.role-student .student-invoice-money-grid div {
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-invoice-meta-grid span,
+.role-student .student-invoice-money-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.role-student .student-invoice-meta-grid strong,
+.role-student .student-invoice-money-grid strong {
+    display: block;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.role-student .student-invoice-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+/* Table overflow fix */
+
+.role-student .main-content {
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.role-student .student-dashboard-section {
+    overflow: hidden;
+}
+
+.role-student .student-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+}
+
+.role-student .student-table-scroll table {
+    min-width: 1200px;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+}
+
+.role-student .student-table-scroll th,
+.role-student .student-table-scroll td {
+    white-space: nowrap;
+}
+
+.role-student .student-table-scroll td:nth-child(3) {
+    white-space: normal;
+    min-width: 140px;
+}
+
+.role-student .student-table-scroll::-webkit-scrollbar {
+    height: 10px;
+}
+
+.role-student .student-table-scroll::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 999px;
+}
+
+.role-student .student-table-scroll::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 999px;
+}
+
+.role-student .student-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+@media (max-width: 1280px) {
+    .role-student .student-invoice-summary-grid,
+    .role-student .student-invoice-status-grid,
+    .role-student .student-invoice-meta-grid,
+    .role-student .student-invoice-money-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .role-student .student-invoice-hero {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .role-student .student-invoice-student-info {
+        width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+    .role-student .student-invoice-summary-grid,
+    .role-student .student-invoice-status-grid,
+    .role-student .student-invoice-meta-grid,
+    .role-student .student-invoice-money-grid,
+    .role-student .student-invoice-student-info {
+        grid-template-columns: 1fr;
+    }
+
+    .role-student .student-invoice-hero,
+    .role-student .student-invoice-card {
+        padding: 26px;
+    }
+
+    .role-student .student-invoice-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .role-student .student-invoice-action {
+        justify-content: stretch;
+    }
+
+    .role-student .student-invoice-action .student-primary-link {
+        width: 100%;
+    }
+}
