@@ -1,5 +1,9 @@
 <h1>Violation Records</h1>
-<p>Manager tạo biên bản vi phạm. Điểm phạt được hệ thống tự động gán theo loại vi phạm.</p>
+<p>Manager tạo biên bản vi phạm. Điểm phạt được hệ thống tự động gán theo loại vi phạm. Nếu sinh viên vượt ngưỡng Critical Warning, Manager có thể chấm dứt hợp đồng KTX.</p>
+
+<?php
+$criticalThreshold = $criticalThreshold ?? 15;
+?>
 
 <?php if (!empty($errors)): ?>
     <div class="alert error">
@@ -85,6 +89,7 @@
         value="<?= htmlspecialchars($old['custom_penalty_points'] ?? '') ?>"
         placeholder="Hệ thống tự điền theo loại vi phạm"
     >
+
     <small id="penalty_note">
         Với các loại vi phạm có sẵn, điểm phạt sẽ được hệ thống tự động điền và không cần nhập tay.
     </small>
@@ -110,7 +115,12 @@
 
 <div class="rule-box">
     <h2>Violation Point Rules</h2>
-    <p>Hệ thống dùng bảng quy đổi này để tự động tính điểm phạt.</p>
+    <p>
+        Hệ thống dùng bảng quy đổi này để tự động tính điểm phạt.
+        Nếu tổng điểm vi phạm từ 
+        <strong><?= htmlspecialchars($criticalThreshold) ?> điểm</strong>
+        trở lên, sinh viên sẽ ở mức Critical Warning và Manager có thể chấm dứt hợp đồng.
+    </p>
 
     <table>
         <thead>
@@ -153,6 +163,8 @@
             <th>Violation Count</th>
             <th>Total Points</th>
             <th>Warning Level</th>
+            <th>Active Contract</th>
+            <th>Action</th>
         </tr>
         </thead>
 
@@ -163,29 +175,76 @@
             $level = 'Warning';
             $class = 'warning';
 
-            if ($points >= 15) {
+            if ($points >= $criticalThreshold) {
                 $level = 'Critical Warning';
                 $class = 'critical';
             } elseif ($points >= 10) {
                 $level = 'Serious Warning';
                 $class = 'serious';
             }
+
+            $hasActiveContract = !empty($student['active_contract_id']);
             ?>
 
             <tr>
                 <td><?= htmlspecialchars($student['student_code']) ?></td>
+
                 <td><?= htmlspecialchars($student['full_name']) ?></td>
+
                 <td><?= htmlspecialchars($student['faculty'] ?? '-') ?></td>
+
                 <td><?= htmlspecialchars($student['violation_count']) ?></td>
+
                 <td>
                     <span class="badge danger">
                         <?= htmlspecialchars($student['total_points']) ?> points
                     </span>
                 </td>
+
                 <td>
                     <span class="warning-label <?= htmlspecialchars($class) ?>">
                         <?= htmlspecialchars($level) ?>
                     </span>
+                </td>
+
+                <td>
+                    <?php if ($hasActiveContract): ?>
+                        <strong>
+                            <?= htmlspecialchars($student['active_contract_code'] ?? ('Contract #' . $student['active_contract_id'])) ?>
+                        </strong>
+                        <br>
+                        <small>
+                            <?= htmlspecialchars($student['building_name'] ?? '-') ?>
+                            -
+                            <?= htmlspecialchars($student['room_number'] ?? '-') ?>
+                        </small>
+                    <?php else: ?>
+                        <span class="badge pending">No active contract</span>
+                    <?php endif; ?>
+                </td>
+
+                <td>
+                    <?php if ($points >= $criticalThreshold && $hasActiveContract): ?>
+                        <form 
+                            method="POST" 
+                            action="<?= BASE_URL ?>/index.php?route=manager/violation-terminate-contract"
+                            onsubmit="return confirm('Sinh viên đã vượt ngưỡng Critical Warning. Bạn có chắc muốn chấm dứt hợp đồng KTX không?');"
+                        >
+                            <input 
+                                type="hidden" 
+                                name="student_id" 
+                                value="<?= htmlspecialchars($student['id']) ?>"
+                            >
+
+                            <button type="submit" class="btn-reject-small">
+                                Terminate Contract
+                            </button>
+                        </form>
+                    <?php elseif ($points >= $criticalThreshold && !$hasActiveContract): ?>
+                        <small>Critical nhưng không có hợp đồng active.</small>
+                    <?php else: ?>
+                        <small>Chưa đủ ngưỡng.</small>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -156,10 +156,18 @@ $routes['student/register-room'] = function (PDO $db): void {
         WHERE user_id = :user_id
         LIMIT 1
     ");
+
     $stmt->execute([
         'user_id' => $user['id']
     ]);
+
     $student = $stmt->fetch();
+
+    $buildings = [];
+    $semesters = [];
+    $activeContract = null;
+    $currentRegistration = null;
+    $canRegister = true;
 
     if (!$student) {
         render('student/register_room', [
@@ -167,6 +175,9 @@ $routes['student/register-room'] = function (PDO $db): void {
             'student' => null,
             'buildings' => [],
             'semesters' => [],
+            'activeContract' => null,
+            'currentRegistration' => null,
+            'canRegister' => false,
             'errors' => ['Không tìm thấy hồ sơ sinh viên.'],
             'success' => null,
             'old' => []
@@ -175,8 +186,8 @@ $routes['student/register-room'] = function (PDO $db): void {
     }
 
     $buildings = $db->query("
-        SELECT id, building_name 
-        FROM buildings 
+        SELECT id, building_name
+        FROM buildings
         ORDER BY building_name
     ")->fetchAll();
 
@@ -187,11 +198,85 @@ $routes['student/register-room'] = function (PDO $db): void {
         ORDER BY start_date DESC
     ")->fetchAll();
 
+    $stmt = $db->prepare("
+        SELECT
+            c.*,
+            r.room_number,
+            r.room_type,
+            r.gender_type,
+            b.building_name,
+            se.semester_name,
+            se.academic_year
+        FROM contracts c
+        JOIN rooms r ON r.id = c.room_id
+        JOIN buildings b ON b.id = r.building_id
+        LEFT JOIN semesters se ON se.id = c.semester_id
+        WHERE c.student_id = :student_id
+          AND c.status = 'active'
+        ORDER BY c.id DESC
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'student_id' => $student['id']
+    ]);
+
+    $activeContract = $stmt->fetch();
+
+    $stmt = $db->prepare("
+        SELECT
+            rr.*,
+            se.semester_name,
+            se.academic_year,
+            desired_b.building_name AS desired_building,
+            assigned_r.room_number AS assigned_room,
+            assigned_b.building_name AS assigned_building,
+            manager.username AS processed_by_username
+        FROM room_registrations rr
+        JOIN semesters se ON se.id = rr.semester_id
+        LEFT JOIN buildings desired_b ON desired_b.id = rr.desired_building_id
+        LEFT JOIN rooms assigned_r ON assigned_r.id = rr.assigned_room_id
+        LEFT JOIN buildings assigned_b ON assigned_b.id = assigned_r.building_id
+        LEFT JOIN users manager ON manager.id = rr.processed_by
+        WHERE rr.student_id = :student_id
+          AND rr.status IN ('pending', 'approved')
+        ORDER BY rr.id DESC
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'student_id' => $student['id']
+    ]);
+
+    $currentRegistration = $stmt->fetch();
+
+    if ($activeContract || $currentRegistration) {
+        $canRegister = false;
+    }
+
+    if (!$canRegister) {
+        render('student/register_room', [
+            'title' => 'Register Room',
+            'student' => $student,
+            'buildings' => $buildings,
+            'semesters' => $semesters,
+            'activeContract' => $activeContract,
+            'currentRegistration' => $currentRegistration,
+            'canRegister' => false,
+            'errors' => [],
+            'success' => null,
+            'old' => []
+        ]);
+        return;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $semesterId = (int) ($_POST['semester_id'] ?? 0);
+
         $desiredBuildingId = ($_POST['desired_building_id'] ?? '') !== ''
             ? (int) $_POST['desired_building_id']
             : null;
+
         $desiredRoomType = trim($_POST['desired_room_type'] ?? '');
         $note = trim($_POST['note'] ?? '');
 
@@ -207,17 +292,51 @@ $routes['student/register-room'] = function (PDO $db): void {
 
         $stmt = $db->prepare("
             SELECT COUNT(*)
-            FROM room_registrations
+            FROM contracts
             WHERE student_id = :student_id
-              AND semester_id = :semester_id
+              AND status = 'active'
         ");
+
         $stmt->execute([
-            'student_id' => $student['id'],
-            'semester_id' => $semesterId
+            'student_id' => $student['id']
         ]);
 
         if ((int) $stmt->fetchColumn() > 0) {
-            $errors[] = 'Bạn đã có đơn đăng ký trong học kỳ này.';
+            $errors[] = 'Bạn đang có hợp đồng KTX active nên không thể đăng ký phòng mới.';
+        }
+
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM room_registrations
+            WHERE student_id = :student_id
+              AND status IN ('pending', 'approved')
+        ");
+
+        $stmt->execute([
+            'student_id' => $student['id']
+        ]);
+
+        if ((int) $stmt->fetchColumn() > 0) {
+            $errors[] = 'Bạn đã có đơn đăng ký đang được xử lý hoặc đã được duyệt.';
+        }
+
+        if ($semesterId > 0) {
+            $stmt = $db->prepare("
+                SELECT COUNT(*)
+                FROM room_registrations
+                WHERE student_id = :student_id
+                  AND semester_id = :semester_id
+                  AND status IN ('pending', 'approved')
+            ");
+
+            $stmt->execute([
+                'student_id' => $student['id'],
+                'semester_id' => $semesterId
+            ]);
+
+            if ((int) $stmt->fetchColumn() > 0) {
+                $errors[] = 'Bạn đã có đơn đăng ký trong học kỳ này.';
+            }
         }
 
         if (!empty($errors)) {
@@ -226,6 +345,9 @@ $routes['student/register-room'] = function (PDO $db): void {
                 'student' => $student,
                 'buildings' => $buildings,
                 'semesters' => $semesters,
+                'activeContract' => null,
+                'currentRegistration' => null,
+                'canRegister' => true,
                 'errors' => $errors,
                 'success' => null,
                 'old' => $_POST
@@ -245,57 +367,111 @@ $routes['student/register-room'] = function (PDO $db): void {
             $priorityScore = 25;
         }
 
-        $stmt = $db->prepare("
-            INSERT INTO room_registrations (
-                student_id,
-                semester_id,
-                desired_building_id,
-                desired_room_type,
-                desired_gender_type,
-                assigned_room_id,
-                priority_score,
-                note,
-                status,
-                processed_by,
-                processed_at,
-                rejection_reason
-            )
-            VALUES (
-                :student_id,
-                :semester_id,
-                :desired_building_id,
-                :desired_room_type,
-                :desired_gender_type,
-                NULL,
-                :priority_score,
-                :note,
-                'pending',
-                NULL,
-                NULL,
-                NULL
-            )
-        ");
+        try {
+            $db->beginTransaction();
 
-        $stmt->execute([
-            'student_id' => $student['id'],
-            'semester_id' => $semesterId,
-            'desired_building_id' => $desiredBuildingId,
-            'desired_room_type' => $desiredRoomType,
-            'desired_gender_type' => $student['gender'],
-            'priority_score' => $priorityScore,
-            'note' => $note !== '' ? $note : null
-        ]);
+            $stmt = $db->prepare("
+                INSERT INTO room_registrations (
+                    student_id,
+                    semester_id,
+                    desired_building_id,
+                    desired_room_type,
+                    desired_gender_type,
+                    assigned_room_id,
+                    priority_score,
+                    note,
+                    status,
+                    processed_by,
+                    processed_at,
+                    rejection_reason
+                )
+                VALUES (
+                    :student_id,
+                    :semester_id,
+                    :desired_building_id,
+                    :desired_room_type,
+                    :desired_gender_type,
+                    NULL,
+                    :priority_score,
+                    :note,
+                    'pending',
+                    NULL,
+                    NULL,
+                    NULL
+                )
+            ");
 
-        render('student/register_room', [
-            'title' => 'Register Room',
-            'student' => $student,
-            'buildings' => $buildings,
-            'semesters' => $semesters,
-            'errors' => [],
-            'success' => 'Gửi đơn đăng ký phòng thành công. Trạng thái hiện tại: pending.',
-            'old' => []
-        ]);
-        return;
+            $stmt->execute([
+                'student_id' => $student['id'],
+                'semester_id' => $semesterId,
+                'desired_building_id' => $desiredBuildingId,
+                'desired_room_type' => $desiredRoomType,
+                'desired_gender_type' => $student['gender'],
+                'priority_score' => $priorityScore,
+                'note' => $note !== '' ? $note : null
+            ]);
+
+            $registrationId = (int) $db->lastInsertId();
+
+            $db->commit();
+
+            $stmt = $db->prepare("
+                SELECT
+                    rr.*,
+                    se.semester_name,
+                    se.academic_year,
+                    desired_b.building_name AS desired_building,
+                    assigned_r.room_number AS assigned_room,
+                    assigned_b.building_name AS assigned_building,
+                    manager.username AS processed_by_username
+                FROM room_registrations rr
+                JOIN semesters se ON se.id = rr.semester_id
+                LEFT JOIN buildings desired_b ON desired_b.id = rr.desired_building_id
+                LEFT JOIN rooms assigned_r ON assigned_r.id = rr.assigned_room_id
+                LEFT JOIN buildings assigned_b ON assigned_b.id = assigned_r.building_id
+                LEFT JOIN users manager ON manager.id = rr.processed_by
+                WHERE rr.id = :id
+                LIMIT 1
+            ");
+
+            $stmt->execute([
+                'id' => $registrationId
+            ]);
+
+            $currentRegistration = $stmt->fetch();
+
+            render('student/register_room', [
+                'title' => 'Register Room',
+                'student' => $student,
+                'buildings' => $buildings,
+                'semesters' => $semesters,
+                'activeContract' => null,
+                'currentRegistration' => $currentRegistration,
+                'canRegister' => false,
+                'errors' => [],
+                'success' => 'Gửi đơn đăng ký phòng thành công. Trạng thái hiện tại: pending.',
+                'old' => []
+            ]);
+            return;
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+
+            render('student/register_room', [
+                'title' => 'Register Room',
+                'student' => $student,
+                'buildings' => $buildings,
+                'semesters' => $semesters,
+                'activeContract' => null,
+                'currentRegistration' => null,
+                'canRegister' => true,
+                'errors' => ['Gửi đơn đăng ký thất bại: ' . $e->getMessage()],
+                'success' => null,
+                'old' => $_POST
+            ]);
+            return;
+        }
     }
 
     render('student/register_room', [
@@ -303,6 +479,9 @@ $routes['student/register-room'] = function (PDO $db): void {
         'student' => $student,
         'buildings' => $buildings,
         'semesters' => $semesters,
+        'activeContract' => $activeContract,
+        'currentRegistration' => $currentRegistration,
+        'canRegister' => $canRegister,
         'errors' => [],
         'success' => null,
         'old' => []
@@ -814,7 +993,6 @@ $routes['student/pay-invoice'] = function (PDO $db): void {
     header('Location: ' . BASE_URL . '/index.php?route=student/payment-submit&invoice_id=' . $invoiceId);
     exit;
 };
-
 $routes['student/maintenance'] = function (PDO $db): void {
     Auth::requireRole('Student');
 
@@ -911,7 +1089,6 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
     $description = trim($_POST['description'] ?? '');
 
     $errors = [];
-    $evidenceImagePath = null;
 
     if ($category === '') {
         $errors[] = 'Vui lòng chọn loại sự cố.';
@@ -927,50 +1104,6 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
 
     if ($description === '') {
         $errors[] = 'Vui lòng mô tả chi tiết sự cố.';
-    }
-
-    if (isset($_FILES['evidence_image']) && $_FILES['evidence_image']['error'] !== UPLOAD_ERR_NO_FILE) {
-        if ($_FILES['evidence_image']['error'] !== UPLOAD_ERR_OK) {
-            $errors[] = 'Upload ảnh minh chứng thất bại.';
-        } else {
-            $maxSize = 5 * 1024 * 1024;
-
-            if ($_FILES['evidence_image']['size'] > $maxSize) {
-                $errors[] = 'Ảnh minh chứng không được vượt quá 5MB.';
-            }
-
-            $allowedMimeTypes = [
-                'image/jpeg' => 'jpg',
-                'image/png' => 'png',
-                'image/webp' => 'webp'
-            ];
-
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mimeType = finfo_file($finfo, $_FILES['evidence_image']['tmp_name']);
-            finfo_close($finfo);
-
-            if (!array_key_exists($mimeType, $allowedMimeTypes)) {
-                $errors[] = 'Ảnh minh chứng chỉ được dùng định dạng JPG, PNG hoặc WEBP.';
-            }
-
-            if (empty($errors)) {
-                $uploadDir = dirname(__DIR__) . '/public/uploads/maintenance';
-
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-
-                $extension = $allowedMimeTypes[$mimeType];
-                $fileName = 'maintenance_' . date('YmdHis') . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
-                $targetPath = $uploadDir . '/' . $fileName;
-
-                if (!move_uploaded_file($_FILES['evidence_image']['tmp_name'], $targetPath)) {
-                    $errors[] = 'Không thể lưu ảnh minh chứng.';
-                } else {
-                    $evidenceImagePath = 'uploads/maintenance/' . $fileName;
-                }
-            }
-        }
     }
 
     try {
@@ -1069,8 +1202,7 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
                 request_date,
                 processed_by,
                 processed_at,
-                resolution_note,
-                evidence_image
+                resolution_note
             )
             VALUES (
                 :student_id,
@@ -1083,8 +1215,7 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
                 NOW(),
                 NULL,
                 NULL,
-                NULL,
-                :evidence_image
+                NULL
             )
         ");
 
@@ -1094,8 +1225,7 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
             'title' => $title,
             'description' => $description,
             'category' => $category,
-            'priority' => $priority,
-            'evidence_image' => $evidenceImagePath
+            'priority' => $priority
         ]);
 
         $requestId = $db->lastInsertId();
@@ -1145,6 +1275,7 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
         exit;
     }
 };
+
 $routes['student/violations'] = function (PDO $db): void {
     Auth::requireRole('Student');
 
