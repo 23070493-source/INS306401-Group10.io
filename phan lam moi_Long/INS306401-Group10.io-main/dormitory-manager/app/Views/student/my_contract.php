@@ -102,6 +102,14 @@ foreach ($contracts ?? [] as $contract) {
                 <span class="badge <?= htmlspecialchars($contract['status'] ?? 'active') ?>">
                     <?= htmlspecialchars(ucfirst($contract['status'] ?? 'active')) ?>
                 </span>
+
+                <a
+                    class="student-primary-link no-print"
+                    href="<?= BASE_URL ?>/index.php?route=student/contract-print&contract_id=<?= htmlspecialchars((string) ($contract['id'] ?? '')) ?>"
+                    data-i18n="print_contract"
+                >
+                    In hợp đồng
+                </a>
             </div>
 
             <div class="student-contract-detail-grid">

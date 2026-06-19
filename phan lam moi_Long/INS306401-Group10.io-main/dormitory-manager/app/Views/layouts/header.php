@@ -1,7 +1,7 @@
 <?php
 $user = Auth::user();
 $pageTitle = $title ?? 'Dormitory Manager';
-$assetVersion = '20260618-ui-i18n-3';
+$assetVersion = '20260619-print-validation-1';
 
 $currentRoute = $_GET['route'] ?? 'home';
 
@@ -64,6 +64,9 @@ $isActiveGroup = function (array $routes) use ($currentRoute): string {
 
     <!-- Role-based theme -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/<?= htmlspecialchars($roleCss) ?>?v=<?= urlencode($assetVersion) ?>">
+
+    <!-- Final VNU-IS visual theme -->
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/vnu.css?v=<?= urlencode($assetVersion) ?>">
 </head>
 
 <body class="role-<?= htmlspecialchars($roleClass) ?>">
@@ -73,7 +76,11 @@ $isActiveGroup = function (array $routes) use ($currentRoute): string {
     <?php if ($user): ?>
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <div class="brand-icon">K</div>
+                <img
+                    src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg?v=<?= urlencode($assetVersion) ?>"
+                    alt="VNU-IS"
+                    class="brand-logo"
+                >
 
                 <div>
                     <h2>Dormitory Manager</h2>
@@ -146,6 +153,11 @@ $isActiveGroup = function (array $routes) use ($currentRoute): string {
                     <a class="<?= $isActiveGroup(['admin/audit-logs']) ?>" href="<?= BASE_URL ?>/index.php?route=admin/audit-logs">
                         <span class="nav-icon">🛡</span>
                         <span data-i18n="audit_logs">Nhật ký hệ thống</span>
+                    </a>
+
+                    <a class="<?= $isActiveGroup(['admin/violations']) ?>" href="<?= BASE_URL ?>/index.php?route=admin/violations">
+                        <span class="nav-icon">⚠</span>
+                        <span data-i18n="violations">Vi phạm</span>
                     </a>
 
                     <a class="<?= $isActiveGroup(['admin/reports']) ?>" href="<?= BASE_URL ?>/index.php?route=admin/reports">

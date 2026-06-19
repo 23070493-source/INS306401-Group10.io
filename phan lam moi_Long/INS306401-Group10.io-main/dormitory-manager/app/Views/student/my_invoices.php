@@ -199,6 +199,14 @@ foreach ($invoices ?? [] as $invoice) {
                             Submit Bank Transfer
                         </a>
                     <?php endif; ?>
+
+                    <a
+                        class="student-primary-link no-print"
+                        href="<?= BASE_URL ?>/index.php?route=student/invoice-print&invoice_id=<?= htmlspecialchars((string) ($invoice['id'] ?? '')) ?>"
+                        data-i18n="print_invoice"
+                    >
+                        In hóa đơn
+                    </a>
                 </div>
             </article>
         <?php endforeach; ?>
@@ -287,6 +295,14 @@ foreach ($invoices ?? [] as $invoice) {
                                     Submit Bank Transfer
                                 </a>
                             <?php endif; ?>
+
+                            <a
+                                class="btn-link no-print"
+                                href="<?= BASE_URL ?>/index.php?route=student/invoice-print&invoice_id=<?= htmlspecialchars((string) ($invoice['id'] ?? '')) ?>"
+                                data-i18n="print_invoice"
+                            >
+                                In hóa đơn
+                            </a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

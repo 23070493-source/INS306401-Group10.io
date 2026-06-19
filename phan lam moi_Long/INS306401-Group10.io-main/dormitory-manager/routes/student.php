@@ -686,6 +686,166 @@ $routes['student/my-invoices'] = function (PDO $db): void {
     ]);
 };
 
+$routes['student/contract-print'] = function (PDO $db): void {
+    Auth::requireRole('Student');
+
+    $user = Auth::user();
+    $contractId = (int) ($_GET['contract_id'] ?? 0);
+
+    if ($contractId <= 0) {
+        redirectTo('student/my-contract');
+    }
+
+    $stmt = $db->prepare("
+        SELECT id
+        FROM students
+        WHERE user_id = :user_id
+        LIMIT 1
+    ");
+    $stmt->execute(['user_id' => $user['id']]);
+    $studentId = (int) $stmt->fetchColumn();
+
+    if ($studentId <= 0) {
+        redirectTo('student/my-contract');
+    }
+
+    $stmt = $db->prepare("
+        SELECT
+            c.*,
+            s.student_code,
+            s.full_name,
+            s.gender AS student_gender,
+            s.faculty,
+            s.program,
+            r.room_number,
+            r.room_type,
+            r.gender_type,
+            r.capacity,
+            b.building_name,
+            se.semester_name,
+            se.academic_year,
+            creator.username AS created_by_username
+        FROM contracts c
+        JOIN students s ON s.id = c.student_id
+        JOIN rooms r ON r.id = c.room_id
+        JOIN buildings b ON b.id = r.building_id
+        JOIN semesters se ON se.id = c.semester_id
+        LEFT JOIN users creator ON creator.id = c.created_by
+        WHERE c.id = :contract_id
+          AND c.student_id = :student_id
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'contract_id' => $contractId,
+        'student_id' => $studentId
+    ]);
+
+    $contract = $stmt->fetch();
+
+    if (!$contract) {
+        echo '<h2>Không tìm thấy hợp đồng.</h2>';
+        echo '<a href="' . BASE_URL . '/index.php?route=student/my-contract">Quay lại</a>';
+        return;
+    }
+
+    render('print/contract', [
+        'title' => 'In hợp đồng',
+        'contract' => $contract,
+        'backUrl' => BASE_URL . '/index.php?route=student/my-contract'
+    ]);
+};
+
+$routes['student/invoice-print'] = function (PDO $db): void {
+    Auth::requireRole('Student');
+
+    $user = Auth::user();
+    $invoiceId = (int) ($_GET['invoice_id'] ?? 0);
+
+    if ($invoiceId <= 0) {
+        redirectTo('student/my-invoices');
+    }
+
+    $stmt = $db->prepare("
+        SELECT id
+        FROM students
+        WHERE user_id = :user_id
+        LIMIT 1
+    ");
+    $stmt->execute(['user_id' => $user['id']]);
+    $studentId = (int) $stmt->fetchColumn();
+
+    if ($studentId <= 0) {
+        redirectTo('student/my-invoices');
+    }
+
+    $stmt = $db->prepare("
+        SELECT
+            i.*,
+            c.contract_code,
+            s.student_code,
+            s.full_name,
+            s.faculty,
+            r.room_number,
+            b.building_name,
+            creator.username AS created_by_username
+        FROM invoices i
+        JOIN contracts c ON c.id = i.contract_id
+        JOIN students s ON s.id = i.student_id
+        JOIN rooms r ON r.id = i.room_id
+        JOIN buildings b ON b.id = r.building_id
+        LEFT JOIN users creator ON creator.id = i.created_by
+        WHERE i.id = :invoice_id
+          AND i.student_id = :student_id
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        'invoice_id' => $invoiceId,
+        'student_id' => $studentId
+    ]);
+
+    $invoice = $stmt->fetch();
+
+    if (!$invoice) {
+        echo '<h2>Không tìm thấy hóa đơn.</h2>';
+        echo '<a href="' . BASE_URL . '/index.php?route=student/my-invoices">Quay lại</a>';
+        return;
+    }
+
+    $detailStmt = $db->prepare("
+        SELECT
+            d.*,
+            sv.service_name
+        FROM invoice_details d
+        LEFT JOIN services sv ON sv.id = d.service_id
+        WHERE d.invoice_id = :invoice_id
+        ORDER BY d.id
+    ");
+    $detailStmt->execute(['invoice_id' => $invoiceId]);
+
+    $paymentStmt = $db->prepare("
+        SELECT
+            payment_code,
+            amount,
+            payment_method,
+            payment_date,
+            status
+        FROM payments
+        WHERE invoice_id = :invoice_id
+        ORDER BY payment_date DESC, id DESC
+    ");
+    $paymentStmt->execute(['invoice_id' => $invoiceId]);
+
+    render('print/invoice', [
+        'title' => 'In hóa đơn',
+        'invoice' => $invoice,
+        'details' => $detailStmt->fetchAll(),
+        'payments' => $paymentStmt->fetchAll(),
+        'backUrl' => BASE_URL . '/index.php?route=student/my-invoices'
+    ]);
+};
+
 $routes['student/payment-submit'] = function (PDO $db): void {
     Auth::requireRole('Student');
 
@@ -782,7 +942,6 @@ $routes['student/payment-store'] = function (PDO $db): void {
     $senderBank = trim($_POST['sender_bank'] ?? '');
     $senderAccountName = trim($_POST['sender_account_name'] ?? '');
     $transactionReference = trim($_POST['transaction_reference'] ?? '');
-    $paymentDate = trim($_POST['payment_date'] ?? '');
     $note = trim($_POST['note'] ?? '');
 
     $errors = [];
@@ -801,10 +960,6 @@ $routes['student/payment-store'] = function (PDO $db): void {
 
     if ($transactionReference === '') {
         $errors[] = 'Vui lòng nhập mã giao dịch.';
-    }
-
-    if ($paymentDate === '') {
-        $errors[] = 'Vui lòng nhập thời gian chuyển khoản.';
     }
 
     try {
@@ -885,12 +1040,7 @@ $routes['student/payment-store'] = function (PDO $db): void {
         $db->beginTransaction();
 
         $paymentCode = 'PAY' . date('YmdHis') . $invoiceId;
-
-        $paymentDateSql = str_replace('T', ' ', $paymentDate);
-
-        if (strlen($paymentDateSql) === 16) {
-            $paymentDateSql .= ':00';
-        }
+        $paymentDateSql = date('Y-m-d H:i:s');
 
         $stmt = $db->prepare("
             INSERT INTO payments (
@@ -1310,7 +1460,7 @@ $routes['student/violations'] = function (PDO $db): void {
                 vr.created_at,
                 creator.username AS created_by_username
             FROM violation_records vr
-            LEFT JOIN users creator ON creator.id = vr.created_by
+            LEFT JOIN users creator ON creator.id = vr.recorded_by
             WHERE vr.student_id = :student_id
             ORDER BY 
                 vr.violation_date DESC,

@@ -1,47 +1,47 @@
 <h1>Hợp đồng</h1>
-<p>Quản lý và theo dõi danh sách hợp đồng KTX. Manager có thể checkout/kết thúc hợp đồng đang active.</p>
+<p>Quản lý và theo dõi danh sách hợp đồng KTX. Quản lý có thể kết thúc hợp đồng đang hiệu lực.</p>
 
 <div class="cards">
     <div class="card">
-        <h3>Total Contracts</h3>
+        <h3>Tổng hợp đồng</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Active</h3>
+        <h3>Đang hiệu lực</h3>
         <strong><?= htmlspecialchars($summary['active']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Expired</h3>
+        <h3>Hết hạn</h3>
         <strong><?= htmlspecialchars($summary['expired']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Terminated</h3>
+        <h3>Đã chấm dứt</h3>
         <strong><?= htmlspecialchars($summary['terminated']) ?></strong>
     </div>
 </div>
 
 <div class="filter-bar">
     <a class="filter-link <?= $currentStatus === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/contracts">
-        All
+        Tất cả
     </a>
 
     <a class="filter-link <?= $currentStatus === 'active' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/contracts&status=active">
-        Active
+        Đang hiệu lực
     </a>
 
     <a class="filter-link <?= $currentStatus === 'expired' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/contracts&status=expired">
-        Expired
+        Hết hạn
     </a>
 
     <a class="filter-link <?= $currentStatus === 'terminated' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/contracts&status=terminated">
-        Terminated
+        Đã chấm dứt
     </a>
 
     <a class="filter-link <?= $currentStatus === 'cancelled' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/contracts&status=cancelled">
-        Cancelled
+        Đã hủy
     </a>
 </div>
 
@@ -53,17 +53,18 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Contract Code</th>
-            <th>Student</th>
-            <th>Room</th>
-            <th>Semester</th>
-            <th>Duration</th>
-            <th>Monthly Price</th>
-            <th>Deposit</th>
-            <th>Status</th>
-            <th>Created By</th>
-            <th>Created At</th>
-            <th>Checkout</th>
+            <th>Mã hợp đồng</th>
+            <th>Sinh viên</th>
+            <th>Phòng</th>
+            <th>Học kỳ</th>
+            <th>Thời hạn</th>
+            <th>Giá hàng tháng</th>
+            <th>Tiền cọc</th>
+            <th>Trạng thái</th>
+            <th>Người tạo</th>
+            <th>Ngày tạo</th>
+            <th>In</th>
+            <th>Kết thúc</th>
         </tr>
         </thead>
         <tbody>
@@ -102,7 +103,7 @@
                 <td>
                     <?= htmlspecialchars($contract['start_date']) ?>
                     <br>
-                    <small>to <?= htmlspecialchars($contract['end_date']) ?></small>
+                    <small>đến <?= htmlspecialchars($contract['end_date']) ?></small>
                 </td>
 
                 <td><?= number_format((float)$contract['monthly_price']) ?> VND</td>
@@ -117,14 +118,14 @@
                     <?php if ($contract['status'] === 'terminated'): ?>
                         <br>
                         <small>
-                            Ended:
+                            Kết thúc:
                             <?= htmlspecialchars($contract['ended_at'] ?? '-') ?>
                         </small>
 
                         <?php if (!empty($contract['ended_by_username'])): ?>
                             <br>
                             <small>
-                                By:
+                                Bởi:
                                 <?= htmlspecialchars($contract['ended_by_username']) ?>
                             </small>
                         <?php endif; ?>
@@ -136,11 +137,21 @@
                 <td><?= htmlspecialchars($contract['created_at']) ?></td>
 
                 <td>
+                    <a
+                        class="btn-link no-print"
+                        href="<?= BASE_URL ?>/index.php?route=manager/contract-print&contract_id=<?= htmlspecialchars((string) $contract['id']) ?>"
+                        data-i18n="print_contract"
+                    >
+                        In hợp đồng
+                    </a>
+                </td>
+
+                <td>
                     <?php if ($contract['status'] === 'active'): ?>
                         <form 
                             method="POST" 
                             action="<?= BASE_URL ?>/index.php?route=manager/contract-end"
-                            onsubmit="return confirm('Bạn có chắc muốn checkout/kết thúc hợp đồng này không?');"
+                            onsubmit="return confirm('Bạn có chắc muốn kết thúc hợp đồng này không?');"
                         >
                             <input 
                                 type="hidden" 
@@ -152,16 +163,16 @@
                                 type="text" 
                                 name="checkout_note" 
                                 class="table-input"
-                                placeholder="Ghi chú checkout"
+                                placeholder="Ghi chú kết thúc"
                             >
 
                             <button type="submit" class="btn-reject-small">
-                                End Contract
+                                Kết thúc hợp đồng
                             </button>
                         </form>
                     <?php elseif ($contract['status'] === 'terminated'): ?>
                         <small>
-                            <?= htmlspecialchars($contract['checkout_note'] ?? 'No checkout note') ?>
+                            <?= htmlspecialchars($contract['checkout_note'] ?? 'Không có ghi chú kết thúc') ?>
                         </small>
                     <?php else: ?>
                         <small>-</small>

@@ -806,6 +806,59 @@ $routes['manager/contracts'] = function (PDO $db): void {
     ]);
 };
 
+$routes['manager/contract-print'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    managerEnsureContractTerminationSchema($db);
+
+    $contractId = (int) ($_GET['contract_id'] ?? 0);
+
+    if ($contractId <= 0) {
+        redirectTo('manager/contracts');
+    }
+
+    $stmt = $db->prepare("
+        SELECT
+            c.*,
+            s.student_code,
+            s.full_name,
+            s.gender AS student_gender,
+            s.faculty,
+            s.program,
+            r.room_number,
+            r.room_type,
+            r.gender_type,
+            r.capacity,
+            b.building_name,
+            se.semester_name,
+            se.academic_year,
+            creator.username AS created_by_username
+        FROM contracts c
+        JOIN students s ON s.id = c.student_id
+        JOIN rooms r ON r.id = c.room_id
+        JOIN buildings b ON b.id = r.building_id
+        JOIN semesters se ON se.id = c.semester_id
+        LEFT JOIN users creator ON creator.id = c.created_by
+        WHERE c.id = :contract_id
+        LIMIT 1
+    ");
+
+    $stmt->execute(['contract_id' => $contractId]);
+    $contract = $stmt->fetch();
+
+    if (!$contract) {
+        echo '<h2>Không tìm thấy hợp đồng.</h2>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/contracts">Quay lại</a>';
+        return;
+    }
+
+    render('print/contract', [
+        'title' => 'In hợp đồng',
+        'contract' => $contract,
+        'backUrl' => BASE_URL . '/index.php?route=manager/contracts'
+    ]);
+};
+
 $routes['manager/contract-end'] = function (PDO $db): void {
     Auth::requireRole('Manager');
 
@@ -952,6 +1005,77 @@ $routes['manager/invoices'] = function (PDO $db): void {
         'invoices' => $stmt->fetchAll(),
         'summary' => $summary,
         'currentStatus' => $status
+    ]);
+};
+
+$routes['manager/invoice-print'] = function (PDO $db): void {
+    Auth::requireRole('Manager');
+
+    $invoiceId = (int) ($_GET['invoice_id'] ?? 0);
+
+    if ($invoiceId <= 0) {
+        redirectTo('manager/invoices');
+    }
+
+    $stmt = $db->prepare("
+        SELECT
+            i.*,
+            c.contract_code,
+            s.student_code,
+            s.full_name,
+            s.faculty,
+            r.room_number,
+            b.building_name,
+            creator.username AS created_by_username
+        FROM invoices i
+        JOIN contracts c ON c.id = i.contract_id
+        JOIN students s ON s.id = i.student_id
+        JOIN rooms r ON r.id = i.room_id
+        JOIN buildings b ON b.id = r.building_id
+        LEFT JOIN users creator ON creator.id = i.created_by
+        WHERE i.id = :invoice_id
+        LIMIT 1
+    ");
+
+    $stmt->execute(['invoice_id' => $invoiceId]);
+    $invoice = $stmt->fetch();
+
+    if (!$invoice) {
+        echo '<h2>Không tìm thấy hóa đơn.</h2>';
+        echo '<a href="' . BASE_URL . '/index.php?route=manager/invoices">Quay lại</a>';
+        return;
+    }
+
+    $detailStmt = $db->prepare("
+        SELECT
+            d.*,
+            sv.service_name
+        FROM invoice_details d
+        LEFT JOIN services sv ON sv.id = d.service_id
+        WHERE d.invoice_id = :invoice_id
+        ORDER BY d.id
+    ");
+    $detailStmt->execute(['invoice_id' => $invoiceId]);
+
+    $paymentStmt = $db->prepare("
+        SELECT
+            payment_code,
+            amount,
+            payment_method,
+            payment_date,
+            status
+        FROM payments
+        WHERE invoice_id = :invoice_id
+        ORDER BY payment_date DESC, id DESC
+    ");
+    $paymentStmt->execute(['invoice_id' => $invoiceId]);
+
+    render('print/invoice', [
+        'title' => 'In hóa đơn',
+        'invoice' => $invoice,
+        'details' => $detailStmt->fetchAll(),
+        'payments' => $paymentStmt->fetchAll(),
+        'backUrl' => BASE_URL . '/index.php?route=manager/invoices'
     ]);
 };
 
@@ -1645,7 +1769,7 @@ $routes['manager/violations'] = function (PDO $db): void {
             creator.username AS created_by_username
         FROM violation_records vr
         JOIN students s ON s.id = vr.student_id
-        LEFT JOIN users creator ON creator.id = vr.created_by
+        LEFT JOIN users creator ON creator.id = vr.recorded_by
         ORDER BY 
             vr.violation_date DESC,
             vr.created_at DESC,
@@ -1747,7 +1871,7 @@ $routes['manager/violation-store'] = function (PDO $db): void {
                 creator.username AS created_by_username
             FROM violation_records vr
             JOIN students s ON s.id = vr.student_id
-            LEFT JOIN users creator ON creator.id = vr.created_by
+            LEFT JOIN users creator ON creator.id = vr.recorded_by
             ORDER BY 
                 vr.violation_date DESC,
                 vr.created_at DESC,
@@ -1798,7 +1922,7 @@ $routes['manager/violation-store'] = function (PDO $db): void {
                 description,
                 penalty_points,
                 violation_date,
-                created_by,
+                recorded_by,
                 created_at
             )
             VALUES (
@@ -1807,7 +1931,7 @@ $routes['manager/violation-store'] = function (PDO $db): void {
                 :description,
                 :penalty_points,
                 :violation_date,
-                :created_by,
+                :recorded_by,
                 NOW()
             )
         ");
@@ -1818,7 +1942,7 @@ $routes['manager/violation-store'] = function (PDO $db): void {
             'description' => $description,
             'penalty_points' => $penaltyPoints,
             'violation_date' => $violationDate,
-            'created_by' => $manager['id']
+            'recorded_by' => $manager['id']
         ]);
 
         $violationId = (int) $db->lastInsertId();

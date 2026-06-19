@@ -3,56 +3,56 @@
 
 <div class="page-actions">
     <a class="btn-link" href="<?= BASE_URL ?>/index.php?route=manager/invoice-create">
-        Create Invoice
+        Tạo hóa đơn
     </a>
 </div>
 
 <div class="cards">
     <div class="card">
-        <h3>Total Invoices</h3>
+        <h3>Tổng hóa đơn</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Unpaid</h3>
+        <h3>Chưa thanh toán</h3>
         <strong><?= htmlspecialchars($summary['unpaid']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Paid</h3>
+        <h3>Đã thanh toán</h3>
         <strong><?= htmlspecialchars($summary['paid']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Overdue</h3>
+        <h3>Quá hạn</h3>
         <strong><?= htmlspecialchars($summary['overdue']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Partially Paid</h3>
+        <h3>Thanh toán một phần</h3>
         <strong><?= htmlspecialchars($summary['partially_paid']) ?></strong>
     </div>
 </div>
 
 <div class="filter-bar">
     <a class="filter-link <?= $currentStatus === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/invoices">
-        All
+        Tất cả
     </a>
 
     <a class="filter-link <?= $currentStatus === 'unpaid' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/invoices&status=unpaid">
-        Unpaid
+        Chưa thanh toán
     </a>
 
     <a class="filter-link <?= $currentStatus === 'paid' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/invoices&status=paid">
-        Paid
+        Đã thanh toán
     </a>
 
     <a class="filter-link <?= $currentStatus === 'partially_paid' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/invoices&status=partially_paid">
-        Partially Paid
+        Thanh toán một phần
     </a>
 
     <a class="filter-link <?= $currentStatus === 'overdue' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=manager/invoices&status=overdue">
-        Overdue
+        Quá hạn
     </a>
 </div>
 
@@ -64,16 +64,17 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Invoice Code</th>
-            <th>Student</th>
-            <th>Room</th>
-            <th>Month</th>
-            <th>Due Date</th>
-            <th>Total</th>
-            <th>Paid</th>
-            <th>Remaining</th>
-            <th>Status</th>
-            <th>Created By</th>
+            <th>Mã hóa đơn</th>
+            <th>Sinh viên</th>
+            <th>Phòng</th>
+            <th>Tháng</th>
+            <th>Hạn thanh toán</th>
+            <th>Tổng tiền</th>
+            <th>Đã thanh toán</th>
+            <th>Còn lại</th>
+            <th>Trạng thái</th>
+            <th>Người tạo</th>
+            <th>In</th>
         </tr>
         </thead>
 
@@ -110,6 +111,15 @@
                     </span>
                 </td>
                 <td><?= htmlspecialchars($invoice['created_by_username'] ?? '-') ?></td>
+                <td>
+                    <a
+                        class="btn-link no-print"
+                        href="<?= BASE_URL ?>/index.php?route=manager/invoice-print&invoice_id=<?= htmlspecialchars((string) $invoice['id']) ?>"
+                        data-i18n="print_invoice"
+                    >
+                        In hóa đơn
+                    </a>
+                </td>
             </tr>
         <?php endforeach; ?>
         </tbody>

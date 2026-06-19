@@ -1,0 +1,1364 @@
+/* =========================================================
+   VNU-IS final theme
+   ========================================================= */
+
+:root {
+    --vnu-navy: #102f57;
+    --vnu-navy-2: #0b2444;
+    --vnu-navy-3: #173f70;
+    --vnu-gold: #d7b04b;
+    --vnu-gold-soft: #fff6d8;
+    --vnu-border: #dbe4ef;
+    --vnu-bg: #f5f7fb;
+    --vnu-text: #102033;
+    --vnu-muted: #64748b;
+    --role-primary: var(--vnu-navy);
+    --role-primary-dark: var(--vnu-navy-2);
+    --role-dark: var(--vnu-navy-2);
+    --role-soft: var(--vnu-gold-soft);
+    --role-light: #eef4fb;
+    --role-gradient: linear-gradient(135deg, var(--vnu-navy), var(--vnu-navy-3));
+    --sidebar-width: 268px;
+}
+
+body,
+input,
+select,
+textarea,
+button,
+table,
+label,
+a,
+p,
+span,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Segoe UI", Arial, sans-serif !important;
+}
+
+body,
+body.role-admin,
+body.role-manager,
+body.role-student,
+body.role-guest {
+    background: var(--vnu-bg) !important;
+    color: var(--vnu-text);
+}
+
+.app-dashboard {
+    background: var(--vnu-bg);
+}
+
+.sidebar,
+.role-admin .sidebar,
+.role-manager .sidebar,
+.role-student .sidebar {
+    width: var(--sidebar-width);
+    padding: 18px 14px;
+    color: #eef4fb;
+    background: var(--vnu-navy-2) !important;
+    border-right: 4px solid var(--vnu-gold);
+    box-shadow: 8px 0 26px rgba(16, 47, 87, 0.16);
+}
+
+.sidebar-brand {
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 0 4px 14px;
+    border-bottom: 1px solid rgba(215, 176, 75, 0.28);
+}
+
+.brand-logo {
+    width: 54px;
+    height: 62px;
+    flex: 0 0 54px;
+    object-fit: contain;
+    border-radius: 10px;
+    padding: 3px;
+    background: #ffffff;
+    border: 2px solid var(--vnu-gold);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.brand-icon {
+    display: none;
+}
+
+.sidebar-brand h2,
+.role-student .sidebar-brand h2 {
+    color: #ffffff;
+    font-size: 21px;
+    line-height: 1.12;
+    font-weight: 850;
+}
+
+.sidebar-brand p,
+.role-student .sidebar-brand p {
+    margin-top: 4px;
+    color: #e9cf78;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.user-box,
+.role-student .user-box {
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(215, 176, 75, 0.22);
+}
+
+.user-meta strong,
+.role-student .user-meta strong {
+    color: #ffffff;
+}
+
+.role-pill,
+.role-student .role-pill-student,
+.role-student .user-meta span {
+    background: rgba(215, 176, 75, 0.16);
+    color: #ffe7a3;
+    border: 1px solid rgba(215, 176, 75, 0.20);
+}
+
+.sidebar-avatar,
+.sidebar-avatar-placeholder,
+.role-student .sidebar-avatar,
+.role-student .sidebar-avatar-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.sidebar-avatar-placeholder,
+.role-student .sidebar-avatar-placeholder {
+    background: var(--vnu-gold);
+    color: var(--vnu-navy-2);
+}
+
+.language-box,
+.role-student .language-box {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(215, 176, 75, 0.20);
+}
+
+.language-box label,
+.role-student .language-box label {
+    color: #d7e1ee;
+}
+
+.language-box select {
+    color: var(--vnu-text);
+    background: #ffffff;
+    border: 1px solid rgba(215, 176, 75, 0.45);
+}
+
+.sidebar-nav a,
+.role-student .sidebar-nav a {
+    min-height: 40px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    color: #d8e1ec;
+    font-weight: 720;
+}
+
+.sidebar-nav a:hover,
+.role-student .sidebar-nav a:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.sidebar-nav a.active,
+.role-student .sidebar-nav a.active {
+    color: var(--vnu-navy-2);
+    background: var(--vnu-gold);
+    box-shadow: none;
+}
+
+.sidebar-divider {
+    background: rgba(215, 176, 75, 0.26);
+}
+
+.logout-link {
+    color: #ffd0d0 !important;
+}
+
+.main-content,
+.role-admin .main-content,
+.role-manager .main-content,
+.role-student .main-content {
+    padding: 30px 34px;
+    background: transparent !important;
+}
+
+h1 {
+    color: var(--vnu-text);
+    font-size: 36px;
+    letter-spacing: 0 !important;
+}
+
+h1::after,
+.role-admin h1::after,
+.role-manager h1::after {
+    width: 58px;
+    height: 4px;
+    margin-top: 10px;
+    background: var(--vnu-gold) !important;
+}
+
+h2 {
+    color: var(--vnu-text);
+}
+
+h3 {
+    color: #1e293b;
+}
+
+h1 + p,
+p {
+    color: var(--vnu-muted);
+}
+
+.card,
+.form-card,
+.profile-box,
+.profile-card,
+.table-card,
+.report-card,
+.dashboard-card,
+.summary-card,
+.stat-card,
+.action-card,
+.info-card,
+.student-dashboard-section,
+.student-invoice-card,
+.student-invoice-hero {
+    border-radius: 10px !important;
+    border: 1px solid var(--vnu-border) !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 26px rgba(16, 47, 87, 0.07) !important;
+}
+
+.card:hover,
+.action-card:hover,
+.stat-card:hover,
+.summary-card:hover {
+    transform: none !important;
+    box-shadow: 0 14px 30px rgba(16, 47, 87, 0.10) !important;
+}
+
+button,
+.btn,
+.btn-primary,
+.btn-pay,
+.student-primary-link,
+input[type="submit"] {
+    background: var(--vnu-navy) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+button:hover,
+.btn:hover,
+.btn-primary:hover,
+.btn-pay:hover,
+.student-primary-link:hover,
+input[type="submit"]:hover {
+    background: var(--vnu-navy-3) !important;
+}
+
+.btn-link,
+a.btn-link {
+    color: var(--vnu-navy) !important;
+    font-weight: 750;
+}
+
+table {
+    border: 1px solid var(--vnu-border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table th,
+.role-admin table th,
+.role-manager table th {
+    background: #edf2f7 !important;
+    color: var(--vnu-navy) !important;
+}
+
+.badge.paid,
+.badge.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge.pending,
+.badge.warning {
+    background: var(--vnu-gold-soft);
+    color: #8a5a00;
+}
+
+.badge.danger,
+.badge.rejected,
+.badge.overdue {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.app-auth {
+    background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 58%, #eef3f8 100%) !important;
+}
+
+.auth-content {
+    width: min(780px, 100%);
+}
+
+.login-card,
+.register-card,
+.auth-card {
+    border-radius: 14px !important;
+    border: 1px solid var(--vnu-border) !important;
+    border-top: 5px solid var(--vnu-gold) !important;
+    box-shadow: 0 22px 60px rgba(16, 47, 87, 0.14) !important;
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.auth-brand-logo {
+    width: 70px;
+    height: 82px;
+    flex: 0 0 70px;
+    object-fit: contain;
+    padding: 4px;
+    background: #ffffff;
+    border: 2px solid var(--vnu-gold);
+    border-radius: 12px;
+}
+
+.auth-brand h1 {
+    margin: 0 0 4px !important;
+    color: var(--vnu-navy) !important;
+    font-size: 38px !important;
+    line-height: 1.1 !important;
+}
+
+.auth-brand h1::after {
+    display: none;
+}
+
+.auth-brand span {
+    color: #8a5a00;
+    font-size: 14px;
+    font-weight: 750;
+    text-transform: uppercase;
+}
+
+.login-card label,
+.register-card label,
+.auth-card label,
+.auth-content label {
+    color: var(--vnu-text) !important;
+}
+
+.login-card input,
+.login-card select,
+.login-card textarea,
+.register-card input,
+.register-card select,
+.register-card textarea,
+.auth-card input,
+.auth-card select,
+.auth-card textarea,
+.auth-content input,
+.auth-content select,
+.auth-content textarea {
+    border-radius: 9px !important;
+    border-color: var(--vnu-border) !important;
+    background: #ffffff !important;
+    font-size: 18px !important;
+}
+
+.login-card input:focus,
+.login-card select:focus,
+.register-card input:focus,
+.register-card select:focus,
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-content input:focus,
+.auth-content select:focus {
+    border-color: var(--vnu-gold) !important;
+    box-shadow: 0 0 0 4px rgba(215, 176, 75, 0.18) !important;
+}
+
+.auth-language-box {
+    border-top: 3px solid var(--vnu-gold);
+}
+
+@media (max-width: 900px) {
+    :root {
+        --sidebar-width: 238px;
+    }
+
+    .main-content {
+        padding: 24px;
+    }
+
+    .brand-logo {
+        width: 48px;
+        height: 56px;
+        flex-basis: 48px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 640px) {
+    .auth-brand {
+        align-items: flex-start;
+    }
+
+    .auth-brand-logo {
+        width: 58px;
+        height: 68px;
+        flex-basis: 58px;
+    }
+
+    .auth-brand h1 {
+        font-size: 30px !important;
+    }
+}
+
+/* =========================================================
+   VNU-IS raised interface overhaul
+   Palette: navy #1D2B52, white #FFFFFF, gold #D6A73A, silver #D2D2D2
+   ========================================================= */
+
+:root {
+    --vnu-navy: #1d2b52;
+    --vnu-navy-deep: #111c38;
+    --vnu-navy-soft: #263a68;
+    --vnu-white: #ffffff;
+    --vnu-gold: #d6a73a;
+    --vnu-gold-deep: #a97818;
+    --vnu-gold-soft: #fff4d4;
+    --vnu-silver: #d2d2d2;
+    --vnu-silver-soft: #edf0f4;
+    --vnu-page: #eef2f7;
+    --vnu-panel: #ffffff;
+    --vnu-ink: #14213d;
+    --vnu-muted: #667085;
+    --vnu-shadow: 0 22px 46px rgba(29, 43, 82, 0.16);
+    --vnu-shadow-soft: 0 12px 28px rgba(29, 43, 82, 0.10);
+}
+
+body.role-manager,
+body.role-admin,
+body.role-student {
+    --role-primary: var(--vnu-navy);
+    --role-primary-dark: var(--vnu-navy-deep);
+    --role-dark: var(--vnu-navy-deep);
+    --role-soft: var(--vnu-gold-soft);
+    --role-light: #f8fafc;
+    --role-gradient: linear-gradient(135deg, var(--vnu-navy), var(--vnu-navy-soft));
+    background:
+        linear-gradient(135deg, #e7ecf4 0%, #f7f9fc 42%, #eef2f7 100%) !important;
+    color: var(--vnu-ink);
+}
+
+.app-dashboard {
+    background:
+        linear-gradient(90deg, rgba(29, 43, 82, 0.04), transparent 28%),
+        linear-gradient(180deg, #f7f9fc 0%, #eef2f7 100%);
+}
+
+.role-manager .sidebar,
+.role-admin .sidebar,
+.role-student .sidebar,
+.sidebar {
+    background:
+        linear-gradient(180deg, var(--vnu-navy) 0%, var(--vnu-navy-deep) 100%) !important;
+    border-right: 5px solid var(--vnu-gold) !important;
+    box-shadow: 16px 0 38px rgba(17, 28, 56, 0.24) !important;
+}
+
+.sidebar-brand {
+    padding-bottom: 16px !important;
+    border-bottom: 1px solid rgba(214, 167, 58, 0.34) !important;
+}
+
+.brand-logo {
+    border-color: var(--vnu-gold) !important;
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.22),
+        0 0 0 4px rgba(255, 255, 255, 0.10) !important;
+}
+
+.sidebar-brand h2,
+.role-student .sidebar-brand h2 {
+    color: var(--vnu-white) !important;
+    font-size: 20px !important;
+    line-height: 1.16 !important;
+}
+
+.sidebar-brand p,
+.role-student .sidebar-brand p {
+    color: #f5d677 !important;
+}
+
+.user-box,
+.language-box,
+.role-student .user-box,
+.role-student .language-box {
+    background: rgba(255, 255, 255, 0.09) !important;
+    border: 1px solid rgba(214, 167, 58, 0.28) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.sidebar-avatar-placeholder,
+.role-student .sidebar-avatar-placeholder {
+    background: var(--vnu-gold) !important;
+    color: var(--vnu-navy) !important;
+}
+
+.sidebar-nav a,
+.role-student .sidebar-nav a {
+    border: 1px solid transparent !important;
+    color: #dfe7f3 !important;
+}
+
+.sidebar-nav a:hover,
+.role-student .sidebar-nav a:hover {
+    background: rgba(255, 255, 255, 0.10) !important;
+    border-color: rgba(214, 167, 58, 0.20) !important;
+}
+
+.sidebar-nav a.active,
+.role-student .sidebar-nav a.active {
+    color: var(--vnu-navy-deep) !important;
+    background: linear-gradient(135deg, #f0ca63, var(--vnu-gold)) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    box-shadow: 0 12px 24px rgba(214, 167, 58, 0.24) !important;
+}
+
+.main-content,
+.role-manager .main-content,
+.role-admin .main-content,
+.role-student .main-content {
+    padding: 30px 34px 40px !important;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.10)),
+        transparent !important;
+}
+
+h1,
+.role-manager h1,
+.role-admin h1,
+.role-student h1 {
+    color: var(--vnu-ink) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0 !important;
+}
+
+h1::after,
+.role-manager h1::after,
+.role-admin h1::after,
+.role-student h1::after {
+    background: var(--vnu-gold) !important;
+    box-shadow: 0 5px 12px rgba(214, 167, 58, 0.25);
+}
+
+.card,
+.form-card,
+.profile-box,
+.profile-card,
+.table-card,
+.report-card,
+.dashboard-card,
+.summary-card,
+.stat-card,
+.action-card,
+.info-card,
+.dashboard-panel,
+.metric-card {
+    border-radius: 8px !important;
+    border: 1px solid rgba(210, 210, 210, 0.70) !important;
+    background: var(--vnu-panel) !important;
+    box-shadow: var(--vnu-shadow-soft) !important;
+}
+
+.card:hover,
+.action-card:hover,
+.stat-card:hover,
+.summary-card:hover,
+.metric-card:hover,
+.dashboard-panel:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--vnu-shadow) !important;
+}
+
+table {
+    border: 1px solid rgba(210, 210, 210, 0.80) !important;
+    box-shadow: var(--vnu-shadow-soft) !important;
+}
+
+table th,
+.role-manager table th,
+.role-admin table th,
+.role-student table th {
+    background: #e8edf5 !important;
+    color: var(--vnu-navy) !important;
+}
+
+button,
+.btn,
+.btn-primary,
+.btn-pay,
+.btn-link,
+input[type="submit"] {
+    border-radius: 8px !important;
+}
+
+button,
+.btn,
+.btn-primary,
+.btn-pay,
+input[type="submit"] {
+    background: var(--vnu-navy) !important;
+    box-shadow: 0 12px 24px rgba(29, 43, 82, 0.18) !important;
+}
+
+button:hover,
+.btn:hover,
+.btn-primary:hover,
+.btn-pay:hover,
+input[type="submit"]:hover {
+    background: var(--vnu-navy-deep) !important;
+}
+
+.filter-link.active,
+.filter-link:hover {
+    border-color: rgba(214, 167, 58, 0.70) !important;
+    background: var(--vnu-gold-soft) !important;
+    color: var(--vnu-navy) !important;
+}
+
+.manager-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 1540px;
+}
+
+.dashboard-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 24px;
+    align-items: stretch;
+    padding: 28px;
+    border: 1px solid rgba(214, 167, 58, 0.46);
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, var(--vnu-navy) 0%, var(--vnu-navy-soft) 72%, #31476f 100%);
+    color: var(--vnu-white);
+    box-shadow: var(--vnu-shadow);
+}
+
+.dashboard-hero h1 {
+    margin: 8px 0 10px;
+    color: var(--vnu-white) !important;
+    font-size: clamp(34px, 4vw, 52px);
+}
+
+.dashboard-hero h1::after {
+    width: 88px !important;
+    height: 5px !important;
+    margin-top: 14px !important;
+    background: var(--vnu-gold) !important;
+}
+
+.dashboard-hero p {
+    max-width: 760px;
+    margin: 0;
+    color: #dfe7f3;
+    font-size: 16px;
+}
+
+.dashboard-eyebrow,
+.dashboard-status-card span,
+.panel-heading span {
+    color: var(--vnu-gold);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+}
+
+.dashboard-status-card {
+    display: flex;
+    min-height: 154px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.dashboard-status-card strong {
+    display: block;
+    margin-top: 10px;
+    color: var(--vnu-white);
+    font-size: 24px;
+    line-height: 1.18;
+}
+
+.dashboard-status-card small {
+    margin-top: 10px;
+    color: #dfe7f3;
+}
+
+.manager-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.metric-card {
+    position: relative;
+    display: flex;
+    min-height: 164px;
+    gap: 14px;
+    padding: 18px;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.metric-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 5px;
+    background: var(--metric-color, var(--vnu-gold));
+}
+
+.metric-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--metric-soft, var(--vnu-gold-soft));
+    color: var(--metric-color, var(--vnu-gold-deep));
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.metric-card h3 {
+    min-height: 42px;
+    margin: 0 0 10px;
+    color: var(--vnu-ink);
+    font-size: 15px;
+}
+
+.metric-card strong {
+    display: block;
+    color: var(--vnu-ink);
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 950;
+}
+
+.metric-card small {
+    margin-top: 10px;
+    color: var(--vnu-muted);
+    line-height: 1.35;
+}
+
+.metric-gold {
+    --metric-color: var(--vnu-gold);
+    --metric-soft: var(--vnu-gold-soft);
+}
+
+.metric-navy {
+    --metric-color: var(--vnu-navy);
+    --metric-soft: #e7ecf7;
+}
+
+.metric-alert {
+    --metric-color: #b7791f;
+    --metric-soft: #fff4d4;
+}
+
+.metric-silver {
+    --metric-color: #7b8794;
+    --metric-soft: #edf0f4;
+}
+
+.metric-danger {
+    --metric-color: #b42318;
+    --metric-soft: #fee4e2;
+}
+
+.dashboard-workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.8fr);
+    gap: 22px;
+}
+
+.dashboard-panel {
+    padding: 22px;
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: end;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(210, 210, 210, 0.70);
+}
+
+.panel-heading strong {
+    color: var(--vnu-ink);
+    font-size: 20px;
+}
+
+.task-row {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    padding: 14px 0;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(210, 210, 210, 0.54);
+}
+
+.task-row:last-child {
+    border-bottom: 0;
+}
+
+.task-row strong {
+    color: var(--vnu-ink);
+    font-size: 16px;
+}
+
+.task-row small {
+    color: var(--vnu-muted);
+}
+
+.task-count {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--vnu-gold), #f0ca63);
+    color: var(--vnu-navy-deep);
+    font-size: 22px;
+    font-weight: 950;
+    box-shadow: 0 10px 20px rgba(214, 167, 58, 0.25);
+}
+
+.quick-link-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.quick-link-grid a {
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(29, 43, 82, 0.06), rgba(214, 167, 58, 0.10));
+    border: 1px solid rgba(210, 210, 210, 0.82);
+    color: var(--vnu-navy);
+    font-weight: 900;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.quick-link-grid a:hover {
+    transform: translateY(-2px);
+    border-color: rgba(214, 167, 58, 0.70);
+    box-shadow: var(--vnu-shadow-soft);
+}
+
+.flow-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.flow-steps div {
+    display: flex;
+    min-height: 96px;
+    gap: 12px;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(210, 210, 210, 0.70);
+}
+
+.flow-steps span {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--vnu-navy);
+    color: var(--vnu-white);
+    font-weight: 950;
+}
+
+.flow-steps strong {
+    color: var(--vnu-ink);
+    line-height: 1.3;
+}
+
+.role-dashboard .dashboard-panel {
+    overflow: hidden;
+}
+
+.student-profile-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    padding: 16px;
+}
+
+.student-profile-strip div,
+.student-room-summary div,
+.bank-detail-list div {
+    min-width: 0;
+    padding: 16px;
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(210, 210, 210, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.student-profile-strip span,
+.student-room-summary span,
+.bank-detail-list span {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--vnu-muted);
+    font-weight: 800;
+}
+
+.student-profile-strip strong,
+.student-room-summary strong,
+.bank-detail-list strong {
+    display: block;
+    color: var(--vnu-ink);
+    font-size: 19px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.metric-card .metric-status {
+    font-size: 22px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.student-room-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.dashboard-empty-state {
+    padding: 22px;
+    border-radius: 8px;
+    border: 1px dashed rgba(29, 43, 82, 0.24);
+    background: #f8fafc;
+    color: var(--vnu-muted);
+    font-weight: 800;
+    text-align: center;
+}
+
+.compact-heading {
+    margin-top: 18px;
+}
+
+.payment-summary-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(340px, 0.8fr);
+    gap: 22px;
+}
+
+.bank-detail-list {
+    display: grid;
+    gap: 14px;
+}
+
+.payment-form-panel {
+    display: block;
+}
+
+.payment-form-panel .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.field-group {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.field-group label {
+    color: var(--vnu-ink);
+    font-weight: 900;
+}
+
+.readonly-note {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(214, 167, 58, 0.44);
+    background: var(--vnu-gold-soft);
+    color: #7a5414;
+    font-weight: 850;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.form-actions .btn-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 10px 14px;
+}
+
+.is-invalid {
+    border-color: #b42318 !important;
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12) !important;
+}
+
+.field-error {
+    color: #b42318;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.print-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 18px;
+}
+
+.btn-print {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--vnu-navy), var(--vnu-navy-soft));
+    color: var(--vnu-white);
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: var(--vnu-shadow-soft);
+}
+
+.print-document {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.document-paper {
+    padding: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(210, 210, 210, 0.82);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    box-shadow: var(--vnu-shadow);
+}
+
+.document-header {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    border-bottom: 3px solid var(--vnu-gold);
+}
+
+.document-header img {
+    width: 74px;
+    height: 88px;
+    object-fit: contain;
+    padding: 4px;
+    border: 2px solid var(--vnu-gold);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.document-header span,
+.document-section h2,
+.section-heading p {
+    color: var(--vnu-muted);
+}
+
+.document-header h1 {
+    margin: 4px 0;
+    color: var(--vnu-ink);
+    font-size: 34px;
+}
+
+.document-header h1::after {
+    display: none;
+}
+
+.document-header p {
+    margin: 0;
+    color: var(--vnu-muted);
+}
+
+.document-highlight,
+.document-grid,
+.document-money-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.document-highlight div,
+.document-grid div,
+.document-money-grid div {
+    min-width: 0;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(210, 210, 210, 0.72);
+    background: #f8fafc;
+}
+
+.document-highlight span,
+.document-grid span,
+.document-money-grid span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--vnu-muted);
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.document-highlight strong,
+.document-grid strong,
+.document-money-grid strong {
+    display: block;
+    color: var(--vnu-ink);
+    font-size: 17px;
+    overflow-wrap: anywhere;
+}
+
+.document-section {
+    margin-top: 24px;
+}
+
+.document-section h2 {
+    margin: 0 0 12px;
+    color: var(--vnu-ink);
+    font-size: 21px;
+}
+
+.document-table,
+.crud-checklist-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid rgba(210, 210, 210, 0.72);
+    border-radius: 8px;
+}
+
+.document-table th,
+.document-table td,
+.crud-checklist-table th,
+.crud-checklist-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(210, 210, 210, 0.52);
+    vertical-align: top;
+}
+
+.document-table th,
+.crud-checklist-table th {
+    background: #eaf0f8;
+    color: var(--vnu-navy);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.signature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 40px;
+}
+
+.signature-grid div {
+    min-height: 118px;
+    padding: 14px;
+    border-top: 2px solid var(--vnu-navy);
+    text-align: center;
+}
+
+.signature-grid strong,
+.signature-grid span {
+    display: block;
+}
+
+.signature-grid span {
+    margin-top: 8px;
+    color: var(--vnu-muted);
+}
+
+.crud-checklist-section {
+    margin: 28px 0;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 14px;
+}
+
+.section-heading h2 {
+    margin-bottom: 6px;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: var(--vnu-shadow-soft);
+}
+
+@media print {
+    body.role-admin,
+    body.role-manager,
+    body.role-student,
+    body {
+        background: #ffffff !important;
+    }
+
+    .app-dashboard {
+        display: block;
+        background: #ffffff !important;
+    }
+
+    .main-content {
+        width: 100% !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+    }
+
+    .print-document {
+        max-width: none;
+        margin: 0;
+    }
+
+    .document-paper {
+        padding: 0;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .document-header img {
+        width: 58px;
+        height: 70px;
+    }
+
+    .document-header h1 {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .manager-stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1040px) {
+    .dashboard-hero,
+    .dashboard-workbench,
+    .payment-summary-grid,
+    .flow-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .student-profile-strip,
+    .student-room-summary,
+    .document-highlight,
+    .document-grid,
+    .document-money-grid,
+    .signature-grid,
+    .payment-form-panel .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .main-content,
+    .role-manager .main-content,
+    .role-admin .main-content,
+    .role-student .main-content {
+        padding: 20px 16px 30px !important;
+    }
+
+    .dashboard-hero {
+        padding: 20px;
+    }
+
+    .manager-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-heading {
+        align-items: start;
+        flex-direction: column;
+    }
+}
