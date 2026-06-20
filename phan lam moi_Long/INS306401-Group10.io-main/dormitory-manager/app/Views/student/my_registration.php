@@ -6,6 +6,26 @@ $pendingCount = 0;
 $approvedCount = 0;
 $rejectedCount = 0;
 
+$roomTypeLabels = [
+    'standard' => 'Tiêu chuẩn',
+    'premium' => 'Cao cấp',
+];
+$genderLabels = [
+    'male' => 'Nam',
+    'female' => 'Nữ',
+    'mixed' => 'Linh hoạt',
+];
+$statusLabels = [
+    'pending' => 'Chờ xử lý',
+    'approved' => 'Đã duyệt',
+    'rejected' => 'Từ chối',
+    'cancelled' => 'Đã hủy',
+];
+$label = static function (array $labels, ?string $value): string {
+    $key = strtolower(trim((string) $value));
+    return $labels[$key] ?? ($value ?: '-');
+};
+
 foreach ($registrations ?? [] as $registration) {
     if ($latestRegistration === null) {
         $latestRegistration = $registration;
@@ -27,18 +47,18 @@ foreach ($registrations ?? [] as $registration) {
 
 <?php if (!$student): ?>
     <div class="alert error">
-        Student profile not found.
+        Không tìm thấy hồ sơ sinh viên.
     </div>
 
 <?php elseif (empty($registrations)): ?>
     <section class="student-registration-empty">
         <div class="empty-state">
-            No room registration has been submitted yet.
+            Bạn chưa gửi đơn đăng ký phòng nào.
         </div>
 
         <div class="page-actions">
             <a class="student-primary-link" href="<?= BASE_URL ?>/index.php?route=student/register-room">
-                Register Room
+                Đăng ký phòng
             </a>
         </div>
     </section>
@@ -47,33 +67,33 @@ foreach ($registrations ?? [] as $registration) {
 
     <section class="student-registration-hero">
         <div>
-            <span class="student-page-label">Registration Overview</span>
-            <h2>Track your dormitory room registration</h2>
+            <span class="student-page-label">Tổng quan đăng ký</span>
+            <h2>Theo dõi hồ sơ đăng ký phòng ký túc xá</h2>
         </div>
 
         <a class="student-primary-link" href="<?= BASE_URL ?>/index.php?route=student/register-room">
-            Register Room
+            Đăng ký phòng
         </a>
     </section>
 
     <section class="student-registration-summary-grid">
         <div class="student-registration-summary-card">
-            <span>Total Registrations</span>
+            <span>Tổng số đơn</span>
             <strong><?= htmlspecialchars((string) $totalRegistrations) ?></strong>
         </div>
 
         <div class="student-registration-summary-card">
-            <span>Pending</span>
+            <span>Chờ xử lý</span>
             <strong><?= htmlspecialchars((string) $pendingCount) ?></strong>
         </div>
 
         <div class="student-registration-summary-card">
-            <span>Approved</span>
+            <span>Đã duyệt</span>
             <strong><?= htmlspecialchars((string) $approvedCount) ?></strong>
         </div>
 
         <div class="student-registration-summary-card">
-            <span>Rejected</span>
+            <span>Từ chối</span>
             <strong><?= htmlspecialchars((string) $rejectedCount) ?></strong>
         </div>
     </section>
@@ -82,7 +102,7 @@ foreach ($registrations ?? [] as $registration) {
         <section class="student-registration-latest">
             <div class="student-result-header">
                 <div>
-                    <span>Latest Registration</span>
+                    <span>Đơn mới nhất</span>
                     <h2>
                         <?= htmlspecialchars($latestRegistration['semester_name'] ?? '-') ?>
                         -
@@ -91,53 +111,53 @@ foreach ($registrations ?? [] as $registration) {
                 </div>
 
                 <span class="badge <?= htmlspecialchars($latestRegistration['status'] ?? 'pending') ?>">
-                    <?= htmlspecialchars(ucfirst($latestRegistration['status'] ?? 'pending')) ?>
+                    <?= htmlspecialchars($label($statusLabels, $latestRegistration['status'] ?? 'pending')) ?>
                 </span>
             </div>
 
             <div class="student-registration-detail-grid">
                 <div>
-                    <span>Desired Building</span>
-                    <strong><?= htmlspecialchars($latestRegistration['desired_building'] ?? 'Any') ?></strong>
+                    <span>Tòa mong muốn</span>
+                    <strong><?= htmlspecialchars($latestRegistration['desired_building'] ?? 'Bất kỳ') ?></strong>
                 </div>
 
                 <div>
-                    <span>Desired Room Type</span>
-                    <strong><?= htmlspecialchars(ucfirst($latestRegistration['desired_room_type'] ?? '-')) ?></strong>
+                    <span>Loại phòng mong muốn</span>
+                    <strong><?= htmlspecialchars($label($roomTypeLabels, $latestRegistration['desired_room_type'] ?? null)) ?></strong>
                 </div>
 
                 <div>
-                    <span>Gender Type</span>
-                    <strong><?= htmlspecialchars(ucfirst($latestRegistration['desired_gender_type'] ?? '-')) ?></strong>
+                    <span>Giới tính phòng</span>
+                    <strong><?= htmlspecialchars($label($genderLabels, $latestRegistration['desired_gender_type'] ?? null)) ?></strong>
                 </div>
 
                 <div>
-                    <span>Priority Score</span>
+                    <span>Mức ưu tiên</span>
                     <strong><?= htmlspecialchars((string) ($latestRegistration['priority_score'] ?? 0)) ?></strong>
                 </div>
 
                 <div>
-                    <span>Assigned Room</span>
+                    <span>Phòng được xếp</span>
                     <strong>
                         <?php if (!empty($latestRegistration['assigned_room'])): ?>
                             <?= htmlspecialchars($latestRegistration['assigned_building'] ?? '-') ?>
                             -
                             <?= htmlspecialchars($latestRegistration['assigned_room'] ?? '-') ?>
                         <?php else: ?>
-                            Not assigned
+                            Chưa xếp phòng
                         <?php endif; ?>
                     </strong>
                 </div>
 
                 <div>
-                    <span>Created At</span>
+                    <span>Ngày tạo</span>
                     <strong><?= htmlspecialchars($latestRegistration['created_at'] ?? '-') ?></strong>
                 </div>
             </div>
 
             <?php if (($latestRegistration['status'] ?? '') === 'rejected' && !empty($latestRegistration['rejection_reason'])): ?>
                 <div class="student-rejection-box">
-                    <strong>Rejection Reason</strong>
+                    <strong>Lý do từ chối</strong>
                     <p><?= htmlspecialchars($latestRegistration['rejection_reason']) ?></p>
                 </div>
             <?php endif; ?>
@@ -147,7 +167,7 @@ foreach ($registrations ?? [] as $registration) {
     <section class="student-registration-list">
         <div class="student-section-header">
             <div>
-                <h2>Registration History</h2>
+                <h2>Lịch sử đăng ký</h2>
             </div>
         </div>
 
@@ -156,7 +176,7 @@ foreach ($registrations ?? [] as $registration) {
                 <article class="student-registration-card">
                     <div class="student-registration-card-header">
                         <div>
-                            <span>Registration #<?= htmlspecialchars((string) ($registration['id'] ?? '-')) ?></span>
+                            <span>Đơn đăng ký #<?= htmlspecialchars((string) ($registration['id'] ?? '-')) ?></span>
                             <h3>
                                 <?= htmlspecialchars($registration['semester_name'] ?? '-') ?>
                                 -
@@ -165,58 +185,58 @@ foreach ($registrations ?? [] as $registration) {
                         </div>
 
                         <span class="badge <?= htmlspecialchars($registration['status'] ?? 'pending') ?>">
-                            <?= htmlspecialchars(ucfirst($registration['status'] ?? 'pending')) ?>
+                            <?= htmlspecialchars($label($statusLabels, $registration['status'] ?? 'pending')) ?>
                         </span>
                     </div>
 
                     <div class="student-registration-card-grid">
                         <div>
-                            <span>Desired Building</span>
-                            <strong><?= htmlspecialchars($registration['desired_building'] ?? 'Any') ?></strong>
+                            <span>Tòa mong muốn</span>
+                            <strong><?= htmlspecialchars($registration['desired_building'] ?? 'Bất kỳ') ?></strong>
                         </div>
 
                         <div>
-                            <span>Desired Type</span>
-                            <strong><?= htmlspecialchars(ucfirst($registration['desired_room_type'] ?? '-')) ?></strong>
+                            <span>Loại phòng mong muốn</span>
+                            <strong><?= htmlspecialchars($label($roomTypeLabels, $registration['desired_room_type'] ?? null)) ?></strong>
                         </div>
 
                         <div>
-                            <span>Gender</span>
-                            <strong><?= htmlspecialchars(ucfirst($registration['desired_gender_type'] ?? '-')) ?></strong>
+                            <span>Giới tính</span>
+                            <strong><?= htmlspecialchars($label($genderLabels, $registration['desired_gender_type'] ?? null)) ?></strong>
                         </div>
 
                         <div>
-                            <span>Assigned Room</span>
+                            <span>Phòng được xếp</span>
                             <strong>
                                 <?php if (!empty($registration['assigned_room'])): ?>
                                     <?= htmlspecialchars($registration['assigned_building'] ?? '-') ?>
                                     -
                                     <?= htmlspecialchars($registration['assigned_room'] ?? '-') ?>
                                 <?php else: ?>
-                                    Not assigned
+                                    Chưa xếp phòng
                                 <?php endif; ?>
                             </strong>
                         </div>
 
                         <div>
-                            <span>Priority</span>
+                            <span>Mức ưu tiên</span>
                             <strong><?= htmlspecialchars((string) ($registration['priority_score'] ?? 0)) ?></strong>
                         </div>
 
                         <div>
-                            <span>Processed By</span>
+                            <span>Người xử lý</span>
                             <strong><?= htmlspecialchars($registration['processed_by'] ?? '-') ?></strong>
                         </div>
 
                         <div>
-                            <span>Created At</span>
+                            <span>Ngày tạo</span>
                             <strong><?= htmlspecialchars($registration['created_at'] ?? '-') ?></strong>
                         </div>
                     </div>
 
                     <?php if (($registration['status'] ?? '') === 'rejected' && !empty($registration['rejection_reason'])): ?>
                         <div class="student-rejection-box">
-                            <strong>Rejection Reason</strong>
+                            <strong>Lý do từ chối</strong>
                             <p><?= htmlspecialchars($registration['rejection_reason']) ?></p>
                         </div>
                     <?php endif; ?>
@@ -228,59 +248,61 @@ foreach ($registrations ?? [] as $registration) {
     <section class="student-dashboard-section">
         <div class="student-section-header">
             <div>
-                <h2>Registration Table</h2>
+                <h2>Bảng đơn đăng ký</h2>
             </div>
         </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Semester</th>
-                <th>Desired Building</th>
-                <th>Desired Type</th>
-                <th>Gender</th>
-                <th>Assigned Room</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Processed By</th>
-                <th>Created At</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <?php foreach ($registrations as $registration): ?>
+        <div class="student-table-scroll">
+            <table>
+                <thead>
                 <tr>
-                    <td><?= htmlspecialchars((string) ($registration['id'] ?? '-')) ?></td>
-                    <td>
-                        <?= htmlspecialchars($registration['semester_name'] ?? '-') ?>
-                        <br>
-                        <small><?= htmlspecialchars($registration['academic_year'] ?? '-') ?></small>
-                    </td>
-                    <td><?= htmlspecialchars($registration['desired_building'] ?? 'Any') ?></td>
-                    <td><?= htmlspecialchars(ucfirst($registration['desired_room_type'] ?? '-')) ?></td>
-                    <td><?= htmlspecialchars(ucfirst($registration['desired_gender_type'] ?? '-')) ?></td>
-                    <td>
-                        <?php if (!empty($registration['assigned_room'])): ?>
-                            <?= htmlspecialchars($registration['assigned_building'] ?? '-') ?>
-                            -
-                            <?= htmlspecialchars($registration['assigned_room'] ?? '-') ?>
-                        <?php else: ?>
-                            -
-                        <?php endif; ?>
-                    </td>
-                    <td><?= htmlspecialchars((string) ($registration['priority_score'] ?? 0)) ?></td>
-                    <td>
-                        <span class="badge <?= htmlspecialchars($registration['status'] ?? 'pending') ?>">
-                            <?= htmlspecialchars(ucfirst($registration['status'] ?? 'pending')) ?>
-                        </span>
-                    </td>
-                    <td><?= htmlspecialchars($registration['processed_by'] ?? '-') ?></td>
-                    <td><?= htmlspecialchars($registration['created_at'] ?? '-') ?></td>
+                    <th>ID</th>
+                    <th>Học kỳ</th>
+                    <th>Tòa mong muốn</th>
+                    <th>Loại phòng</th>
+                    <th>Giới tính</th>
+                    <th>Phòng được xếp</th>
+                    <th>Mức ưu tiên</th>
+                    <th>Trạng thái</th>
+                    <th>Người xử lý</th>
+                    <th>Ngày tạo</th>
                 </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                <?php foreach ($registrations as $registration): ?>
+                    <tr>
+                        <td><?= htmlspecialchars((string) ($registration['id'] ?? '-')) ?></td>
+                        <td>
+                            <?= htmlspecialchars($registration['semester_name'] ?? '-') ?>
+                            <br>
+                            <small><?= htmlspecialchars($registration['academic_year'] ?? '-') ?></small>
+                        </td>
+                        <td><?= htmlspecialchars($registration['desired_building'] ?? 'Bất kỳ') ?></td>
+                        <td><?= htmlspecialchars($label($roomTypeLabels, $registration['desired_room_type'] ?? null)) ?></td>
+                        <td><?= htmlspecialchars($label($genderLabels, $registration['desired_gender_type'] ?? null)) ?></td>
+                        <td>
+                            <?php if (!empty($registration['assigned_room'])): ?>
+                                <?= htmlspecialchars($registration['assigned_building'] ?? '-') ?>
+                                -
+                                <?= htmlspecialchars($registration['assigned_room'] ?? '-') ?>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
+                        <td><?= htmlspecialchars((string) ($registration['priority_score'] ?? 0)) ?></td>
+                        <td>
+                            <span class="badge <?= htmlspecialchars($registration['status'] ?? 'pending') ?>">
+                                <?= htmlspecialchars($label($statusLabels, $registration['status'] ?? 'pending')) ?>
+                            </span>
+                        </td>
+                        <td><?= htmlspecialchars($registration['processed_by'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($registration['created_at'] ?? '-') ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </section>
 
 <?php endif; ?>

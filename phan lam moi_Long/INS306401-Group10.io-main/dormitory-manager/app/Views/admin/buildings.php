@@ -3,17 +3,17 @@
 
 <div class="cards">
     <div class="card">
-        <h3>Total Buildings</h3>
+        <h3>Tổng số tòa</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Active</h3>
+        <h3>Đang hoạt động</h3>
         <strong><?= htmlspecialchars($summary['active']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Inactive</h3>
+        <h3>Ngừng hoạt động</h3>
         <strong><?= htmlspecialchars($summary['inactive']) ?></strong>
     </div>
 </div>
@@ -23,21 +23,21 @@
     action="<?= BASE_URL ?>/index.php?route=admin/building-store" 
     class="form-card wide-form"
 >
-    <h2>Create Building</h2>
+    <h2>Tạo tòa nhà</h2>
 
     <div class="admin-form-grid">
         <div>
-            <label>Building Name</label>
+            <label>Tên tòa nhà</label>
             <input
                 type="text"
                 name="building_name"
                 required
-                placeholder="Ví dụ: Building A"
+                placeholder="Ví dụ: Tòa A"
             >
         </div>
 
         <div>
-            <label>Address</label>
+            <label>Địa chỉ</label>
             <input
                 type="text"
                 name="address"
@@ -46,33 +46,33 @@
         </div>
 
         <div>
-            <label>Status</label>
+            <label>Trạng thái</label>
             <select name="status" required>
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
+                <option value="active">Đang hoạt động</option>
+                <option value="inactive">Ngừng hoạt động</option>
             </select>
         </div>
     </div>
 
-    <label>Description</label>
+    <label>Mô tả</label>
     <textarea name="description" rows="3" placeholder="Ghi chú về tòa nhà"></textarea>
 
-    <button type="submit">Create Building</button>
+    <button type="submit">Tạo tòa nhà</button>
 </form>
 
-<h2>Building List</h2>
+<h2>Danh sách tòa nhà</h2>
 
 <div class="filter-bar">
     <a class="filter-link <?= $statusFilter === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/buildings">
-        All
+        Tất cả
     </a>
 
     <a class="filter-link <?= $statusFilter === 'active' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/buildings&status=active">
-        Active
+        Đang hoạt động
     </a>
 
     <a class="filter-link <?= $statusFilter === 'inactive' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/buildings&status=inactive">
-        Inactive
+        Ngừng hoạt động
     </a>
 </div>
 
@@ -83,13 +83,13 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Building</th>
-            <th>Address</th>
-            <th>Rooms</th>
-            <th>Status</th>
-            <th>Description</th>
-            <th>Created At</th>
-            <th>Quick Update</th>
+            <th>Tòa nhà</th>
+            <th>Địa chỉ</th>
+            <th>Số phòng</th>
+            <th>Trạng thái</th>
+            <th>Mô tả</th>
+            <th>Ngày tạo</th>
+            <th>Cập nhật nhanh</th>
         </tr>
         </thead>
 
@@ -125,8 +125,8 @@
 
                     <td>
                         <select name="status" class="table-input">
-                            <option value="active" <?= $building['status'] === 'active' ? 'selected' : '' ?>>active</option>
-                            <option value="inactive" <?= $building['status'] === 'inactive' ? 'selected' : '' ?>>inactive</option>
+                            <option value="active" <?= $building['status'] === 'active' ? 'selected' : '' ?>>Đang hoạt động</option>
+                            <option value="inactive" <?= $building['status'] === 'inactive' ? 'selected' : '' ?>>Ngừng hoạt động</option>
                         </select>
                     </td>
 
@@ -142,7 +142,7 @@
                     <td><?= htmlspecialchars($building['created_at'] ?? '-') ?></td>
 
                     <td>
-                        <button type="submit" class="btn-pay">Update</button>
+                        <button type="submit" class="btn-pay">Cập nhật</button>
                     </td>
                 </form>
             </tr>

@@ -2,8 +2,8 @@
     <div class="auth-brand">
         <img src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS" class="auth-brand-logo">
         <div>
-            <h1>Dormitory Manager</h1>
-            <span>VNU International School</span>
+            <h1>Quản lý ký túc xá</h1>
+            <span>Trường Quốc tế - ĐHQGHN</span>
         </div>
     </div>
     <p class="auth-note" data-i18n="login_intro">Đăng nhập vào hệ thống quản lý ký túc xá</p>

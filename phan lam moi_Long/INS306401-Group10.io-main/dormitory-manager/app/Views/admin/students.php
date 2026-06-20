@@ -11,34 +11,34 @@
 
 <div class="cards">
     <div class="card">
-        <h3>Total Students</h3>
+        <h3>Tổng sinh viên</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Active</h3>
+        <h3>Đang hoạt động</h3>
         <strong><?= htmlspecialchars($summary['active']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Inactive</h3>
+        <h3>Ngừng hoạt động</h3>
         <strong><?= htmlspecialchars($summary['inactive']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Missing Profile</h3>
+        <h3>Thiếu hồ sơ</h3>
         <strong><?= htmlspecialchars($summary['missing_profile']) ?></strong>
     </div>
 </div>
 
 <form method="POST" action="<?= BASE_URL ?>/index.php?route=admin/student-store" class="form-card wide-form">
-    <h2>Create Student Profile</h2>
+    <h2>Tạo hồ sơ sinh viên</h2>
 
     <div class="admin-form-grid">
         <div>
-            <label>User Student</label>
+            <label>Tài khoản sinh viên</label>
             <select name="user_id" required>
-                <option value="">-- Select Student User --</option>
+                <option value="">-- Chọn tài khoản sinh viên --</option>
                 <?php foreach ($studentUsers as $studentUser): ?>
                     <option value="<?= htmlspecialchars($studentUser['id']) ?>">
                         <?= htmlspecialchars($studentUser['username']) ?>
@@ -50,57 +50,57 @@
         </div>
 
         <div>
-            <label>Student Code</label>
+            <label>Mã sinh viên</label>
             <input type="text" name="student_code" required placeholder="Ví dụ: 20260001">
         </div>
 
         <div>
-            <label>Full Name</label>
+            <label>Họ và tên</label>
             <input type="text" name="full_name" required placeholder="Nguyễn Văn A">
         </div>
 
         <div>
-            <label>Gender</label>
+            <label>Giới tính</label>
             <select name="gender" required>
-                <option value="male">male</option>
-                <option value="female">female</option>
-                <option value="other">other</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
             </select>
         </div>
 
         <div>
-            <label>Faculty</label>
+            <label>Khoa/Viện</label>
             <input type="text" name="faculty" placeholder="Ví dụ: HEDSPI">
         </div>
 
         <div>
-            <label>Program</label>
+            <label>Chương trình</label>
             <input type="text" name="program" placeholder="Ví dụ: K69-1S">
         </div>
 
         <div>
-            <label>Priority Type</label>
+            <label>Diện ưu tiên</label>
             <input type="text" name="priority_type" placeholder="normal / scholarship / policy">
         </div>
 
         <div>
-            <label>Status</label>
+            <label>Trạng thái</label>
             <select name="status" required>
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
+                <option value="active">Đang hoạt động</option>
+                <option value="inactive">Ngừng hoạt động</option>
             </select>
         </div>
     </div>
 
-    <button type="submit">Create Student Profile</button>
+    <button type="submit">Tạo hồ sơ sinh viên</button>
 </form>
 
-<h2>Student List</h2>
+<h2>Danh sách sinh viên</h2>
 
 <div class="filter-bar">
-    <a class="filter-link <?= $statusFilter === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/students">All</a>
-    <a class="filter-link <?= $statusFilter === 'active' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/students&status=active">Active</a>
-    <a class="filter-link <?= $statusFilter === 'inactive' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/students&status=inactive">Inactive</a>
+    <a class="filter-link <?= $statusFilter === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/students">Tất cả</a>
+    <a class="filter-link <?= $statusFilter === 'active' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/students&status=active">Đang hoạt động</a>
+    <a class="filter-link <?= $statusFilter === 'inactive' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/students&status=inactive">Ngừng hoạt động</a>
 </div>
 
 <?php if (empty($students)): ?>
@@ -110,15 +110,15 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Account</th>
-            <th>Student Code</th>
-            <th>Full Name</th>
-            <th>Gender</th>
-            <th>Faculty</th>
-            <th>Program</th>
-            <th>Priority</th>
-            <th>Status</th>
-            <th>Update</th>
+            <th>Tài khoản</th>
+            <th>Mã sinh viên</th>
+            <th>Họ và tên</th>
+            <th>Giới tính</th>
+            <th>Khoa/Viện</th>
+            <th>Chương trình</th>
+            <th>Ưu tiên</th>
+            <th>Trạng thái</th>
+            <th>Cập nhật</th>
         </tr>
         </thead>
 
@@ -175,7 +175,7 @@
                     </td>
 
                     <td>
-                        <button type="submit" class="btn-pay">Update</button>
+                        <button type="submit" class="btn-pay">Cập nhật</button>
                     </td>
                 </form>
             </tr>

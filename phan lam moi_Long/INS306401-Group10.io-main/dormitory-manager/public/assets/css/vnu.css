@@ -1362,3 +1362,399 @@ input[type="submit"]:hover {
         flex-direction: column;
     }
 }
+
+/* =========================================================
+   Vietnamese-only interface polish
+   ========================================================= */
+
+.language-box,
+.auth-language-box {
+    display: none !important;
+}
+
+.main-content,
+.role-manager .main-content,
+.role-admin .main-content,
+.role-student .main-content {
+    min-height: 100vh;
+}
+
+.main-content > h1 {
+    margin-bottom: 8px !important;
+}
+
+.main-content > p {
+    max-width: 840px;
+    margin-bottom: 22px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.cards,
+.role-admin .cards,
+.role-manager .cards,
+.role-student .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 18px;
+    margin: 22px 0 28px;
+}
+
+.cards .card,
+.summary-card,
+.stat-card,
+.student-room-summary-card,
+.student-registration-summary-card,
+.student-contract-summary-card,
+.student-invoice-summary-card,
+.student-invoice-status-card {
+    position: relative;
+    min-height: 118px;
+    padding: 18px 20px !important;
+    overflow: hidden;
+    border-radius: 8px !important;
+    border: 1px solid rgba(210, 210, 210, 0.78) !important;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%) !important;
+    box-shadow: 0 14px 30px rgba(29, 43, 82, 0.12) !important;
+}
+
+.cards .card::before,
+.summary-card::before,
+.stat-card::before,
+.student-room-summary-card::before,
+.student-registration-summary-card::before,
+.student-contract-summary-card::before,
+.student-invoice-summary-card::before,
+.student-invoice-status-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, var(--vnu-gold), rgba(214, 167, 58, 0.30));
+}
+
+.cards .card h3,
+.student-room-summary-card span,
+.student-registration-summary-card span,
+.student-contract-summary-card span,
+.student-invoice-summary-card span,
+.student-invoice-status-card span {
+    margin: 0 0 12px;
+    color: var(--vnu-ink);
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.35;
+}
+
+.cards .card strong,
+.student-room-summary-card strong,
+.student-registration-summary-card strong,
+.student-contract-summary-card strong,
+.student-invoice-summary-card strong,
+.student-invoice-status-card strong {
+    display: block;
+    color: var(--vnu-navy-deep);
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 950;
+}
+
+.form-card,
+.student-register-form-section,
+.student-dashboard-section,
+.student-registration-list,
+.student-invoice-card,
+.student-contract-card,
+.student-room-card-item,
+.student-registration-card,
+.student-registration-latest,
+.student-register-profile,
+.student-register-result,
+.student-rooms-hero,
+.student-registration-hero,
+.student-contract-hero,
+.student-invoice-hero {
+    border-radius: 8px !important;
+    border: 1px solid rgba(210, 210, 210, 0.80) !important;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%) !important;
+    box-shadow: 0 18px 38px rgba(29, 43, 82, 0.12) !important;
+}
+
+.student-rooms-hero,
+.student-registration-hero,
+.student-contract-hero,
+.student-invoice-hero,
+.student-register-profile,
+.student-register-result {
+    position: relative;
+    overflow: hidden;
+    padding: 26px !important;
+}
+
+.student-rooms-hero::before,
+.student-registration-hero::before,
+.student-contract-hero::before,
+.student-invoice-hero::before,
+.student-register-profile::before,
+.student-register-result::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--vnu-gold), var(--vnu-navy));
+}
+
+.student-page-label,
+.student-result-header span:first-child,
+.student-section-header span,
+.student-register-profile span {
+    color: var(--vnu-muted);
+    font-weight: 900;
+}
+
+.student-room-grid,
+.student-registration-card-list,
+.student-invoice-card-list {
+    gap: 18px !important;
+}
+
+.student-room-card-item,
+.student-registration-card,
+.student-invoice-card,
+.student-contract-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.student-room-card-item:hover,
+.student-registration-card:hover,
+.student-invoice-card:hover,
+.student-contract-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 44px rgba(29, 43, 82, 0.16) !important;
+}
+
+.student-room-card-header,
+.student-registration-card-header,
+.student-contract-card-header,
+.student-invoice-card-header,
+.student-result-header,
+.student-section-header {
+    gap: 14px;
+    align-items: flex-start;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(210, 210, 210, 0.64);
+}
+
+.student-room-number {
+    border-radius: 8px !important;
+    border: 1px solid rgba(210, 210, 210, 0.80) !important;
+    background: #f8fafc !important;
+    color: var(--vnu-navy-deep) !important;
+}
+
+.student-room-detail-grid div,
+.student-registration-detail-grid div,
+.student-registration-card-grid div,
+.student-contract-detail-grid div,
+.student-contract-profile-grid div,
+.student-invoice-meta-grid div,
+.student-invoice-money-grid div,
+.student-invoice-student-info div,
+.student-register-profile-grid div,
+.student-result-grid div {
+    min-width: 0;
+    border-radius: 8px !important;
+    border: 1px solid rgba(210, 210, 210, 0.72) !important;
+    background: #f8fafc !important;
+}
+
+.student-room-detail-grid span,
+.student-registration-detail-grid span,
+.student-registration-card-grid span,
+.student-contract-detail-grid span,
+.student-contract-profile-grid span,
+.student-invoice-meta-grid span,
+.student-invoice-money-grid span,
+.student-invoice-student-info span,
+.student-register-profile-grid span,
+.student-result-grid span {
+    color: var(--vnu-muted);
+    font-weight: 850;
+}
+
+.student-room-detail-grid strong,
+.student-registration-detail-grid strong,
+.student-registration-card-grid strong,
+.student-contract-detail-grid strong,
+.student-contract-profile-grid strong,
+.student-invoice-meta-grid strong,
+.student-invoice-money-grid strong,
+.student-invoice-student-info strong,
+.student-register-profile-grid strong,
+.student-result-grid strong {
+    color: var(--vnu-ink);
+    overflow-wrap: anywhere;
+}
+
+.student-table-scroll,
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(210, 210, 210, 0.80);
+    background: #ffffff;
+    box-shadow: 0 16px 34px rgba(29, 43, 82, 0.12);
+}
+
+table {
+    width: 100% !important;
+    min-width: 780px;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    background: #ffffff !important;
+    box-shadow: none !important;
+}
+
+table th,
+.role-admin table th,
+.role-manager table th,
+.role-student table th {
+    padding: 14px 16px !important;
+    background:
+        linear-gradient(180deg, #edf2f8 0%, #e5ebf3 100%) !important;
+    color: var(--vnu-navy-deep) !important;
+    font-size: 12px !important;
+    font-weight: 950 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    white-space: nowrap;
+}
+
+table td {
+    padding: 14px 16px !important;
+    color: #334155;
+    border-bottom: 1px solid rgba(210, 210, 210, 0.56) !important;
+    vertical-align: middle !important;
+}
+
+table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+table tbody tr:hover td {
+    background: #fbfcff;
+}
+
+.table-input,
+table input,
+table select,
+table textarea,
+.student-register-form input,
+.student-register-form select,
+.student-register-form textarea,
+.auth-content input,
+.auth-content select,
+.auth-content textarea {
+    min-height: 42px;
+    border-radius: 8px !important;
+    border: 1px solid rgba(210, 210, 210, 0.96) !important;
+    background: #ffffff !important;
+    color: var(--vnu-ink) !important;
+}
+
+.table-input:focus,
+table input:focus,
+table select:focus,
+table textarea:focus,
+.student-register-form input:focus,
+.student-register-form select:focus,
+.student-register-form textarea:focus,
+.auth-content input:focus,
+.auth-content select:focus,
+.auth-content textarea:focus {
+    border-color: var(--vnu-gold) !important;
+    box-shadow: 0 0 0 4px rgba(214, 167, 58, 0.16) !important;
+    outline: none;
+}
+
+.form-card,
+.student-register-form-section {
+    padding: 24px !important;
+    margin: 24px 0 !important;
+}
+
+.admin-form-grid,
+.student-register-form {
+    gap: 16px !important;
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.filter-link {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(210, 210, 210, 0.84);
+    background: #ffffff;
+    color: var(--vnu-navy);
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.badge {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.btn-reject-small,
+.inline-form button,
+.btn-pay,
+.student-primary-link,
+button,
+input[type="submit"] {
+    min-height: 42px;
+    font-weight: 900 !important;
+}
+
+@media (max-width: 760px) {
+    table {
+        min-width: 680px;
+    }
+
+    .student-rooms-hero,
+    .student-registration-hero,
+    .student-contract-hero,
+    .student-invoice-hero,
+    .student-register-profile,
+    .student-register-result,
+    .form-card,
+    .student-register-form-section {
+        padding: 20px !important;
+    }
+
+    .cards,
+    .role-admin .cards,
+    .role-manager .cards,
+    .role-student .cards {
+        grid-template-columns: 1fr;
+    }
+}

@@ -11,32 +11,32 @@
 
 <div class="cards">
     <div class="card">
-        <h3>Total Users</h3>
+        <h3>Tổng tài khoản</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Active</h3>
+        <h3>Đang hoạt động</h3>
         <strong><?= htmlspecialchars($summary['active']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Inactive</h3>
+        <h3>Ngừng hoạt động</h3>
         <strong><?= htmlspecialchars($summary['inactive']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Admins</h3>
+        <h3>Quản trị viên</h3>
         <strong><?= htmlspecialchars($summary['admins']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Managers</h3>
+        <h3>Quản lý</h3>
         <strong><?= htmlspecialchars($summary['managers']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Students</h3>
+        <h3>Sinh viên</h3>
         <strong><?= htmlspecialchars($summary['students']) ?></strong>
     </div>
 </div>
@@ -46,11 +46,11 @@
     action="<?= BASE_URL ?>/index.php?route=admin/user-store" 
     class="form-card wide-form"
 >
-    <h2>Create User Account</h2>
+    <h2>Tạo tài khoản người dùng</h2>
 
     <div class="admin-form-grid">
         <div>
-            <label>Username</label>
+            <label>Tên đăng nhập</label>
             <input
                 type="text"
                 name="username"
@@ -61,7 +61,7 @@
         </div>
 
         <div>
-            <label>Password</label>
+            <label>Mật khẩu</label>
             <input
                 type="text"
                 name="password"
@@ -83,7 +83,7 @@
         </div>
 
         <div>
-            <label>Phone</label>
+            <label>Số điện thoại</label>
             <input
                 type="text"
                 name="phone"
@@ -93,9 +93,9 @@
         </div>
 
         <div>
-            <label>Role</label>
+            <label>Vai trò</label>
             <select name="role_id" required>
-                <option value="">-- Select role --</option>
+                <option value="">-- Chọn vai trò --</option>
                 <?php foreach ($roles as $role): ?>
                     <option 
                         value="<?= htmlspecialchars($role['id']) ?>"
@@ -108,22 +108,22 @@
         </div>
 
         <div>
-            <label>Status</label>
+            <label>Trạng thái</label>
             <select name="status" required>
-                <option value="active" <?= ($old['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>active</option>
-                <option value="inactive" <?= ($old['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>inactive</option>
+                <option value="active" <?= ($old['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>Đang hoạt động</option>
+                <option value="inactive" <?= ($old['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>Ngừng hoạt động</option>
             </select>
         </div>
     </div>
 
-    <button type="submit">Create User</button>
+    <button type="submit">Tạo tài khoản</button>
 </form>
 
-<h2>User List</h2>
+<h2>Danh sách tài khoản</h2>
 
 <div class="filter-bar">
     <a class="filter-link <?= $roleFilter === '' && $statusFilter === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/users">
-        All
+        Tất cả
     </a>
 
     <a class="filter-link <?= $roleFilter === 'Admin' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/users&role=Admin">
@@ -139,11 +139,11 @@
     </a>
 
     <a class="filter-link <?= $statusFilter === 'active' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/users&status=active">
-        Active
+        Đang hoạt động
     </a>
 
     <a class="filter-link <?= $statusFilter === 'inactive' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/users&status=inactive">
-        Inactive
+        Ngừng hoạt động
     </a>
 </div>
 
@@ -154,13 +154,13 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Account</th>
-            <th>Role</th>
-            <th>Student Profile</th>
-            <th>Contact</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Actions</th>
+            <th>Tài khoản</th>
+            <th>Vai trò</th>
+            <th>Hồ sơ sinh viên</th>
+            <th>Liên hệ</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
         </tr>
         </thead>
 
@@ -186,7 +186,7 @@
                             <br>
                             <small><?= htmlspecialchars($userRow['student_full_name'] ?? '-') ?></small>
                         <?php else: ?>
-                            <span class="badge pending">No profile</span>
+                            <span class="badge pending">Chưa có hồ sơ</span>
                         <?php endif; ?>
                     <?php else: ?>
                         <span>-</span>
@@ -211,7 +211,7 @@
                     <form method="POST" action="<?= BASE_URL ?>/index.php?route=admin/user-toggle-status" class="inline-form">
                         <input type="hidden" name="user_id" value="<?= htmlspecialchars($userRow['id']) ?>">
                         <button type="submit" class="btn-pay">
-                            <?= $userRow['status'] === 'active' ? 'Deactivate' : 'Activate' ?>
+                            <?= $userRow['status'] === 'active' ? 'Ngừng kích hoạt' : 'Kích hoạt' ?>
                         </button>
                     </form>
 
@@ -223,7 +223,7 @@
                     >
                         <input type="hidden" name="user_id" value="<?= htmlspecialchars($userRow['id']) ?>">
                         <button type="submit" class="btn-reject-small">
-                            Reset Password
+                            Đặt lại mật khẩu
                         </button>
                     </form>
                 </td>

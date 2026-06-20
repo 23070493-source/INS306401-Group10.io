@@ -1,7 +1,7 @@
 <?php
 $user = Auth::user();
-$pageTitle = $title ?? 'Dormitory Manager';
-$assetVersion = '20260619-print-validation-1';
+$pageTitle = $title ?? 'Quản lý ký túc xá';
+$assetVersion = '20260620-vi-only-ui-1';
 
 $currentRoute = $_GET['route'] ?? 'home';
 
@@ -83,7 +83,7 @@ $isActiveGroup = function (array $routes) use ($currentRoute): string {
                 >
 
                 <div>
-                    <h2>Dormitory Manager</h2>
+                    <h2>Quản lý ký túc xá</h2>
                     <p data-i18n="<?= htmlspecialchars($roleLabelKey) ?>"><?= htmlspecialchars($roleLabel) ?></p>
                 </div>
             </div>
@@ -103,14 +103,6 @@ $isActiveGroup = function (array $routes) use ($currentRoute): string {
                         <?= htmlspecialchars($displayRoleName) ?>
                     </span>
                 </div>
-            </div>
-
-            <div class="language-box">
-                <label for="language-select" data-i18n="language">Ngôn ngữ</label>
-                <select id="language-select" aria-label="Ngôn ngữ" data-i18n-aria-label="language">
-                    <option value="vi" data-i18n="vietnamese">Tiếng Việt</option>
-                    <option value="en" data-i18n="english">English</option>
-                </select>
             </div>
 
             <nav class="sidebar-nav">
@@ -264,12 +256,3 @@ $isActiveGroup = function (array $routes) use ($currentRoute): string {
     <?php endif; ?>
 
     <main class="<?= $user ? 'main-content' : 'auth-content' ?>">
-        <?php if (!$user): ?>
-            <div class="auth-language-box language-box">
-                <label for="language-select" data-i18n="language">Ngôn ngữ</label>
-                <select id="language-select" aria-label="Ngôn ngữ" data-i18n-aria-label="language">
-                    <option value="vi" data-i18n="vietnamese">Tiếng Việt</option>
-                    <option value="en" data-i18n="english">English</option>
-                </select>
-            </div>
-        <?php endif; ?>

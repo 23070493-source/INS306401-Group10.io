@@ -37,28 +37,28 @@
             class="form-card wide-form"
             enctype="multipart/form-data"
         >
-            <h2>Create Maintenance Request</h2>
+            <h2>Tạo yêu cầu sửa chữa</h2>
 
-            <label>Category</label>
+            <label>Danh mục</label>
             <select name="category" required>
-                <option value="">-- Select category --</option>
-                <option value="electricity" <?= ($old['category'] ?? '') === 'electricity' ? 'selected' : '' ?>>Electricity</option>
-                <option value="water" <?= ($old['category'] ?? '') === 'water' ? 'selected' : '' ?>>Water</option>
-                <option value="furniture" <?= ($old['category'] ?? '') === 'furniture' ? 'selected' : '' ?>>Furniture</option>
+                <option value="">-- Chọn danh mục --</option>
+                <option value="electricity" <?= ($old['category'] ?? '') === 'electricity' ? 'selected' : '' ?>>Điện</option>
+                <option value="water" <?= ($old['category'] ?? '') === 'water' ? 'selected' : '' ?>>Nước</option>
+                <option value="furniture" <?= ($old['category'] ?? '') === 'furniture' ? 'selected' : '' ?>>Nội thất</option>
                 <option value="internet" <?= ($old['category'] ?? '') === 'internet' ? 'selected' : '' ?>>Internet</option>
-                <option value="cleaning" <?= ($old['category'] ?? '') === 'cleaning' ? 'selected' : '' ?>>Cleaning</option>
-                <option value="other" <?= ($old['category'] ?? '') === 'other' ? 'selected' : '' ?>>Other</option>
+                <option value="cleaning" <?= ($old['category'] ?? '') === 'cleaning' ? 'selected' : '' ?>>Vệ sinh</option>
+                <option value="other" <?= ($old['category'] ?? '') === 'other' ? 'selected' : '' ?>>Khác</option>
             </select>
 
-            <label>Priority</label>
+            <label>Mức ưu tiên</label>
             <select name="priority" required>
-                <option value="low" <?= ($old['priority'] ?? '') === 'low' ? 'selected' : '' ?>>Low</option>
-                <option value="medium" <?= ($old['priority'] ?? 'medium') === 'medium' ? 'selected' : '' ?>>Medium</option>
-                <option value="high" <?= ($old['priority'] ?? '') === 'high' ? 'selected' : '' ?>>High</option>
-                <option value="urgent" <?= ($old['priority'] ?? '') === 'urgent' ? 'selected' : '' ?>>Urgent</option>
+                <option value="low" <?= ($old['priority'] ?? '') === 'low' ? 'selected' : '' ?>>Thấp</option>
+                <option value="medium" <?= ($old['priority'] ?? 'medium') === 'medium' ? 'selected' : '' ?>>Trung bình</option>
+                <option value="high" <?= ($old['priority'] ?? '') === 'high' ? 'selected' : '' ?>>Cao</option>
+                <option value="urgent" <?= ($old['priority'] ?? '') === 'urgent' ? 'selected' : '' ?>>Khẩn cấp</option>
             </select>
 
-            <label>Title</label>
+            <label>Tiêu đề</label>
             <input
                 type="text"
                 name="title"
@@ -67,7 +67,7 @@
                 value="<?= htmlspecialchars($old['title'] ?? '') ?>"
             >
 
-            <label>Description</label>
+            <label>Mô tả</label>
             <textarea
                 name="description"
                 rows="5"
@@ -75,7 +75,7 @@
                 placeholder="Mô tả chi tiết vấn đề cần sửa chữa"
             ><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
 
-            <label>Evidence Image</label>
+            <label>Ảnh minh chứng</label>
             <input
                 type="file"
                 name="evidence_image"
@@ -83,7 +83,7 @@
             >
             <small>Cho phép JPG, PNG, WEBP. Tối đa 5MB. Không bắt buộc.</small>
 
-            <button type="submit">Submit Request</button>
+            <button type="submit">Gửi yêu cầu</button>
         </form>
     <?php else: ?>
         <div class="alert error">
@@ -91,7 +91,7 @@
         </div>
     <?php endif; ?>
 
-    <h2>My Maintenance Requests</h2>
+    <h2>Yêu cầu sửa chữa của tôi</h2>
 
     <?php if (empty($requests)): ?>
         <div class="alert error">Bạn chưa có yêu cầu sửa chữa nào.</div>
@@ -100,15 +100,15 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Room</th>
-                <th>Category</th>
-                <th>Issue</th>
-                <th>Evidence</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Request Date</th>
-                <th>Processed By</th>
-                <th>Resolution Note</th>
+                <th>Phòng</th>
+                <th>Danh mục</th>
+                <th>Sự cố</th>
+                <th>Minh chứng</th>
+                <th>Ưu tiên</th>
+                <th>Trạng thái</th>
+                <th>Ngày yêu cầu</th>
+                <th>Người xử lý</th>
+                <th>Ghi chú xử lý</th>
             </tr>
             </thead>
 
@@ -141,14 +141,14 @@
                             <a href="<?= htmlspecialchars($imageUrl) ?>" target="_blank">
                                 <img
                                     src="<?= htmlspecialchars($imageUrl) ?>"
-                                    alt="Evidence Image"
+                                    alt="Ảnh minh chứng"
                                     class="evidence-thumb"
                                 >
                             </a>
                             <br>
                             <small>
                                 <a href="<?= htmlspecialchars($imageUrl) ?>" target="_blank">
-                                    View image
+                                    Xem ảnh
                                 </a>
                             </small>
                         <?php else: ?>

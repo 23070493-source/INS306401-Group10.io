@@ -3,22 +3,22 @@
 
 <div class="cards">
     <div class="card">
-        <h3>Total</h3>
+        <h3>Tổng số</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Upcoming</h3>
+        <h3>Sắp mở</h3>
         <strong><?= htmlspecialchars($summary['upcoming']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Open</h3>
+        <h3>Đang mở</h3>
         <strong><?= htmlspecialchars($summary['open']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Closed</h3>
+        <h3>Đã đóng</h3>
         <strong><?= htmlspecialchars($summary['closed']) ?></strong>
     </div>
 </div>
@@ -28,59 +28,59 @@
     action="<?= BASE_URL ?>/index.php?route=admin/semester-store" 
     class="form-card wide-form"
 >
-    <h2>Create Semester</h2>
+    <h2>Tạo học kỳ</h2>
 
     <div class="admin-form-grid">
         <div>
-            <label>Semester Name</label>
+            <label>Tên học kỳ</label>
             <input type="text" name="semester_name" required placeholder="Ví dụ: Semester 2026A">
         </div>
 
         <div>
-            <label>Academic Year</label>
+            <label>Năm học</label>
             <input type="text" name="academic_year" required placeholder="Ví dụ: 2025-2026">
         </div>
 
         <div>
-            <label>Start Date</label>
+            <label>Ngày bắt đầu</label>
             <input type="date" name="start_date" required>
         </div>
 
         <div>
-            <label>End Date</label>
+            <label>Ngày kết thúc</label>
             <input type="date" name="end_date" required>
         </div>
 
         <div>
-            <label>Status</label>
+            <label>Trạng thái</label>
             <select name="status" required>
-                <option value="upcoming">upcoming</option>
-                <option value="open">open</option>
-                <option value="closed">closed</option>
+                <option value="upcoming">Sắp mở</option>
+                <option value="open">Đang mở</option>
+                <option value="closed">Đã đóng</option>
             </select>
         </div>
     </div>
 
-    <button type="submit">Create Semester</button>
+    <button type="submit">Tạo học kỳ</button>
 </form>
 
-<h2>Semester List</h2>
+<h2>Danh sách học kỳ</h2>
 
 <div class="filter-bar">
     <a class="filter-link <?= $statusFilter === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/semesters">
-        All
+        Tất cả
     </a>
 
     <a class="filter-link <?= $statusFilter === 'upcoming' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/semesters&status=upcoming">
-        Upcoming
+        Sắp mở
     </a>
 
     <a class="filter-link <?= $statusFilter === 'open' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/semesters&status=open">
-        Open
+        Đang mở
     </a>
 
     <a class="filter-link <?= $statusFilter === 'closed' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/semesters&status=closed">
-        Closed
+        Đã đóng
     </a>
 </div>
 
@@ -91,13 +91,13 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Semester Name</th>
-            <th>Academic Year</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Update</th>
+            <th>Tên học kỳ</th>
+            <th>Năm học</th>
+            <th>Bắt đầu</th>
+            <th>Kết thúc</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Cập nhật</th>
         </tr>
         </thead>
 
@@ -163,7 +163,7 @@
                     <td><?= htmlspecialchars($semester['created_at'] ?? '-') ?></td>
 
                     <td>
-                        <button type="submit" class="btn-pay">Update</button>
+                        <button type="submit" class="btn-pay">Cập nhật</button>
                     </td>
                 </form>
             </tr>

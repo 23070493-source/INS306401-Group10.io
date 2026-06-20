@@ -3,7 +3,7 @@
         <img src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS" class="auth-brand-logo">
         <div>
             <h1>Đăng ký tài khoản sinh viên</h1>
-            <span>VNU International School</span>
+            <span>Trường Quốc tế - ĐHQGHN</span>
         </div>
     </div>
     <p class="auth-note">Tạo tài khoản để đăng ký phòng, xem hợp đồng, hóa đơn và gửi yêu cầu sửa chữa.</p>

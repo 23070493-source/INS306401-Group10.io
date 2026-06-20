@@ -3,22 +3,22 @@
 
 <div class="cards">
     <div class="card">
-        <h3>Total Rooms</h3>
+        <h3>Tổng số phòng</h3>
         <strong><?= htmlspecialchars($summary['total']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Available</h3>
+        <h3>Còn trống</h3>
         <strong><?= htmlspecialchars($summary['available']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Maintenance</h3>
+        <h3>Bảo trì</h3>
         <strong><?= htmlspecialchars($summary['maintenance']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Inactive</h3>
+        <h3>Ngừng hoạt động</h3>
         <strong><?= htmlspecialchars($summary['inactive']) ?></strong>
     </div>
 </div>
@@ -28,13 +28,13 @@
     action="<?= BASE_URL ?>/index.php?route=admin/room-store" 
     class="form-card wide-form"
 >
-    <h2>Create Room</h2>
+    <h2>Tạo phòng</h2>
 
     <div class="admin-form-grid">
         <div>
-            <label>Building</label>
+            <label>Tòa nhà</label>
             <select name="building_id" required>
-                <option value="">-- Select building --</option>
+                <option value="">-- Chọn tòa nhà --</option>
                 <?php foreach ($buildings as $building): ?>
                     <option value="<?= htmlspecialchars($building['id']) ?>">
                         <?= htmlspecialchars($building['building_name']) ?>
@@ -44,73 +44,73 @@
         </div>
 
         <div>
-            <label>Room Number</label>
+            <label>Số phòng</label>
             <input type="text" name="room_number" required placeholder="Ví dụ: A101">
         </div>
 
         <div>
-            <label>Room Type</label>
+            <label>Loại phòng</label>
             <select name="room_type" required>
-                <option value="">-- Select type --</option>
-                <option value="single">single</option>
-                <option value="double">double</option>
-                <option value="quad">quad</option>
-                <option value="six">six</option>
-                <option value="eight">eight</option>
+                <option value="">-- Chọn loại phòng --</option>
+                <option value="single">Phòng đơn</option>
+                <option value="double">Phòng đôi</option>
+                <option value="quad">Phòng 4 người</option>
+                <option value="six">Phòng 6 người</option>
+                <option value="eight">Phòng 8 người</option>
             </select>
         </div>
 
         <div>
-            <label>Gender Type</label>
+            <label>Giới tính phòng</label>
             <select name="gender_type" required>
-                <option value="">-- Select gender --</option>
-                <option value="male">male</option>
-                <option value="female">female</option>
-                <option value="mixed">mixed</option>
+                <option value="">-- Chọn giới tính --</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="mixed">Linh hoạt</option>
             </select>
         </div>
 
         <div>
-            <label>Capacity</label>
+            <label>Sức chứa</label>
             <input type="number" name="capacity" min="1" required placeholder="Ví dụ: 4">
         </div>
 
         <div>
-            <label>Price Per Month</label>
+            <label>Giá mỗi tháng</label>
             <input type="number" name="price_per_month" min="0" step="1000" required placeholder="Ví dụ: 800000">
         </div>
 
         <div>
-            <label>Status</label>
+            <label>Trạng thái</label>
             <select name="status" required>
-                <option value="available">available</option>
-                <option value="full">full</option>
-                <option value="maintenance">maintenance</option>
-                <option value="inactive">inactive</option>
+                <option value="available">Còn trống</option>
+                <option value="full">Đã đầy</option>
+                <option value="maintenance">Bảo trì</option>
+                <option value="inactive">Ngừng hoạt động</option>
             </select>
         </div>
     </div>
 
-    <button type="submit">Create Room</button>
+    <button type="submit">Tạo phòng</button>
 </form>
 
-<h2>Room List</h2>
+<h2>Danh sách phòng</h2>
 
 <div class="filter-bar">
     <a class="filter-link <?= $statusFilter === '' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/rooms">
-        All
+        Tất cả
     </a>
 
     <a class="filter-link <?= $statusFilter === 'available' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/rooms&status=available">
-        Available
+        Còn trống
     </a>
 
     <a class="filter-link <?= $statusFilter === 'maintenance' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/rooms&status=maintenance">
-        Maintenance
+        Bảo trì
     </a>
 
     <a class="filter-link <?= $statusFilter === 'inactive' ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php?route=admin/rooms&status=inactive">
-        Inactive
+        Ngừng hoạt động
     </a>
 </div>
 
@@ -121,15 +121,15 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Building</th>
-            <th>Room</th>
-            <th>Type</th>
-            <th>Gender</th>
-            <th>Capacity</th>
-            <th>Occupancy</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Update</th>
+            <th>Tòa nhà</th>
+            <th>Phòng</th>
+            <th>Loại phòng</th>
+            <th>Giới tính</th>
+            <th>Sức chứa</th>
+            <th>Đang ở</th>
+            <th>Giá</th>
+            <th>Trạng thái</th>
+            <th>Cập nhật</th>
         </tr>
         </thead>
 
@@ -225,7 +225,7 @@
                     </td>
 
                     <td>
-                        <button type="submit" class="btn-pay">Update</button>
+                        <button type="submit" class="btn-pay">Cập nhật</button>
                     </td>
                 </form>
             </tr>

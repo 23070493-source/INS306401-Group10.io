@@ -10,6 +10,18 @@ $paidCount = 0;
 $unpaidCount = 0;
 $pendingCount = 0;
 
+$invoiceStatusLabels = [
+    'paid' => 'Đã thanh toán',
+    'unpaid' => 'Chưa thanh toán',
+    'partially_paid' => 'Thanh toán một phần',
+    'overdue' => 'Quá hạn',
+    'cancelled' => 'Đã hủy',
+];
+$labelStatus = static function (?string $value) use ($invoiceStatusLabels): string {
+    $key = strtolower(trim((string) $value));
+    return $invoiceStatusLabels[$key] ?? ($value ?: '-');
+};
+
 foreach ($invoices ?? [] as $invoice) {
     $invoiceTotal = (float) ($invoice['total_amount'] ?? 0);
     $invoicePaid = (float) ($invoice['paid_amount'] ?? 0);
@@ -37,13 +49,13 @@ foreach ($invoices ?? [] as $invoice) {
 
 <?php if (!$student): ?>
     <div class="alert error">
-        Student profile not found.
+        Không tìm thấy hồ sơ sinh viên.
     </div>
 
 <?php elseif (empty($invoices)): ?>
     <section class="student-invoice-empty">
         <div class="empty-state">
-            No invoices found.
+            Chưa có hóa đơn nào.
         </div>
     </section>
 
@@ -51,18 +63,18 @@ foreach ($invoices ?? [] as $invoice) {
 
     <section class="student-invoice-hero">
         <div>
-            <span class="student-page-label">Billing Overview</span>
+            <span class="student-page-label">Tổng quan hóa đơn</span>
             <h2><?= htmlspecialchars($student['full_name'] ?? '-') ?></h2>
         </div>
 
         <div class="student-invoice-student-info">
             <div>
-                <span>Student Code</span>
+                <span>Mã sinh viên</span>
                 <strong><?= htmlspecialchars($student['student_code'] ?? '-') ?></strong>
             </div>
 
             <div>
-                <span>Faculty</span>
+                <span>Khoa/Viện</span>
                 <strong><?= htmlspecialchars($student['faculty'] ?? '-') ?></strong>
             </div>
         </div>
@@ -70,44 +82,44 @@ foreach ($invoices ?? [] as $invoice) {
 
     <section class="student-invoice-summary-grid">
         <div class="student-invoice-summary-card">
-            <span>Total Invoices</span>
+            <span>Tổng số hóa đơn</span>
             <strong><?= htmlspecialchars((string) $totalInvoices) ?></strong>
         </div>
 
         <div class="student-invoice-summary-card">
-            <span>Total Amount</span>
+            <span>Tổng tiền</span>
             <strong><?= number_format($totalAmount) ?> VND</strong>
         </div>
 
         <div class="student-invoice-summary-card">
-            <span>Paid Amount</span>
+            <span>Đã thanh toán</span>
             <strong><?= number_format($totalPaid) ?> VND</strong>
         </div>
 
         <div class="student-invoice-summary-card">
-            <span>Remaining Due</span>
+            <span>Còn phải trả</span>
             <strong><?= number_format($totalRemaining) ?> VND</strong>
         </div>
     </section>
 
     <section class="student-invoice-status-grid">
         <div class="student-invoice-status-card">
-            <span>Paid</span>
+            <span>Đã thanh toán</span>
             <strong><?= htmlspecialchars((string) $paidCount) ?></strong>
         </div>
 
         <div class="student-invoice-status-card">
-            <span>Waiting Confirmation</span>
+            <span>Chờ xác nhận</span>
             <strong><?= htmlspecialchars((string) $pendingCount) ?></strong>
         </div>
 
         <div class="student-invoice-status-card">
-            <span>Unpaid</span>
+            <span>Chưa thanh toán</span>
             <strong><?= htmlspecialchars((string) $unpaidCount) ?></strong>
         </div>
 
         <div class="student-invoice-status-card">
-            <span>Pending Amount</span>
+            <span>Số tiền chờ xác nhận</span>
             <strong><?= number_format($totalPending) ?> VND</strong>
         </div>
     </section>
@@ -127,23 +139,23 @@ foreach ($invoices ?? [] as $invoice) {
             <article class="student-invoice-card">
                 <div class="student-invoice-card-header">
                     <div>
-                        <span>Invoice</span>
+                        <span>Hóa đơn</span>
                         <h2><?= htmlspecialchars($invoice['invoice_code'] ?? '-') ?></h2>
                     </div>
 
                     <span class="badge <?= htmlspecialchars($invoiceStatus) ?>">
-                        <?= htmlspecialchars(ucfirst(str_replace('_', ' ', $invoiceStatus))) ?>
+                        <?= htmlspecialchars($labelStatus($invoiceStatus)) ?>
                     </span>
                 </div>
 
                 <div class="student-invoice-meta-grid">
                     <div>
-                        <span>Contract</span>
+                        <span>Hợp đồng</span>
                         <strong><?= htmlspecialchars($invoice['contract_code'] ?? '-') ?></strong>
                     </div>
 
                     <div>
-                        <span>Room</span>
+                        <span>Phòng</span>
                         <strong>
                             <?= htmlspecialchars($invoice['building_name'] ?? '-') ?>
                             -
@@ -152,51 +164,51 @@ foreach ($invoices ?? [] as $invoice) {
                     </div>
 
                     <div>
-                        <span>Month</span>
+                        <span>Tháng</span>
                         <strong><?= htmlspecialchars($month) ?></strong>
                     </div>
 
                     <div>
-                        <span>Due Date</span>
+                        <span>Hạn thanh toán</span>
                         <strong><?= htmlspecialchars($invoice['due_date'] ?? '-') ?></strong>
                     </div>
                 </div>
 
                 <div class="student-invoice-money-grid">
                     <div>
-                        <span>Total</span>
+                        <span>Tổng tiền</span>
                         <strong><?= number_format($total) ?> VND</strong>
                     </div>
 
                     <div>
-                        <span>Paid</span>
+                        <span>Đã thanh toán</span>
                         <strong><?= number_format($paid) ?> VND</strong>
                     </div>
 
                     <div>
-                        <span>Pending</span>
+                        <span>Chờ xác nhận</span>
                         <strong><?= number_format($pending) ?> VND</strong>
                     </div>
 
                     <div>
-                        <span>Remaining</span>
+                        <span>Còn lại</span>
                         <strong><?= number_format($remaining) ?> VND</strong>
                     </div>
                 </div>
 
                 <div class="student-invoice-action">
                     <?php if ($invoiceStatus === 'paid' || $remaining <= 0): ?>
-                        <span class="badge paid">Paid</span>
+                        <span class="badge paid">Đã thanh toán</span>
 
                     <?php elseif ($pending > 0): ?>
-                        <span class="badge pending">Waiting Confirmation</span>
+                        <span class="badge pending">Chờ xác nhận</span>
 
                     <?php else: ?>
-                        <a 
+                        <a
                             class="student-primary-link"
                             href="<?= BASE_URL ?>/index.php?route=student/payment-submit&invoice_id=<?= htmlspecialchars((string) ($invoice['id'] ?? '')) ?>"
                         >
-                            Submit Bank Transfer
+                            Gửi minh chứng chuyển khoản
                         </a>
                     <?php endif; ?>
 
@@ -215,7 +227,7 @@ foreach ($invoices ?? [] as $invoice) {
     <section class="student-dashboard-section">
         <div class="student-section-header">
             <div>
-                <h2>Invoice Table</h2>
+                <h2>Bảng hóa đơn</h2>
             </div>
         </div>
 
@@ -223,17 +235,17 @@ foreach ($invoices ?? [] as $invoice) {
             <table>
                 <thead>
                 <tr>
-                    <th>Invoice Code</th>
-                    <th>Contract</th>
-                    <th>Room</th>
-                    <th>Month</th>
-                    <th>Due Date</th>
-                    <th>Total</th>
-                    <th>Paid</th>
-                    <th>Pending</th>
-                    <th>Remaining</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>Mã hóa đơn</th>
+                    <th>Hợp đồng</th>
+                    <th>Phòng</th>
+                    <th>Tháng</th>
+                    <th>Hạn thanh toán</th>
+                    <th>Tổng tiền</th>
+                    <th>Đã thanh toán</th>
+                    <th>Chờ xác nhận</th>
+                    <th>Còn lại</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
                 </tr>
                 </thead>
 
@@ -276,23 +288,23 @@ foreach ($invoices ?? [] as $invoice) {
 
                         <td>
                             <span class="badge <?= htmlspecialchars($invoiceStatus) ?>">
-                                <?= htmlspecialchars(ucfirst(str_replace('_', ' ', $invoiceStatus))) ?>
+                                <?= htmlspecialchars($labelStatus($invoiceStatus)) ?>
                             </span>
                         </td>
 
                         <td>
                             <?php if ($invoiceStatus === 'paid' || $remaining <= 0): ?>
-                                <span class="badge paid">Paid</span>
+                                <span class="badge paid">Đã thanh toán</span>
 
                             <?php elseif ($pending > 0): ?>
-                                <span class="badge pending">Waiting Confirmation</span>
+                                <span class="badge pending">Chờ xác nhận</span>
 
                             <?php else: ?>
-                                <a 
+                                <a
                                     class="btn-link"
                                     href="<?= BASE_URL ?>/index.php?route=student/payment-submit&invoice_id=<?= htmlspecialchars((string) ($invoice['id'] ?? '')) ?>"
                                 >
-                                    Submit Bank Transfer
+                                    Gửi minh chứng chuyển khoản
                                 </a>
                             <?php endif; ?>
 

@@ -24,37 +24,37 @@ $crudChecklist = [
 
 <div class="cards">
     <div class="card">
-        <h3>Total Students</h3>
+        <h3>Tổng sinh viên</h3>
         <strong><?= htmlspecialchars($overview['total_students']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Active Contracts</h3>
+        <h3>Hợp đồng hiệu lực</h3>
         <strong><?= htmlspecialchars($overview['active_contracts']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Ended Contracts</h3>
+        <h3>Hợp đồng đã kết thúc</h3>
         <strong><?= htmlspecialchars($overview['ended_contracts']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Pending Registrations</h3>
+        <h3>Đơn chờ duyệt</h3>
         <strong><?= htmlspecialchars($overview['pending_registrations']) ?></strong>
     </div>
 
     <div class="card danger">
-        <h3>Unpaid Invoices</h3>
+        <h3>Hóa đơn chưa thanh toán</h3>
         <strong><?= htmlspecialchars($overview['unpaid_invoices']) ?></strong>
     </div>
 
     <div class="card">
-        <h3>Paid Invoices</h3>
+        <h3>Hóa đơn đã thanh toán</h3>
         <strong><?= htmlspecialchars($overview['paid_invoices']) ?></strong>
     </div>
 
     <div class="card warning">
-        <h3>Open Maintenance</h3>
+        <h3>Yêu cầu sửa chữa mở</h3>
         <strong><?= htmlspecialchars($overview['open_maintenance']) ?></strong>
     </div>
 </div>
@@ -95,16 +95,16 @@ $crudChecklist = [
     </div>
 </section>
 
-<h2>Occupancy By Building</h2>
+<h2>Tỷ lệ lấp đầy theo tòa</h2>
 
 <table>
     <thead>
     <tr>
-        <th>Building</th>
-        <th>Total Rooms</th>
-        <th>Total Capacity</th>
-        <th>Active Occupancy</th>
-        <th>Occupancy Rate</th>
+        <th>Tòa nhà</th>
+        <th>Tổng phòng</th>
+        <th>Tổng sức chứa</th>
+        <th>Đang ở</th>
+        <th>Tỷ lệ lấp đầy</th>
     </tr>
     </thead>
 
@@ -126,16 +126,16 @@ $crudChecklist = [
     </tbody>
 </table>
 
-<h2>Invoice Summary</h2>
+<h2>Tổng hợp hóa đơn</h2>
 
 <table>
     <thead>
     <tr>
-        <th>Status</th>
-        <th>Invoice Count</th>
-        <th>Total Amount</th>
-        <th>Paid Amount</th>
-        <th>Remaining</th>
+        <th>Trạng thái</th>
+        <th>Số hóa đơn</th>
+        <th>Tổng tiền</th>
+        <th>Đã thanh toán</th>
+        <th>Còn lại</th>
     </tr>
     </thead>
 
@@ -156,7 +156,7 @@ $crudChecklist = [
     </tbody>
 </table>
 
-<h2>Top Violation Students</h2>
+<h2>Sinh viên vi phạm nhiều nhất</h2>
 
 <?php if (empty($topViolationStudents)): ?>
     <div class="alert success">Chưa có sinh viên vi phạm.</div>
@@ -164,10 +164,10 @@ $crudChecklist = [
     <table>
         <thead>
         <tr>
-            <th>Student Code</th>
-            <th>Full Name</th>
-            <th>Violation Count</th>
-            <th>Total Points</th>
+            <th>Mã sinh viên</th>
+            <th>Họ và tên</th>
+            <th>Số lần vi phạm</th>
+            <th>Tổng điểm</th>
         </tr>
         </thead>
 

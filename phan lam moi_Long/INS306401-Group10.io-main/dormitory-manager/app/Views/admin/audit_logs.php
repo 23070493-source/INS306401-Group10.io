@@ -29,13 +29,13 @@
         <tr>
             <th>ID</th>
             <th>User</th>
-            <th>Action</th>
+            <th>Thao tác</th>
             <th>Table</th>
             <th>Record</th>
             <th>Old Value</th>
             <th>New Value</th>
             <th>IP</th>
-            <th>Created At</th>
+            <th>Ngày tạo</th>
         </tr>
         </thead>
 

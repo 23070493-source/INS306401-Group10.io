@@ -18,7 +18,7 @@ $depositAmount = (float) ($contract['deposit_amount'] ?? 0);
         <header class="document-header">
             <img src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS">
             <div>
-                <span>VNU-IS Dormitory Manager</span>
+                <span>Hệ thống quản lý ký túc xá VNU-IS</span>
                 <h1 data-i18n="print_contract_title">Hợp đồng ký túc xá</h1>
                 <p data-i18n="print_contract_subtitle">Bản in phục vụ đối chiếu thông tin cư trú sinh viên.</p>
             </div>

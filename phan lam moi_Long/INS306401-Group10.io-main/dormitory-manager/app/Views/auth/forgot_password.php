@@ -3,7 +3,7 @@
         <img src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS" class="auth-brand-logo">
         <div>
             <h1>Đặt lại mật khẩu</h1>
-            <span>VNU International School</span>
+            <span>Trường Quốc tế - ĐHQGHN</span>
         </div>
     </div>
     <p class="auth-note">Nhập tên đăng nhập và email đã đăng ký để tạo mật khẩu mới.</p>

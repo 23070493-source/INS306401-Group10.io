@@ -29,6 +29,11 @@ const VALUE_LABELS = {
     expired: { vi: 'Hết hạn', en: 'Expired' },
     standard: { vi: 'Tiêu chuẩn', en: 'Standard' },
     premium: { vi: 'Cao cấp', en: 'Premium' },
+    single: { vi: 'Phòng đơn', en: 'single' },
+    double: { vi: 'Phòng đôi', en: 'double' },
+    quad: { vi: 'Phòng 4 người', en: 'quad' },
+    six: { vi: 'Phòng 6 người', en: 'six' },
+    eight: { vi: 'Phòng 8 người', en: 'eight' },
     male: { vi: 'Nam', en: 'Male' },
     female: { vi: 'Nữ', en: 'Female' },
     mixed: { vi: 'Linh hoạt', en: 'Mixed' },
@@ -52,9 +57,6 @@ const VALUE_LABELS = {
 };
 
 const TEXT_LABELS = [
-    ['language', 'Ngôn ngữ', 'Language'],
-    ['vietnamese', 'Tiếng Việt', 'Vietnamese'],
-    ['english', 'Tiếng Anh', 'English'],
     ['guest_portal', 'Cổng đăng nhập', 'Guest portal'],
     ['admin_center', 'Trung tâm quản trị', 'Control center'],
     ['manager_center', 'Điều phối ký túc xá', 'Dormitory operations'],
@@ -526,7 +528,100 @@ const TEXT_LABELS = [
     ['generate_invoice', 'Sinh hóa đơn', 'Generate Invoice'],
     ['maintenance_title_placeholder', 'Ví dụ: Bóng đèn phòng bị hỏng', 'Example: The room light is broken'],
     ['maintenance_desc_placeholder', 'Mô tả chi tiết vấn đề cần sửa chữa', 'Describe the issue that needs repair'],
-    ['example_prefix', 'Ví dụ:', 'Example:']
+    ['example_prefix', 'Ví dụ:', 'Example:'],
+    ['room_availability_label', 'Tình trạng phòng', 'Room Availability'],
+    ['find_room_title', 'Tìm phòng ký túc xá phù hợp', 'Find a suitable dormitory room'],
+    ['room_list', 'Danh sách phòng', 'Room List'],
+    ['available_rooms_count', 'Số phòng còn trống', 'Available Rooms'],
+    ['price_per_month', 'Giá / tháng', 'Price / Month'],
+    ['current_status', 'Trạng thái hiện tại', 'Current Status'],
+    ['active_dorm_contract', 'Hợp đồng ký túc xá đang hiệu lực', 'Active Dormitory Contract'],
+    ['view_my_contract', 'Xem hợp đồng của tôi', 'View My Contract'],
+    ['view_my_registration', 'Xem đơn đăng ký của tôi', 'View My Registration'],
+    ['room_registration_submitted', 'Đơn đăng ký phòng đã được gửi', 'Room Registration Submitted'],
+    ['room_registration_form', 'Biểu mẫu đăng ký phòng', 'Room Registration Form'],
+    ['select_semester', 'Chọn học kỳ', 'Select semester'],
+    ['select_room_type', 'Chọn loại phòng', 'Select room type'],
+    ['no_specific_building', 'Không chọn tòa cụ thể', 'No specific building'],
+    ['submit_registration', 'Gửi đăng ký', 'Submit Registration'],
+    ['student_profile_not_found', 'Không tìm thấy hồ sơ sinh viên.', 'Student profile not found.'],
+    ['no_rooms_now', 'Hiện chưa có phòng trống.', 'No available rooms at the moment.'],
+    ['back_to_dashboard', 'Quay lại bảng điều khiển', 'Back to Dashboard'],
+    ['registration_overview', 'Tổng quan đăng ký', 'Registration Overview'],
+    ['track_registration', 'Theo dõi hồ sơ đăng ký phòng ký túc xá', 'Track your dormitory room registration'],
+    ['registration_history', 'Lịch sử đăng ký', 'Registration History'],
+    ['registration_table', 'Bảng đơn đăng ký', 'Registration Table'],
+    ['total_registrations', 'Tổng số đơn', 'Total Registrations'],
+    ['latest_registration', 'Đơn mới nhất', 'Latest Registration'],
+    ['priority_score', 'Mức ưu tiên', 'Priority Score'],
+    ['not_assigned', 'Chưa xếp phòng', 'Not assigned'],
+    ['rejection_reason_vn', 'Lý do từ chối', 'Rejection Reason'],
+    ['contract_overview', 'Tổng quan hợp đồng', 'Contract Overview'],
+    ['no_contract_found', 'Chưa có hợp đồng ký túc xá.', 'No dormitory contract found.'],
+    ['view_invoices', 'Xem hóa đơn', 'View Invoices'],
+    ['latest_contract', 'Hợp đồng mới nhất', 'Latest Contract'],
+    ['per_month', 'mỗi tháng', 'per month'],
+    ['deposit_amount', 'Tiền đặt cọc', 'Deposit Amount'],
+    ['billing_overview', 'Tổng quan hóa đơn', 'Billing Overview'],
+    ['no_invoices_found', 'Chưa có hóa đơn nào.', 'No invoices found.'],
+    ['total_invoices', 'Tổng số hóa đơn', 'Total Invoices'],
+    ['total_amount', 'Tổng tiền', 'Total Amount'],
+    ['paid_amount', 'Đã thanh toán', 'Paid Amount'],
+    ['remaining_due', 'Còn phải trả', 'Remaining Due'],
+    ['waiting_confirmation', 'Chờ xác nhận', 'Waiting Confirmation'],
+    ['pending_amount', 'Số tiền chờ xác nhận', 'Pending Amount'],
+    ['invoice_table', 'Bảng hóa đơn', 'Invoice Table'],
+    ['invoice_code', 'Mã hóa đơn', 'Invoice Code'],
+    ['submit_bank_transfer', 'Gửi minh chứng chuyển khoản', 'Submit Bank Transfer'],
+    ['no_registration_submitted', 'Bạn chưa gửi đơn đăng ký phòng nào.', 'No room registration has been submitted yet.'],
+    ['total_rooms_label', 'Tổng số phòng', 'Total Rooms'],
+    ['create_room', 'Tạo phòng', 'Create Room'],
+    ['room_number', 'Số phòng', 'Room Number'],
+    ['price_per_month_admin', 'Giá mỗi tháng', 'Price Per Month'],
+    ['select_building', '-- Chọn tòa nhà --', '-- Select building --'],
+    ['select_type', '-- Chọn loại phòng --', '-- Select type --'],
+    ['select_gender_admin', '-- Chọn giới tính --', '-- Select gender --'],
+    ['room_list_admin', 'Danh sách phòng', 'Room List'],
+    ['occupancy', 'Số người ở', 'Occupancy'],
+    ['total_students_label', 'Tổng sinh viên', 'Total Students'],
+    ['missing_profile', 'Thiếu hồ sơ', 'Missing Profile'],
+    ['create_student_profile', 'Tạo hồ sơ sinh viên', 'Create Student Profile'],
+    ['user_student', 'Tài khoản sinh viên', 'User Student'],
+    ['select_student_user', '-- Chọn tài khoản sinh viên --', '-- Select Student User --'],
+    ['student_list', 'Danh sách sinh viên', 'Student List'],
+    ['account', 'Tài khoản', 'Account'],
+    ['priority', 'Mức ưu tiên', 'Priority'],
+    ['total_users_label', 'Tổng tài khoản', 'Total Users'],
+    ['admins_label', 'Quản trị viên', 'Admins'],
+    ['managers_label', 'Quản lý', 'Managers'],
+    ['create_user_account', 'Tạo tài khoản người dùng', 'Create User Account'],
+    ['phone_label', 'Số điện thoại', 'Phone'],
+    ['select_role', '-- Chọn vai trò --', '-- Select role --'],
+    ['create_user_button', 'Tạo tài khoản', 'Create User'],
+    ['user_list', 'Danh sách tài khoản', 'User List'],
+    ['student_profile_col', 'Hồ sơ sinh viên', 'Student Profile'],
+    ['contact', 'Liên hệ', 'Contact'],
+    ['actions', 'Thao tác', 'Actions'],
+    ['no_profile', 'Chưa có hồ sơ', 'No profile'],
+    ['deactivate', 'Ngừng kích hoạt', 'Deactivate'],
+    ['activate', 'Kích hoạt', 'Activate'],
+    ['reset_password_en', 'Đặt lại mật khẩu', 'Reset Password'],
+    ['occupancy_by_building', 'Tỷ lệ lấp đầy theo tòa', 'Occupancy By Building'],
+    ['total_capacity', 'Tổng sức chứa', 'Total Capacity'],
+    ['active_occupancy', 'Số chỗ đang sử dụng', 'Active Occupancy'],
+    ['occupancy_rate', 'Tỷ lệ lấp đầy', 'Occupancy Rate'],
+    ['invoice_summary', 'Tổng hợp hóa đơn', 'Invoice Summary'],
+    ['invoice_count', 'Số hóa đơn', 'Invoice Count'],
+    ['remaining', 'Còn lại', 'Remaining'],
+    ['top_violation_students', 'Sinh viên vi phạm nhiều nhất', 'Top Violation Students'],
+    ['violation_history', 'Lịch sử vi phạm', 'Violation History'],
+    ['violation_date_col', 'Ngày vi phạm', 'Violation Date'],
+    ['description_col', 'Mô tả', 'Description'],
+    ['created_by', 'Người tạo', 'Created By'],
+    ['total_violation_points', 'Tổng điểm vi phạm:', 'Total Violation Points:'],
+    ['normal_level', 'Bình thường', 'Normal'],
+    ['warning_level_en', 'Cảnh báo', 'Warning'],
+    ['points_lower', 'điểm', 'points']
 ];
 
 const TEXT_LOOKUP = new Map();
@@ -544,6 +639,18 @@ const EMBEDDED_TEXT_LABELS = [
     { vi: 'Trí tuệ nhân tạo', en: 'Artificial Intelligence' },
     { vi: 'Quản trị kinh doanh', en: 'Business Administration' },
     { vi: 'Marketing', en: 'Marketing' },
+    { vi: 'Tiêu chuẩn', en: 'Standard' },
+    { vi: 'Cao cấp', en: 'Premium' },
+    { vi: 'Nam', en: 'Male' },
+    { vi: 'Nữ', en: 'Female' },
+    { vi: 'Linh hoạt', en: 'Mixed' },
+    { vi: 'Đang hoạt động', en: 'Active' },
+    { vi: 'Ngừng hoạt động', en: 'Inactive' },
+    { vi: 'Còn trống', en: 'Available' },
+    { vi: 'Bảo trì', en: 'Maintenance' },
+    { vi: 'Đã thanh toán', en: 'Paid' },
+    { vi: 'Chưa thanh toán', en: 'Unpaid' },
+    { vi: 'Thanh toán một phần', en: 'Partially paid' },
     { vi: ' - Phòng ', en: ' - Room ' },
     { vi: ' VND/tháng', en: ' VND/month' }
 ];
@@ -660,22 +767,15 @@ function label(value, lang = getCurrentLang()) {
 }
 
 function bindLanguageSwitch() {
-    const select = document.getElementById('language-select');
+    localStorage.setItem('dm_lang', DEFAULT_LANG);
 
-    if (!select) {
-        return;
-    }
-
-    select.value = getCurrentLang();
-    select.addEventListener('change', () => {
-        const lang = select.value === 'en' ? 'en' : 'vi';
-        localStorage.setItem('dm_lang', lang);
-        applyLanguage(lang);
+    document.querySelectorAll('.language-box, .auth-language-box').forEach((element) => {
+        element.remove();
     });
 }
 
 function getCurrentLang() {
-    return localStorage.getItem('dm_lang') === 'en' ? 'en' : DEFAULT_LANG;
+    return DEFAULT_LANG;
 }
 
 function normalizeText(value) {
@@ -731,12 +831,8 @@ function translateKnownText(value, lang) {
 }
 
 function applyLanguage(lang) {
+    lang = DEFAULT_LANG;
     document.documentElement.lang = lang;
-
-    const select = document.getElementById('language-select');
-    if (select) {
-        select.value = lang;
-    }
 
     document.querySelectorAll('[data-i18n]').forEach((element) => {
         const entry = I18N_BY_KEY.get(element.dataset.i18n);

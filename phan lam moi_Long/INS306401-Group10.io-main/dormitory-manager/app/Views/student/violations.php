@@ -7,20 +7,20 @@
 <?php else: ?>
 
     <?php
-    $warningLevel = 'Normal';
+    $warningLevel = 'Bình thường';
     $warningClass = 'normal';
     $warningMessage = 'Bạn chưa nằm trong nhóm cảnh báo. Hãy tiếp tục tuân thủ nội quy KTX.';
 
     if ($totalPoints >= 15) {
-        $warningLevel = 'Critical Warning';
+        $warningLevel = 'Cảnh báo rất nghiêm trọng';
         $warningClass = 'critical';
         $warningMessage = 'Bạn đang ở mức cảnh báo rất nghiêm trọng. Có thể bị xem xét kỷ luật hoặc chấm dứt hợp đồng KTX.';
     } elseif ($totalPoints >= 10) {
-        $warningLevel = 'Serious Warning';
+        $warningLevel = 'Cảnh báo nghiêm trọng';
         $warningClass = 'serious';
         $warningMessage = 'Bạn đang ở mức cảnh báo nghiêm trọng. Cần chú ý tuân thủ nội quy để tránh bị xử lý kỷ luật.';
     } elseif ($totalPoints >= 5) {
-        $warningLevel = 'Warning';
+        $warningLevel = 'Cảnh báo';
         $warningClass = 'warning';
         $warningMessage = 'Bạn đã có một số điểm vi phạm. Cần chú ý hơn trong sinh hoạt tại KTX.';
     }
@@ -34,11 +34,11 @@
 
     <div class="violation-warning-box <?= htmlspecialchars($warningClass) ?>">
         <h2><?= htmlspecialchars($warningLevel) ?></h2>
-        <p><strong>Total Violation Points:</strong> <?= htmlspecialchars($totalPoints) ?></p>
+        <p><strong>Tổng điểm vi phạm:</strong> <?= htmlspecialchars($totalPoints) ?></p>
         <p><?= htmlspecialchars($warningMessage) ?></p>
     </div>
 
-    <h2>Violation History</h2>
+    <h2>Lịch sử vi phạm</h2>
 
     <?php if (empty($violations)): ?>
         <div class="alert success">
@@ -49,12 +49,12 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Violation Date</th>
-                <th>Violation Type</th>
-                <th>Description</th>
-                <th>Penalty Points</th>
-                <th>Created By</th>
-                <th>Created At</th>
+                <th>Ngày vi phạm</th>
+                <th>Loại vi phạm</th>
+                <th>Mô tả</th>
+                <th>Điểm phạt</th>
+                <th>Người tạo</th>
+                <th>Ngày tạo</th>
             </tr>
             </thead>
 
@@ -67,7 +67,7 @@
                     <td><?= htmlspecialchars($violation['description'] ?? '-') ?></td>
                     <td>
                         <span class="badge danger">
-                            <?= htmlspecialchars($violation['penalty_points']) ?> points
+                            <?= htmlspecialchars($violation['penalty_points']) ?> điểm
                         </span>
                     </td>
                     <td><?= htmlspecialchars($violation['created_by_username'] ?? '-') ?></td>

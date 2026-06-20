@@ -2,6 +2,30 @@
 $canRegister = $canRegister ?? true;
 $activeContract = $activeContract ?? null;
 $currentRegistration = $currentRegistration ?? null;
+
+$roomTypeLabels = [
+    'standard' => 'Tiêu chuẩn',
+    'premium' => 'Cao cấp',
+];
+$genderLabels = [
+    'male' => 'Nam',
+    'female' => 'Nữ',
+    'mixed' => 'Linh hoạt',
+    'nam' => 'Nam',
+    'nu' => 'Nữ',
+    'nữ' => 'Nữ',
+];
+$statusLabels = [
+    'active' => 'Đang hoạt động',
+    'pending' => 'Chờ xử lý',
+    'approved' => 'Đã duyệt',
+    'rejected' => 'Từ chối',
+    'cancelled' => 'Đã hủy',
+];
+$label = static function (array $labels, ?string $value): string {
+    $key = strtolower(trim((string) $value));
+    return $labels[$key] ?? ($value ?: '-');
+};
 ?>
 
 <h1>Đăng ký phòng</h1>
@@ -22,29 +46,29 @@ $currentRegistration = $currentRegistration ?? null;
 
 <?php if (!$student): ?>
     <div class="alert error">
-        Student profile not found.
+        Không tìm thấy hồ sơ sinh viên.
     </div>
 <?php else: ?>
 
     <section class="student-register-profile">
         <div>
-            <span>Student</span>
+            <span>Sinh viên</span>
             <h2><?= htmlspecialchars($student['full_name']) ?></h2>
         </div>
 
         <div class="student-register-profile-grid">
             <div>
-                <span>Student Code</span>
+                <span>Mã sinh viên</span>
                 <strong><?= htmlspecialchars($student['student_code'] ?? '-') ?></strong>
             </div>
 
             <div>
-                <span>Gender</span>
-                <strong><?= htmlspecialchars($student['gender'] ?? '-') ?></strong>
+                <span>Giới tính</span>
+                <strong><?= htmlspecialchars($label($genderLabels, $student['gender'] ?? null)) ?></strong>
             </div>
 
             <div>
-                <span>Priority Type</span>
+                <span>Diện ưu tiên</span>
                 <strong><?= htmlspecialchars($student['priority_type'] ?? '-') ?></strong>
             </div>
         </div>
@@ -56,23 +80,23 @@ $currentRegistration = $currentRegistration ?? null;
             <section class="student-register-result success-state">
                 <div class="student-result-header">
                     <div>
-                        <span>Current Status</span>
-                        <h2>Active Dormitory Contract</h2>
+                        <span>Trạng thái hiện tại</span>
+                        <h2>Hợp đồng ký túc xá đang hiệu lực</h2>
                     </div>
 
                     <span class="badge active">
-                        <?= htmlspecialchars(ucfirst($activeContract['status'] ?? 'active')) ?>
+                        <?= htmlspecialchars($label($statusLabels, $activeContract['status'] ?? 'active')) ?>
                     </span>
                 </div>
 
                 <div class="student-result-grid">
                     <div>
-                        <span>Contract Code</span>
+                        <span>Mã hợp đồng</span>
                         <strong><?= htmlspecialchars($activeContract['contract_code'] ?? '-') ?></strong>
                     </div>
 
                     <div>
-                        <span>Current Room</span>
+                        <span>Phòng hiện tại</span>
                         <strong>
                             <?= htmlspecialchars($activeContract['building_name'] ?? '-') ?>
                             -
@@ -81,16 +105,16 @@ $currentRegistration = $currentRegistration ?? null;
                     </div>
 
                     <div>
-                        <span>Room Type</span>
+                        <span>Loại phòng</span>
                         <strong>
-                            <?= htmlspecialchars(ucfirst($activeContract['room_type'] ?? '-')) ?>
+                            <?= htmlspecialchars($label($roomTypeLabels, $activeContract['room_type'] ?? null)) ?>
                             /
-                            <?= htmlspecialchars(ucfirst($activeContract['gender_type'] ?? '-')) ?>
+                            <?= htmlspecialchars($label($genderLabels, $activeContract['gender_type'] ?? null)) ?>
                         </strong>
                     </div>
 
                     <div>
-                        <span>Semester</span>
+                        <span>Học kỳ</span>
                         <strong>
                             <?= htmlspecialchars($activeContract['semester_name'] ?? '-') ?>
                             -
@@ -99,19 +123,19 @@ $currentRegistration = $currentRegistration ?? null;
                     </div>
 
                     <div>
-                        <span>Start Date</span>
+                        <span>Ngày bắt đầu</span>
                         <strong><?= htmlspecialchars($activeContract['start_date'] ?? '-') ?></strong>
                     </div>
 
                     <div>
-                        <span>End Date</span>
+                        <span>Ngày kết thúc</span>
                         <strong><?= htmlspecialchars($activeContract['end_date'] ?? '-') ?></strong>
                     </div>
                 </div>
 
                 <div class="student-register-actions">
                     <a href="<?= BASE_URL ?>/index.php?route=student/my-contract" class="student-primary-link">
-                        View My Contract
+                        Xem hợp đồng của tôi
                     </a>
                 </div>
             </section>
@@ -120,18 +144,18 @@ $currentRegistration = $currentRegistration ?? null;
             <section class="student-register-result pending-state">
                 <div class="student-result-header">
                     <div>
-                        <span>Current Status</span>
-                        <h2>Room Registration Submitted</h2>
+                        <span>Trạng thái hiện tại</span>
+                        <h2>Đơn đăng ký phòng đã được gửi</h2>
                     </div>
 
                     <span class="badge <?= htmlspecialchars($currentRegistration['status'] ?? 'pending') ?>">
-                        <?= htmlspecialchars(ucfirst($currentRegistration['status'] ?? 'pending')) ?>
+                        <?= htmlspecialchars($label($statusLabels, $currentRegistration['status'] ?? 'pending')) ?>
                     </span>
                 </div>
 
                 <div class="student-result-grid">
                     <div>
-                        <span>Semester</span>
+                        <span>Học kỳ</span>
                         <strong>
                             <?= htmlspecialchars($currentRegistration['semester_name'] ?? '-') ?>
                             -
@@ -140,23 +164,23 @@ $currentRegistration = $currentRegistration ?? null;
                     </div>
 
                     <div>
-                        <span>Desired Building</span>
-                        <strong><?= htmlspecialchars($currentRegistration['desired_building'] ?? 'No specific building') ?></strong>
+                        <span>Tòa mong muốn</span>
+                        <strong><?= htmlspecialchars($currentRegistration['desired_building'] ?? 'Không chọn tòa cụ thể') ?></strong>
                     </div>
 
                     <div>
-                        <span>Desired Room Type</span>
-                        <strong><?= htmlspecialchars(ucfirst($currentRegistration['desired_room_type'] ?? '-')) ?></strong>
+                        <span>Loại phòng mong muốn</span>
+                        <strong><?= htmlspecialchars($label($roomTypeLabels, $currentRegistration['desired_room_type'] ?? null)) ?></strong>
                     </div>
 
                     <div>
-                        <span>Desired Gender Type</span>
-                        <strong><?= htmlspecialchars(ucfirst($currentRegistration['desired_gender_type'] ?? '-')) ?></strong>
+                        <span>Giới tính phòng</span>
+                        <strong><?= htmlspecialchars($label($genderLabels, $currentRegistration['desired_gender_type'] ?? null)) ?></strong>
                     </div>
 
                     <?php if (!empty($currentRegistration['assigned_room'])): ?>
                         <div>
-                            <span>Assigned Room</span>
+                            <span>Phòng được xếp</span>
                             <strong>
                                 <?= htmlspecialchars($currentRegistration['assigned_building'] ?? '-') ?>
                                 -
@@ -167,14 +191,14 @@ $currentRegistration = $currentRegistration ?? null;
 
                     <?php if (!empty($currentRegistration['processed_by_username'])): ?>
                         <div>
-                            <span>Processed By</span>
+                            <span>Người xử lý</span>
                             <strong><?= htmlspecialchars($currentRegistration['processed_by_username']) ?></strong>
                         </div>
                     <?php endif; ?>
 
                     <?php if (!empty($currentRegistration['processed_at'])): ?>
                         <div>
-                            <span>Processed At</span>
+                            <span>Thời điểm xử lý</span>
                             <strong><?= htmlspecialchars($currentRegistration['processed_at']) ?></strong>
                         </div>
                     <?php endif; ?>
@@ -182,7 +206,7 @@ $currentRegistration = $currentRegistration ?? null;
 
                 <div class="student-register-actions">
                     <a href="<?= BASE_URL ?>/index.php?route=student/my-registration" class="student-primary-link">
-                        View My Registration
+                        Xem đơn đăng ký của tôi
                     </a>
                 </div>
             </section>
@@ -193,17 +217,17 @@ $currentRegistration = $currentRegistration ?? null;
         <section class="student-register-form-section">
             <div class="student-section-header">
                 <div>
-                    <h2>Room Registration Form</h2>
+                    <h2>Biểu mẫu đăng ký phòng</h2>
                 </div>
             </div>
 
             <form method="POST" action="<?= BASE_URL ?>/index.php?route=student/register-room" class="student-register-form">
                 <div class="student-form-line">
-                    <label>Semester</label>
+                    <label>Học kỳ</label>
                     <select name="semester_id" required>
-                        <option value="">Select semester</option>
+                        <option value="">Chọn học kỳ</option>
                         <?php foreach ($semesters as $semester): ?>
-                            <option 
+                            <option
                                 value="<?= htmlspecialchars($semester['id']) ?>"
                                 <?= (($old['semester_id'] ?? '') == $semester['id']) ? 'selected' : '' ?>
                             >
@@ -216,11 +240,11 @@ $currentRegistration = $currentRegistration ?? null;
                 </div>
 
                 <div class="student-form-line">
-                    <label>Desired Building</label>
+                    <label>Tòa mong muốn</label>
                     <select name="desired_building_id">
-                        <option value="">No specific building</option>
+                        <option value="">Không chọn tòa cụ thể</option>
                         <?php foreach ($buildings as $building): ?>
-                            <option 
+                            <option
                                 value="<?= htmlspecialchars($building['id']) ?>"
                                 <?= (($old['desired_building_id'] ?? '') == $building['id']) ? 'selected' : '' ?>
                             >
@@ -231,36 +255,37 @@ $currentRegistration = $currentRegistration ?? null;
                 </div>
 
                 <div class="student-form-line">
-                    <label>Desired Room Type</label>
+                    <label>Loại phòng mong muốn</label>
                     <select name="desired_room_type" required>
-                        <option value="">Select room type</option>
+                        <option value="">Chọn loại phòng</option>
                         <option value="standard" <?= (($old['desired_room_type'] ?? '') === 'standard') ? 'selected' : '' ?>>
-                            Standard
+                            Tiêu chuẩn
                         </option>
                         <option value="premium" <?= (($old['desired_room_type'] ?? '') === 'premium') ? 'selected' : '' ?>>
-                            Premium
+                            Cao cấp
                         </option>
                     </select>
                 </div>
 
                 <div class="student-form-line">
-                    <label>Gender Type</label>
-                    <input 
-                        type="text" 
-                        value="<?= htmlspecialchars(ucfirst($student['gender'] ?? '-')) ?>" 
+                    <label>Giới tính phòng</label>
+                    <input
+                        type="text"
+                        value="<?= htmlspecialchars($label($genderLabels, $student['gender'] ?? null)) ?>"
                         disabled
                     >
                 </div>
 
                 <div class="student-form-line student-form-line-textarea">
-                    <label>Note</label>
-                    <textarea 
-                        name="note" 
+                    <label>Ghi chú</label>
+                    <textarea
+                        name="note"
                         rows="4"
+                        placeholder="Nhập nhu cầu hoặc ghi chú thêm nếu có"
                     ><?= htmlspecialchars($old['note'] ?? '') ?></textarea>
                 </div>
 
-                <button type="submit">Submit Registration</button>
+                <button type="submit">Gửi đăng ký</button>
             </form>
         </section>
 

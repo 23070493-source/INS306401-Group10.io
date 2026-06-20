@@ -18,7 +18,7 @@ $remaining = max(0, $total - $paid);
         <header class="document-header">
             <img src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS">
             <div>
-                <span>VNU-IS Dormitory Manager</span>
+                <span>Hệ thống quản lý ký túc xá VNU-IS</span>
                 <h1 data-i18n="print_invoice_title">Hóa đơn ký túc xá</h1>
                 <p data-i18n="print_invoice_subtitle">Bản in phục vụ đối chiếu thanh toán và xác nhận công nợ.</p>
             </div>
