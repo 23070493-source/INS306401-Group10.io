@@ -50,7 +50,16 @@
 
         <div>
             <label>Tháng ghi chỉ số</label>
-            <input type="month" name="reading_month" required>
+            <input
+                type="text"
+                name="reading_month"
+                required
+                inputmode="numeric"
+                pattern="\d{4}-(0[1-9]|1[0-2])"
+                placeholder="Ví dụ: 2026-08"
+                value="<?= htmlspecialchars($old['reading_month'] ?? date('Y-m')) ?>"
+            >
+            <small>Nhập theo định dạng YYYY-MM để tránh lỗi trình duyệt tự đổi tháng.</small>
         </div>
 
         <div>
@@ -67,6 +76,14 @@
             <label>Đơn giá</label>
             <input type="number" name="unit_price" id="unit_price" min="0" step="100" required>
         </div>
+
+        <div class="form-option-row form-option-wide">
+            <label>
+                <input type="checkbox" name="auto_generate_invoice" value="1" checked>
+                Tự động sinh hóa đơn cho sinh viên trong phòng sau khi tạo chỉ số
+            </label>
+            <small>Bỏ chọn nếu bạn chỉ muốn lưu chỉ số trước và sinh hóa đơn sau.</small>
+        </div>
     </div>
 
     <button type="submit">Tạo chỉ số</button>
@@ -77,7 +94,8 @@
 <?php if (empty($readings)): ?>
     <div class="alert error">Chưa có chỉ số điện nước nào.</div>
 <?php else: ?>
-    <table>
+    <div class="table-scroll utility-readings-table-scroll">
+    <table class="utility-readings-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -147,6 +165,7 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 <?php endif; ?>
 
 <script>

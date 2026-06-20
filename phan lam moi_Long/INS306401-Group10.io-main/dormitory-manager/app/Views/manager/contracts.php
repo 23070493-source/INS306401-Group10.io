@@ -49,7 +49,8 @@
     <div class="alert error">Không có hợp đồng nào phù hợp.</div>
 <?php else: ?>
 
-    <table>
+    <div class="table-scroll manager-contract-table-scroll">
+    <table class="manager-contract-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -146,7 +147,7 @@
                     </a>
                 </td>
 
-                <td>
+                <td class="manager-contract-actions">
                     <?php if ($contract['status'] === 'active'): ?>
                         <form 
                             method="POST" 
@@ -182,5 +183,6 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 
 <?php endif; ?>

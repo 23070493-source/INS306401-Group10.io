@@ -95,8 +95,9 @@
 
     <?php if (empty($requests)): ?>
         <div class="alert error">Bạn chưa có yêu cầu sửa chữa nào.</div>
-    <?php else: ?>
-        <table>
+<?php else: ?>
+        <div class="table-scroll maintenance-table-scroll">
+        <table class="maintenance-table">
             <thead>
             <tr>
                 <th>ID</th>
@@ -183,6 +184,7 @@
             <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     <?php endif; ?>
 
 <?php endif; ?>

@@ -1,5 +1,104 @@
 <?php
 
+if (!function_exists('studentColumnExists')) {
+    function studentColumnExists(PDO $db, string $tableName, string $columnName): bool
+    {
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = :table_name
+              AND COLUMN_NAME = :column_name
+        ");
+
+        $stmt->execute([
+            'table_name' => $tableName,
+            'column_name' => $columnName
+        ]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+}
+
+if (!function_exists('studentAddColumnIfMissing')) {
+    function studentAddColumnIfMissing(PDO $db, string $tableName, string $columnName, string $columnDefinition): void
+    {
+        if (!studentColumnExists($db, $tableName, $columnName)) {
+            $db->exec("ALTER TABLE {$tableName} ADD COLUMN {$columnDefinition}");
+        }
+    }
+}
+
+if (!function_exists('studentEnsureMaintenanceSchema')) {
+    function studentEnsureMaintenanceSchema(PDO $db): void
+    {
+        studentAddColumnIfMissing($db, 'maintenance_requests', 'evidence_image', 'evidence_image VARCHAR(255) NULL');
+    }
+}
+
+if (!function_exists('studentStoreMaintenanceEvidence')) {
+    function studentStoreMaintenanceEvidence(array &$errors): ?string
+    {
+        if (empty($_FILES['evidence_image']) || ($_FILES['evidence_image']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+
+        $file = $_FILES['evidence_image'];
+
+        if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            $errors[] = 'Không tải được ảnh minh chứng. Vui lòng chọn lại ảnh.';
+            return null;
+        }
+
+        if (($file['size'] ?? 0) > 5 * 1024 * 1024) {
+            $errors[] = 'Ảnh minh chứng không được vượt quá 5MB.';
+            return null;
+        }
+
+        $mimeType = '';
+
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo) {
+                $mimeType = (string) finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+            }
+        }
+
+        if ($mimeType === '' && function_exists('mime_content_type')) {
+            $mimeType = (string) mime_content_type($file['tmp_name']);
+        }
+
+        $allowedMimeTypes = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp'
+        ];
+
+        if (!isset($allowedMimeTypes[$mimeType])) {
+            $errors[] = 'Ảnh minh chứng chỉ nhận JPG, PNG hoặc WEBP.';
+            return null;
+        }
+
+        $uploadDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'maintenance';
+
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
+            $errors[] = 'Không tạo được thư mục lưu ảnh minh chứng.';
+            return null;
+        }
+
+        $fileName = 'maintenance_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $allowedMimeTypes[$mimeType];
+        $destination = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
+
+        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+            $errors[] = 'Không lưu được ảnh minh chứng. Vui lòng thử lại.';
+            return null;
+        }
+
+        return 'uploads/maintenance/' . $fileName;
+    }
+}
+
 $routes['student/dashboard'] = function (PDO $db): void {
     Auth::requireRole('Student');
 
@@ -1148,6 +1247,8 @@ $routes['student/pay-invoice'] = function (PDO $db): void {
 $routes['student/maintenance'] = function (PDO $db): void {
     Auth::requireRole('Student');
 
+    studentEnsureMaintenanceSchema($db);
+
     $user = Auth::user();
 
     $stmt = $db->prepare("
@@ -1229,6 +1330,8 @@ $routes['student/maintenance'] = function (PDO $db): void {
 $routes['student/maintenance-store'] = function (PDO $db): void {
     Auth::requireRole('Student');
 
+    studentEnsureMaintenanceSchema($db);
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         redirectTo('student/maintenance');
     }
@@ -1299,6 +1402,12 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
             throw new Exception('Bạn cần có hợp đồng active trước khi gửi yêu cầu sửa chữa.');
         }
 
+        $evidenceImage = null;
+
+        if (empty($errors)) {
+            $evidenceImage = studentStoreMaintenanceEvidence($errors);
+        }
+
         if (!empty($errors)) {
             $stmt = $db->prepare("
                 SELECT 
@@ -1350,6 +1459,7 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
                 description,
                 category,
                 priority,
+                evidence_image,
                 status,
                 request_date,
                 processed_by,
@@ -1363,6 +1473,7 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
                 :description,
                 :category,
                 :priority,
+                :evidence_image,
                 'pending',
                 NOW(),
                 NULL,
@@ -1377,7 +1488,8 @@ $routes['student/maintenance-store'] = function (PDO $db): void {
             'title' => $title,
             'description' => $description,
             'category' => $category,
-            'priority' => $priority
+            'priority' => $priority,
+            'evidence_image' => $evidenceImage
         ]);
 
         $requestId = $db->lastInsertId();

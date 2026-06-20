@@ -1,126 +1,157 @@
 <?php
-$status = $contract['status'] ?? '-';
+$statusLabels = [
+    'active' => 'Đang hiệu lực',
+    'expired' => 'Hết hạn',
+    'terminated' => 'Đã chấm dứt',
+    'cancelled' => 'Đã hủy',
+];
+
+$genderLabels = [
+    'male' => 'Nam',
+    'female' => 'Nữ',
+    'Nam' => 'Nam',
+    'Nữ' => 'Nữ',
+];
+
+$roomTypeLabels = [
+    'standard' => 'Tiêu chuẩn',
+    'premium' => 'Cao cấp',
+];
+
+$status = (string) ($contract['status'] ?? '-');
+$gender = (string) ($contract['student_gender'] ?? $contract['gender'] ?? '-');
+$roomGender = (string) ($contract['gender'] ?? '-');
+$roomType = (string) ($contract['room_type'] ?? '-');
 $monthlyPrice = (float) ($contract['monthly_price'] ?? 0);
 $depositAmount = (float) ($contract['deposit_amount'] ?? 0);
+$createdAt = (string) ($contract['created_at'] ?? date('Y-m-d'));
 ?>
 
-<section class="print-document">
+<section class="print-document a4-document">
     <div class="print-toolbar no-print">
-        <button type="button" class="btn-print" onclick="window.print()" data-i18n="print_contract">
-            In hợp đồng
+        <button type="button" class="btn-print" onclick="window.print()">
+            In / Lưu PDF hợp đồng
         </button>
-        <a class="btn-link" href="<?= htmlspecialchars($backUrl ?? (BASE_URL . '/index.php')) ?>" data-i18n="go_back">
+        <a class="btn-link" href="<?= htmlspecialchars($backUrl ?? (BASE_URL . '/index.php')) ?>">
             Quay lại
         </a>
     </div>
 
-    <article class="document-paper">
-        <header class="document-header">
-            <img src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS">
-            <div>
+    <article class="document-paper a4-paper contract-paper compact-contract-paper">
+        <header class="contract-print-header">
+            <img class="contract-print-logo" src="<?= BASE_URL ?>/assets/img/vnu-is-logo.jpg" alt="VNU-IS">
+            <div class="contract-print-title">
                 <span>Hệ thống quản lý ký túc xá VNU-IS</span>
-                <h1 data-i18n="print_contract_title">Hợp đồng ký túc xá</h1>
-                <p data-i18n="print_contract_subtitle">Bản in phục vụ đối chiếu thông tin cư trú sinh viên.</p>
+                <h1>HỢP ĐỒNG KÝ TÚC XÁ</h1>
+                <p>Bản in phục vụ xác nhận thông tin cư trú, tài chính và trách nhiệm của sinh viên.</p>
             </div>
         </header>
 
-        <section class="document-highlight">
+        <section class="contract-meta-strip">
             <div>
-                <span data-i18n="contract_code">Mã hợp đồng</span>
+                <span>Mã hợp đồng</span>
                 <strong><?= htmlspecialchars($contract['contract_code'] ?? '-') ?></strong>
             </div>
             <div>
-                <span data-i18n="status">Trạng thái</span>
-                <strong><?= htmlspecialchars($status) ?></strong>
+                <span>Trạng thái</span>
+                <strong><?= htmlspecialchars($statusLabels[$status] ?? $status) ?></strong>
             </div>
             <div>
-                <span data-i18n="created_at">Ngày tạo</span>
-                <strong><?= htmlspecialchars($contract['created_at'] ?? '-') ?></strong>
+                <span>Ngày lập</span>
+                <strong><?= htmlspecialchars($createdAt) ?></strong>
             </div>
         </section>
 
-        <section class="document-section">
-            <h2 data-i18n="student_information">Thông tin sinh viên</h2>
-            <div class="document-grid">
-                <div>
-                    <span data-i18n="student_code">Mã sinh viên</span>
-                    <strong><?= htmlspecialchars($contract['student_code'] ?? '-') ?></strong>
-                </div>
-                <div>
-                    <span data-i18n="full_name">Họ và tên</span>
-                    <strong><?= htmlspecialchars($contract['full_name'] ?? '-') ?></strong>
-                </div>
-                <div>
-                    <span data-i18n="gender">Giới tính</span>
-                    <strong><?= htmlspecialchars($contract['student_gender'] ?? $contract['gender'] ?? '-') ?></strong>
-                </div>
-                <div>
-                    <span data-i18n="faculty">Khoa/Viện</span>
-                    <strong><?= htmlspecialchars($contract['faculty'] ?? '-') ?></strong>
-                </div>
-            </div>
+        <section class="contract-section">
+            <h2>1. Thông tin sinh viên</h2>
+            <table class="contract-info-table">
+                <tbody>
+                <tr>
+                    <th>Mã sinh viên</th>
+                    <td><?= htmlspecialchars($contract['student_code'] ?? '-') ?></td>
+                    <th>Họ và tên</th>
+                    <td><?= htmlspecialchars($contract['full_name'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <th>Giới tính</th>
+                    <td><?= htmlspecialchars($genderLabels[$gender] ?? $gender) ?></td>
+                    <th>Khoa/Viện</th>
+                    <td><?= htmlspecialchars($contract['faculty'] ?? '-') ?></td>
+                </tr>
+                </tbody>
+            </table>
         </section>
 
-        <section class="document-section">
-            <h2 data-i18n="room_information">Thông tin phòng ở</h2>
-            <div class="document-grid">
-                <div>
-                    <span data-i18n="building">Tòa nhà</span>
-                    <strong><?= htmlspecialchars($contract['building_name'] ?? '-') ?></strong>
-                </div>
-                <div>
-                    <span data-i18n="room">Phòng</span>
-                    <strong><?= htmlspecialchars($contract['room_number'] ?? '-') ?></strong>
-                </div>
-                <div>
-                    <span data-i18n="room_type">Loại phòng</span>
-                    <strong><?= htmlspecialchars($contract['room_type'] ?? '-') ?></strong>
-                </div>
-                <div>
-                    <span data-i18n="capacity">Sức chứa</span>
-                    <strong><?= htmlspecialchars((string) ($contract['capacity'] ?? '-')) ?></strong>
-                </div>
-            </div>
-        </section>
-
-        <section class="document-section">
-            <h2 data-i18n="contract_terms">Điều khoản tài chính và thời hạn</h2>
-            <div class="document-grid">
-                <div>
-                    <span data-i18n="semester">Học kỳ</span>
-                    <strong>
+        <section class="contract-section">
+            <h2>2. Thông tin phòng ở</h2>
+            <table class="contract-info-table">
+                <tbody>
+                <tr>
+                    <th>Tòa nhà</th>
+                    <td><?= htmlspecialchars($contract['building_name'] ?? '-') ?></td>
+                    <th>Phòng</th>
+                    <td><?= htmlspecialchars($contract['room_number'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <th>Loại phòng</th>
+                    <td><?= htmlspecialchars($roomTypeLabels[$roomType] ?? $roomType) ?></td>
+                    <th>Khu vực</th>
+                    <td><?= htmlspecialchars($genderLabels[$roomGender] ?? $roomGender) ?></td>
+                </tr>
+                <tr>
+                    <th>Sức chứa</th>
+                    <td><?= htmlspecialchars((string) ($contract['capacity'] ?? '-')) ?> sinh viên</td>
+                    <th>Học kỳ</th>
+                    <td>
                         <?= htmlspecialchars($contract['semester_name'] ?? '-') ?>
                         -
                         <?= htmlspecialchars($contract['academic_year'] ?? '-') ?>
-                    </strong>
-                </div>
-                <div>
-                    <span data-i18n="duration">Thời hạn</span>
-                    <strong>
-                        <?= htmlspecialchars($contract['start_date'] ?? '-') ?>
-                        -
-                        <?= htmlspecialchars($contract['end_date'] ?? '-') ?>
-                    </strong>
-                </div>
-                <div>
-                    <span data-i18n="monthly_price">Giá hàng tháng</span>
-                    <strong><?= number_format($monthlyPrice) ?> VND</strong>
-                </div>
-                <div>
-                    <span data-i18n="deposit">Tiền cọc</span>
-                    <strong><?= number_format($depositAmount) ?> VND</strong>
-                </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="contract-section">
+            <h2>3. Thời hạn và tài chính</h2>
+            <table class="contract-info-table">
+                <tbody>
+                <tr>
+                    <th>Ngày bắt đầu</th>
+                    <td><?= htmlspecialchars($contract['start_date'] ?? '-') ?></td>
+                    <th>Ngày kết thúc</th>
+                    <td><?= htmlspecialchars($contract['end_date'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <th>Giá hàng tháng</th>
+                    <td><?= number_format($monthlyPrice) ?> VND</td>
+                    <th>Tiền cọc</th>
+                    <td><?= number_format($depositAmount) ?> VND</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="contract-section">
+            <h2>4. Cam kết thực hiện</h2>
+            <div class="contract-terms-box">
+                <ol class="contract-terms-list">
+                    <li>Sinh viên xác nhận thông tin trong hợp đồng là đúng và nhận phòng theo phân bổ của ký túc xá.</li>
+                    <li>Sinh viên tuân thủ nội quy cư trú, giữ gìn tài sản chung và chịu trách nhiệm khi làm hư hỏng thiết bị trong phòng.</li>
+                    <li>Sinh viên thanh toán tiền phòng, điện nước và các khoản phí phát sinh đúng hạn theo thông báo của hệ thống.</li>
+                    <li>Quản lý ký túc xá có quyền xử lý vi phạm, chấm dứt hợp đồng theo quy định khi sinh viên vi phạm nghiêm trọng.</li>
+                </ol>
             </div>
         </section>
 
-        <section class="signature-grid">
+        <section class="compact-signature-grid">
             <div>
-                <strong data-i18n="student_signature">Sinh viên</strong>
-                <span data-i18n="sign_and_full_name">Ký và ghi rõ họ tên</span>
+                <strong>Sinh viên</strong>
+                <span>Ký và ghi rõ họ tên</span>
             </div>
             <div>
-                <strong data-i18n="manager_signature">Quản lý KTX</strong>
-                <span data-i18n="sign_and_full_name">Ký và ghi rõ họ tên</span>
+                <strong>Quản lý ký túc xá</strong>
+                <span>Ký và ghi rõ họ tên</span>
             </div>
         </section>
     </article>

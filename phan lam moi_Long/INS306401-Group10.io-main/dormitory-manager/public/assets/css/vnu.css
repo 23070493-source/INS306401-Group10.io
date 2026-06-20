@@ -1103,17 +1103,24 @@ input[type="submit"]:hover {
 }
 
 .print-document {
-    max-width: 960px;
+    max-width: 210mm;
     margin: 0 auto;
 }
 
 .document-paper {
+    width: 210mm;
+    min-height: 297mm;
+    box-sizing: border-box;
     padding: 34px;
     border-radius: 8px;
     border: 1px solid rgba(210, 210, 210, 0.82);
     background:
         linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
     box-shadow: var(--vnu-shadow);
+}
+
+.a4-paper {
+    padding: 18mm;
 }
 
 .document-header {
@@ -1276,6 +1283,158 @@ input[type="submit"]:hover {
     box-shadow: var(--vnu-shadow-soft);
 }
 
+.manager-contract-table {
+    min-width: 1420px !important;
+}
+
+.manager-contract-actions {
+    min-width: 230px;
+}
+
+.manager-contract-actions form,
+.maintenance-update-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.manager-contract-actions .table-input {
+    min-width: 150px;
+}
+
+.utility-readings-table {
+    min-width: 1120px !important;
+}
+
+.maintenance-table {
+    min-width: 1180px !important;
+}
+
+.form-option-row {
+    padding: 14px;
+    border: 1px solid rgba(210, 210, 210, 0.76);
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.form-option-wide {
+    grid-column: 1 / -1;
+}
+
+.form-option-row label {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 0;
+    color: var(--vnu-ink);
+    font-weight: 900;
+}
+
+.form-option-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-height: 18px;
+    accent-color: var(--vnu-gold);
+}
+
+.form-option-row small {
+    display: block;
+    margin-top: 6px;
+    color: var(--vnu-muted);
+}
+
+.evidence-thumb {
+    width: 84px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(210, 210, 210, 0.96);
+    background: #ffffff;
+    box-shadow: 0 10px 22px rgba(29, 43, 82, 0.14);
+}
+
+.report-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin: 26px 0;
+}
+
+.report-chart-card {
+    min-width: 0;
+    padding: 22px;
+    border-radius: 8px;
+    border: 1px solid rgba(210, 210, 210, 0.76);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+    box-shadow: 0 18px 38px rgba(29, 43, 82, 0.13);
+}
+
+.section-heading.compact {
+    align-items: start;
+    margin-bottom: 18px;
+}
+
+.section-heading.compact h2 {
+    font-size: 22px;
+}
+
+.chart-list {
+    display: grid;
+    gap: 14px;
+}
+
+.chart-row {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.95fr) minmax(120px, 2fr) minmax(72px, auto);
+    gap: 12px;
+    align-items: center;
+}
+
+.chart-row span,
+.chart-row strong {
+    min-width: 0;
+    color: var(--vnu-ink);
+    font-weight: 900;
+    overflow-wrap: anywhere;
+}
+
+.chart-row strong {
+    text-align: right;
+}
+
+.chart-track {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e8edf5;
+}
+
+.chart-track i {
+    display: block;
+    width: var(--bar);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--vnu-navy), #425a8e);
+}
+
+.chart-track.gold i {
+    background: linear-gradient(90deg, #c89118, var(--vnu-gold));
+}
+
+.chart-track.danger i {
+    background: linear-gradient(90deg, #b91c1c, #ef4444);
+}
+
+.report-section {
+    margin: 30px 0;
+}
+
+@page {
+    size: A4;
+    margin: 12mm;
+}
+
 @media print {
     body.role-admin,
     body.role-manager,
@@ -1296,14 +1455,33 @@ input[type="submit"]:hover {
     }
 
     .print-document {
+        width: 100%;
         max-width: none;
         margin: 0;
     }
 
     .document-paper {
+        width: auto;
+        min-height: auto;
         padding: 0;
         border: 0;
+        border-radius: 0;
         box-shadow: none;
+    }
+
+    .print-toolbar,
+    .no-print,
+    .sidebar {
+        display: none !important;
+    }
+
+    .document-highlight,
+    .document-grid,
+    .document-money-grid,
+    .signature-grid,
+    .document-table tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
 
     .document-header img {
@@ -1326,7 +1504,8 @@ input[type="submit"]:hover {
     .dashboard-hero,
     .dashboard-workbench,
     .payment-summary-grid,
-    .flow-steps {
+    .flow-steps,
+    .report-chart-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1360,6 +1539,278 @@ input[type="submit"]:hover {
     .panel-heading {
         align-items: start;
         flex-direction: column;
+    }
+}
+
+.compact-contract-paper {
+    padding: 12mm 14mm;
+    color: var(--vnu-ink);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.contract-print-header {
+    display: grid;
+    grid-template-columns: 66px 1fr;
+    gap: 14px;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 3px solid var(--vnu-gold);
+}
+
+.contract-print-logo {
+    width: 56px;
+    height: 68px;
+    object-fit: contain;
+    padding: 4px;
+    border: 2px solid var(--vnu-gold);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.contract-print-title span {
+    color: var(--vnu-muted);
+    font-weight: 850;
+}
+
+.contract-print-title h1 {
+    margin: 2px 0 4px;
+    color: var(--vnu-navy-deep);
+    font-size: 26px;
+    line-height: 1.08;
+}
+
+.contract-print-title p {
+    margin: 0;
+    color: var(--vnu-muted);
+}
+
+.contract-meta-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+    margin-bottom: 10px;
+    border: 1px solid rgba(210, 210, 210, 0.90);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.contract-meta-strip div {
+    padding: 8px 10px;
+    border-right: 1px solid rgba(210, 210, 210, 0.76);
+}
+
+.contract-meta-strip div:last-child {
+    border-right: 0;
+}
+
+.contract-meta-strip span,
+.contract-info-table th {
+    color: var(--vnu-muted);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.contract-meta-strip strong,
+.contract-info-table td {
+    color: var(--vnu-ink);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.contract-section {
+    margin-top: 9px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.contract-section h2 {
+    margin: 0 0 5px;
+    padding: 5px 8px;
+    border-left: 4px solid var(--vnu-gold);
+    border-radius: 6px;
+    background: #f6f8fc;
+    color: var(--vnu-navy-deep);
+    font-size: 14px;
+    line-height: 1.15;
+}
+
+.contract-info-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed;
+    border-collapse: collapse !important;
+    border: 1px solid rgba(210, 210, 210, 0.90) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: none !important;
+}
+
+.contract-info-table th,
+.contract-info-table td {
+    padding: 6px 8px !important;
+    border-bottom: 1px solid rgba(210, 210, 210, 0.72) !important;
+    vertical-align: top !important;
+    text-align: left;
+}
+
+.contract-info-table tr:last-child th,
+.contract-info-table tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+.contract-info-table th {
+    width: 18%;
+    background: #f6f8fc !important;
+}
+
+.contract-info-table td {
+    width: 32%;
+    background: #ffffff !important;
+    overflow-wrap: anywhere;
+}
+
+.contract-terms-box {
+    padding: 8px 10px;
+    border: 1px solid rgba(210, 210, 210, 0.90);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.contract-terms-list {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.contract-terms-list li {
+    margin: 2px 0;
+}
+
+.compact-signature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 13px;
+}
+
+.compact-signature-grid div {
+    min-height: 78px;
+    padding-top: 46px;
+    border-top: 2px solid var(--vnu-navy);
+    text-align: center;
+}
+
+.compact-signature-grid strong,
+.compact-signature-grid span {
+    display: block;
+}
+
+.compact-signature-grid span {
+    margin-top: 4px;
+    color: var(--vnu-muted);
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 8mm;
+    }
+
+    .compact-contract-paper {
+        padding: 0 !important;
+        font-size: 10px !important;
+        line-height: 1.24 !important;
+    }
+
+    .contract-print-header {
+        grid-template-columns: 48px 1fr !important;
+        gap: 10px !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 7px !important;
+    }
+
+    .contract-print-logo {
+        width: 42px !important;
+        height: 50px !important;
+        padding: 2px !important;
+    }
+
+    .contract-print-title h1 {
+        font-size: 19px !important;
+        margin: 1px 0 2px !important;
+    }
+
+    .contract-print-title span,
+    .contract-print-title p {
+        font-size: 9px !important;
+    }
+
+    .contract-meta-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        margin-bottom: 6px !important;
+    }
+
+    .contract-meta-strip div {
+        padding: 4px 6px !important;
+    }
+
+    .contract-meta-strip span,
+    .contract-info-table th {
+        font-size: 8.8px !important;
+    }
+
+    .contract-meta-strip strong,
+    .contract-info-table td {
+        font-size: 9.4px !important;
+    }
+
+    .contract-section {
+        margin-top: 5px !important;
+    }
+
+    .contract-section h2 {
+        margin-bottom: 3px !important;
+        padding: 3px 5px !important;
+        font-size: 10px !important;
+    }
+
+    .contract-info-table {
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .contract-info-table th,
+    .contract-info-table td {
+        padding: 3px 5px !important;
+    }
+
+    .contract-terms-box {
+        padding: 4px 6px !important;
+    }
+
+    .contract-terms-list {
+        padding-left: 14px !important;
+    }
+
+    .contract-terms-list li {
+        margin: 1px 0 !important;
+    }
+
+    .compact-signature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 14px !important;
+        margin-top: 8px !important;
+    }
+
+    .compact-signature-grid div {
+        min-height: 58px !important;
+        padding-top: 34px !important;
+    }
+
+    .compact-signature-grid strong,
+    .compact-signature-grid span {
+        font-size: 9px !important;
     }
 }
 

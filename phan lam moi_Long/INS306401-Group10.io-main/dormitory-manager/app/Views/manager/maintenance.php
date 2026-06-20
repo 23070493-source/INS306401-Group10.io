@@ -54,7 +54,8 @@
     <div class="alert error">Không có yêu cầu sửa chữa nào phù hợp.</div>
 <?php else: ?>
 
-    <table>
+    <div class="table-scroll maintenance-table-scroll">
+    <table class="maintenance-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -175,5 +176,6 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 
 <?php endif; ?>

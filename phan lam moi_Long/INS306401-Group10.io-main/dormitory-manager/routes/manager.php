@@ -67,6 +67,23 @@ if (!function_exists('managerEnsureUtilitySchema')) {
     }
 }
 
+if (!function_exists('managerNormalizeReadingMonth')) {
+    function managerNormalizeReadingMonth(string $value): ?string
+    {
+        $value = trim(str_replace('/', '-', $value));
+
+        if (preg_match('/^(\d{4})-(0[1-9]|1[0-2])$/', $value)) {
+            return $value;
+        }
+
+        if (preg_match('/^(\d{4})-([1-9])$/', $value, $matches)) {
+            return $matches[1] . '-0' . $matches[2];
+        }
+
+        return null;
+    }
+}
+
 if (!function_exists('ktxAuditSafe')) {
     function ktxAuditSafe(PDO $db, int $userId, string $action, string $tableName, int $recordId, ?string $oldValue, ?string $newValue): void
     {
@@ -103,6 +120,171 @@ if (!function_exists('ktxAuditSafe')) {
             'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
         ]);
+    }
+}
+
+if (!function_exists('managerGenerateUtilityInvoicesFromReading')) {
+    function managerGenerateUtilityInvoicesFromReading(PDO $db, int $readingId, int $managerId): array
+    {
+        $stmt = $db->prepare("
+            SELECT
+                ur.*,
+                sv.service_name,
+                sv.unit,
+                r.room_number
+            FROM utility_readings ur
+            JOIN rooms r ON r.id = ur.room_id
+            LEFT JOIN services sv ON sv.id = ur.service_id
+            WHERE ur.id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $readingId
+        ]);
+
+        $reading = $stmt->fetch();
+
+        if (!$reading) {
+            throw new Exception('Không tìm thấy chỉ số điện/nước.');
+        }
+
+        if (($reading['status'] ?? '') === 'invoiced') {
+            throw new Exception('Chỉ số này đã được sinh hóa đơn.');
+        }
+
+        if (empty($reading['service_id'])) {
+            throw new Exception('Chỉ số này chưa gắn dịch vụ nên chưa thể sinh hóa đơn.');
+        }
+
+        $stmt = $db->prepare("
+            SELECT
+                c.id AS contract_id,
+                c.student_id,
+                c.room_id
+            FROM contracts c
+            WHERE c.room_id = :room_id
+              AND c.status = 'active'
+            ORDER BY c.id
+        ");
+
+        $stmt->execute([
+            'room_id' => $reading['room_id']
+        ]);
+
+        $contracts = $stmt->fetchAll();
+
+        if (empty($contracts)) {
+            throw new Exception('Phòng này chưa có hợp đồng đang hiệu lực để sinh hóa đơn.');
+        }
+
+        $studentCount = count($contracts);
+        $shareAmount = round(((float) $reading['total_amount']) / $studentCount, 2);
+        $shareConsumption = round(((float) $reading['consumption']) / $studentCount, 2);
+        $firstInvoiceId = null;
+
+        foreach ($contracts as $contract) {
+            $invoiceCode = 'INVU' . date('YmdHis') . $readingId . $contract['contract_id'];
+
+            $stmt = $db->prepare("
+                INSERT INTO invoices (
+                    invoice_code,
+                    contract_id,
+                    student_id,
+                    room_id,
+                    month_year,
+                    invoice_month,
+                    due_date,
+                    total_amount,
+                    paid_amount,
+                    status,
+                    created_by,
+                    created_at
+                )
+                VALUES (
+                    :invoice_code,
+                    :contract_id,
+                    :student_id,
+                    :room_id,
+                    :month_year,
+                    :invoice_month,
+                    DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+                    :total_amount,
+                    0,
+                    'unpaid',
+                    :created_by,
+                    NOW()
+                )
+            ");
+
+            $stmt->execute([
+                'invoice_code' => $invoiceCode,
+                'contract_id' => $contract['contract_id'],
+                'student_id' => $contract['student_id'],
+                'room_id' => $contract['room_id'],
+                'month_year' => $reading['reading_month'],
+                'invoice_month' => $reading['reading_month'],
+                'total_amount' => $shareAmount,
+                'created_by' => $managerId
+            ]);
+
+            $invoiceId = (int) $db->lastInsertId();
+            $firstInvoiceId = $firstInvoiceId ?? $invoiceId;
+
+            $description = ($reading['service_name'] ?? 'Dịch vụ')
+                . ' phòng '
+                . ($reading['room_number'] ?? '-')
+                . ' - '
+                . ($reading['reading_month'] ?? '-');
+
+            $stmt = $db->prepare("
+                INSERT INTO invoice_details (
+                    invoice_id,
+                    service_id,
+                    description,
+                    quantity,
+                    unit_price,
+                    amount
+                )
+                VALUES (
+                    :invoice_id,
+                    :service_id,
+                    :description,
+                    :quantity,
+                    :unit_price,
+                    :amount
+                )
+            ");
+
+            $stmt->execute([
+                'invoice_id' => $invoiceId,
+                'service_id' => $reading['service_id'],
+                'description' => $description,
+                'quantity' => $shareConsumption,
+                'unit_price' => $reading['unit_price'],
+                'amount' => $shareAmount
+            ]);
+
+            ktxAuditSafe($db, $managerId, 'create', 'invoices', $invoiceId, null, 'Generated utility invoice from reading #' . $readingId);
+        }
+
+        $stmt = $db->prepare("
+            UPDATE utility_readings
+            SET
+                status = 'invoiced',
+                invoice_id = :invoice_id
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'invoice_id' => $firstInvoiceId,
+            'id' => $readingId
+        ]);
+
+        return [
+            'invoice_count' => $studentCount,
+            'first_invoice_id' => $firstInvoiceId
+        ];
     }
 }
 
@@ -2177,10 +2359,11 @@ $routes['manager/utility-reading-store'] = function (PDO $db): void {
     $roomId = (int) ($_POST['room_id'] ?? 0);
     $serviceId = (int) ($_POST['service_id'] ?? 0);
     $semesterId = (int) ($_POST['semester_id'] ?? 0);
-    $readingMonth = trim($_POST['reading_month'] ?? '');
+    $readingMonth = managerNormalizeReadingMonth((string) ($_POST['reading_month'] ?? ''));
     $previousReading = (float) ($_POST['previous_reading'] ?? 0);
     $currentReading = (float) ($_POST['current_reading'] ?? 0);
     $unitPrice = (float) ($_POST['unit_price'] ?? 0);
+    $autoGenerateInvoice = isset($_POST['auto_generate_invoice']);
 
     $errors = [];
 
@@ -2192,7 +2375,7 @@ $routes['manager/utility-reading-store'] = function (PDO $db): void {
         $errors[] = 'Vui lòng chọn dịch vụ.';
     }
 
-    if ($readingMonth === '') {
+    if ($readingMonth === null) {
         $errors[] = 'Vui lòng chọn tháng ghi chỉ số.';
     }
 
@@ -2268,6 +2451,10 @@ $routes['manager/utility-reading-store'] = function (PDO $db): void {
         $readingId = (int) $db->lastInsertId();
 
         ktxAuditSafe($db, (int) $manager['id'], 'create', 'utility_readings', $readingId, null, 'Created utility reading');
+
+        if ($autoGenerateInvoice) {
+            managerGenerateUtilityInvoicesFromReading($db, $readingId, (int) $manager['id']);
+        }
 
         $db->commit();
 
