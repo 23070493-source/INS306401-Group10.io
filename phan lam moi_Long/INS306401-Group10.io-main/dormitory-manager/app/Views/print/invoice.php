@@ -11,6 +11,13 @@ $total = (float) ($invoice['total_amount'] ?? 0);
 $paid = (float) ($invoice['paid_amount'] ?? 0);
 $remaining = max(0, $total - $paid);
 $status = (string) ($invoice['status'] ?? '-');
+$descriptionLabels = [
+    'Room monthly fee' => 'Tiền phòng hàng tháng',
+    'Electricity fee' => 'Tiền điện',
+    'Water fee' => 'Tiền nước',
+    'Internet fee' => 'Tiền Internet',
+    'Cleaning fee' => 'Phí vệ sinh',
+];
 ?>
 
 <section class="print-document a4-document">
@@ -84,7 +91,7 @@ $status = (string) ($invoice['status'] ?? '-');
             <?php if (empty($details)): ?>
                 <div class="empty-state">Không có dòng chi tiết hóa đơn.</div>
             <?php else: ?>
-                <table class="document-table">
+                <table class="document-table invoice-detail-table">
                     <thead>
                     <tr>
                         <th>Mô tả</th>
@@ -96,7 +103,8 @@ $status = (string) ($invoice['status'] ?? '-');
                     <tbody>
                     <?php foreach ($details as $detail): ?>
                         <tr>
-                            <td><?= htmlspecialchars($detail['description'] ?? $detail['service_name'] ?? '-') ?></td>
+                            <?php $description = (string) ($detail['description'] ?? $detail['service_name'] ?? '-'); ?>
+                            <td><?= htmlspecialchars($descriptionLabels[$description] ?? $description) ?></td>
                             <td><?= htmlspecialchars((string) ($detail['quantity'] ?? 1)) ?></td>
                             <td><?= number_format((float) ($detail['unit_price'] ?? 0)) ?> VND</td>
                             <td><?= number_format((float) ($detail['amount'] ?? 0)) ?> VND</td>
@@ -128,7 +136,7 @@ $status = (string) ($invoice['status'] ?? '-');
         <?php if (!empty($payments)): ?>
             <section class="document-section">
                 <h2>Lịch sử thanh toán</h2>
-                <table class="document-table">
+                <table class="document-table invoice-payment-table">
                     <thead>
                     <tr>
                         <th>Phiếu thanh toán</th>

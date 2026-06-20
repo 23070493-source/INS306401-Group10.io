@@ -2209,3 +2209,101 @@ input[type="submit"] {
         grid-template-columns: 1fr;
     }
 }
+
+.invoice-paper {
+    overflow: hidden;
+}
+
+.invoice-paper .document-table,
+.invoice-paper table.document-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+}
+
+.invoice-paper .document-table th,
+.invoice-paper .document-table td {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-height: 1.35;
+}
+
+.invoice-paper .document-table th {
+    font-size: 12px !important;
+}
+
+.invoice-paper .document-table td {
+    font-size: 15px;
+}
+
+.invoice-detail-table th:nth-child(1),
+.invoice-detail-table td:nth-child(1) {
+    width: 34%;
+}
+
+.invoice-detail-table th:nth-child(2),
+.invoice-detail-table td:nth-child(2) {
+    width: 14%;
+    text-align: center;
+}
+
+.invoice-detail-table th:nth-child(3),
+.invoice-detail-table td:nth-child(3),
+.invoice-detail-table th:nth-child(4),
+.invoice-detail-table td:nth-child(4) {
+    width: 26%;
+}
+
+.invoice-payment-table th:nth-child(1),
+.invoice-payment-table td:nth-child(1) {
+    width: 24%;
+}
+
+.invoice-payment-table th:nth-child(2),
+.invoice-payment-table td:nth-child(2) {
+    width: 24%;
+}
+
+.invoice-payment-table th:nth-child(3),
+.invoice-payment-table td:nth-child(3),
+.invoice-payment-table th:nth-child(4),
+.invoice-payment-table td:nth-child(4),
+.invoice-payment-table th:nth-child(5),
+.invoice-payment-table td:nth-child(5) {
+    width: 17.33%;
+}
+
+@media print {
+    .invoice-paper .document-table,
+    .invoice-paper table.document-table {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+    .invoice-paper .document-table th,
+    .invoice-paper .document-table td {
+        padding: 6px 8px !important;
+        font-size: 9.6px !important;
+        line-height: 1.24 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    .invoice-paper .document-money-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .invoice-paper .document-money-grid div {
+        padding: 8px !important;
+    }
+
+    .invoice-paper .document-money-grid span,
+    .invoice-paper .document-money-grid strong {
+        font-size: 10px !important;
+    }
+}
